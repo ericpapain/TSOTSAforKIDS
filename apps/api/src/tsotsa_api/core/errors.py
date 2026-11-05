@@ -15,6 +15,7 @@ from __future__ import annotations
 from typing import Any
 
 from fastapi import Request, status
+from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
@@ -144,7 +145,7 @@ async def validation_exception_handler(_: Request, exc: RequestValidationError) 
         status_code=http_422,
         code="VALIDATION_ERROR",
         message="Request validation failed",
-        details=exc.errors(),
+        details=jsonable_encoder(exc.errors()),
     )
 
 

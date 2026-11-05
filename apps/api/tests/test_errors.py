@@ -79,3 +79,4 @@ async def test_validation_error_format() -> None:
         data = response.json()
         assert data["error"]["code"] == "VALIDATION_ERROR"
         assert isinstance(data["error"]["details"], list)
+

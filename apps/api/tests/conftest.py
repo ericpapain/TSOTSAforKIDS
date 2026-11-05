@@ -18,19 +18,22 @@ from sqlalchemy.ext.asyncio import (
 from tsotsa_api.core.config import Settings
 from tsotsa_api.core.database import get_db_session
 from tsotsa_api.main import create_app
+from tsotsa_api.modules.identity.models import Base
+from tsotsa_api.modules.identity.rate_limit import RateLimiter
 
 
 def get_test_settings() -> Settings:
     """Return test settings overriding database URL for tests."""
     test_db_url = os.getenv(
         "DATABASE_URL_TEST",
-        "mysql+asyncmy://root:test@127.0.0.1:3307/tsotsa_test",
+        "sqlite+aiosqlite:///:memory:",
     )
     return Settings(
         APP_ENV="test",
         DATABASE_URL=test_db_url,
         DATABASE_MIGRATIONS_URL=test_db_url,
         DATABASE_SSL_CA_PATH=None,
+        BCRYPT_ROUNDS=4,
         CORS_ALLOWED_ORIGINS="http://localhost:3000,https://app.tsotsa-for-kids.com",
     )
 
@@ -54,14 +57,20 @@ async def test_engine() -> AsyncGenerator[AsyncEngine, None]:
             pass
         actual_engine = create_async_engine("sqlite+aiosqlite:///:memory:", echo=False)
 
+    async with actual_engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+
     yield actual_engine
 
+    async with actual_engine.begin() as conn:
+        await conn.run_sync(Base.metadata.drop_all)
     await actual_engine.dispose()
 
 
 @pytest_asyncio.fixture
 async def db_session(test_engine: AsyncEngine) -> AsyncGenerator[AsyncSession, None]:
     """Provide an isolated database session per test."""
+    RateLimiter.clear()
     session_factory = async_sessionmaker(
         bind=test_engine,
         class_=AsyncSession,
@@ -69,7 +78,10 @@ async def db_session(test_engine: AsyncEngine) -> AsyncGenerator[AsyncSession, N
     )
     async with session_factory() as session:
         yield session
-        await session.rollback()
+
+    async with test_engine.begin() as conn:
+        for table in reversed(Base.metadata.sorted_tables):
+            await conn.execute(table.delete())
 
 
 @pytest_asyncio.fixture
@@ -80,6 +92,7 @@ async def client(db_session: AsyncSession) -> AsyncGenerator[AsyncClient, None]:
 
     async def override_get_db() -> AsyncGenerator[AsyncSession, None]:
         yield db_session
+        await db_session.commit()
 
     app.dependency_overrides[get_db_session] = override_get_db
 

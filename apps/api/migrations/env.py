@@ -9,6 +9,7 @@ from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from tsotsa_api.core.config import get_settings
+from tsotsa_api.modules.identity.models import Base
 
 config = context.config
 
@@ -20,7 +21,7 @@ settings = get_settings()
 migrations_url = settings.DATABASE_MIGRATIONS_URL or settings.DATABASE_URL
 config.set_main_option("sqlalchemy.url", migrations_url)
 
-target_metadata = None
+target_metadata = Base.metadata
 
 
 def run_migrations_offline() -> None:
@@ -67,3 +68,4 @@ if context.is_offline_mode():
     run_migrations_offline()
 else:
     run_migrations_online()
+
