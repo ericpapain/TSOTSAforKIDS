@@ -5,6 +5,8 @@ Uses native bcrypt with BCRYPT_ROUNDS and pyjwt for RS256 authentication tokens.
 
 from __future__ import annotations
 
+import hashlib
+import secrets
 from datetime import UTC, datetime, timedelta
 from typing import Any
 
@@ -77,3 +79,19 @@ def decode_access_token(token: str, settings: Settings | None = None) -> dict[st
         algorithms=["HS256"],
         issuer="tsotsa-kids-api",
     )
+
+
+def generate_random_token(length: int = 32) -> str:
+    """Generate a secure cryptographically random hex token."""
+    return secrets.token_hex(length)
+
+
+def generate_numeric_otp(length: int = 6) -> str:
+    """Generate a cryptographically secure numeric OTP code."""
+    return "".join(str(secrets.randbelow(10)) for _ in range(length))
+
+
+def hash_token(token: str) -> str:
+    """Compute standard SHA-256 digest of a token string."""
+    return hashlib.sha256(token.encode("utf-8")).hexdigest()
+

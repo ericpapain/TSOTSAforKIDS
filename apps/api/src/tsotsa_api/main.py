@@ -22,6 +22,7 @@ from tsotsa_api.core.errors import (
     validation_exception_handler,
 )
 from tsotsa_api.core.logging import get_logger, setup_logging
+from tsotsa_api.modules.identity import auth_router
 
 logger = get_logger(__name__)
 
@@ -82,6 +83,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     async def v1_root() -> dict[str, str]:
         return {"message": "TSOTSA Kids API v1", "status": "active"}
 
+    v1_router.include_router(auth_router)
     app.include_router(v1_router)
 
     return app

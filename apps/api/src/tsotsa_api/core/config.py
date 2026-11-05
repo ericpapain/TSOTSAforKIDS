@@ -70,6 +70,13 @@ class Settings(BaseSettings):
         return [orig.strip() for orig in self.CORS_ALLOWED_ORIGINS.split(",") if orig.strip()]
 
     @property
+    def google_client_ids_list(self) -> list[str]:
+        """Return allowed Google Client IDs as a parsed list of clean strings."""
+        if not self.GOOGLE_CLIENT_IDS:
+            return []
+        return [cid.strip() for cid in self.GOOGLE_CLIENT_IDS.split(",") if cid.strip()]
+
+    @property
     def is_production(self) -> bool:
         """Check if environment is production or staging."""
         return self.APP_ENV in {"production", "staging"}

@@ -15,9 +15,8 @@ def setup_logging(settings: Settings) -> None:
     """Configure structlog and standard logging based on environment."""
     log_level = getattr(logging, settings.LOG_LEVEL.upper(), logging.INFO)
 
-    shared_processors: list[Any] = [
+    common_processors: list[Any] = [
         structlog.contextvars.merge_contextvars,
-        structlog.stdlib.filter_by_level,
         structlog.stdlib.add_logger_name,
         structlog.stdlib.add_log_level,
         structlog.stdlib.PositionalArgumentsFormatter(),
@@ -30,10 +29,12 @@ def setup_logging(settings: Settings) -> None:
     if settings.is_production:
         formatter_processor = structlog.processors.JSONRenderer()
     else:
-        formatter_processor = structlog.dev.ConsoleRenderer(colors=True)
+        formatter_processor = structlog.dev.ConsoleRenderer(colors=False)
 
     structlog.configure(
-        processors=shared_processors + [
+        processors=[
+            structlog.stdlib.filter_by_level,
+            *common_processors,
             structlog.stdlib.ProcessorFormatter.wrap_for_formatter,
         ],
         logger_factory=structlog.stdlib.LoggerFactory(),
@@ -42,7 +43,7 @@ def setup_logging(settings: Settings) -> None:
     )
 
     formatter = structlog.stdlib.ProcessorFormatter(
-        foreign_pre_chain=shared_processors,
+        foreign_pre_chain=common_processors,
         processors=[
             structlog.stdlib.ProcessorFormatter.remove_processors_meta,
             formatter_processor,

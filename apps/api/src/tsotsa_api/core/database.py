@@ -88,6 +88,7 @@ async def get_db_session() -> AsyncGenerator[AsyncSession, None]:
     async with async_session_factory() as session:
         try:
             yield session
+            await session.commit()
         except Exception:
             await session.rollback()
             raise
@@ -100,3 +101,4 @@ async def check_database_connection(session: AsyncSession) -> bool:
         return result.scalar() == 1
     except Exception:
         return False
+
