@@ -60,6 +60,7 @@ Thumbs.db
 test-results/
 playwright-report/
 blob-report/
+data/orkg/raw/
 
 # Archives
 *.zip

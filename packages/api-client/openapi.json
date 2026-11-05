@@ -1564,6 +1564,172 @@
           }
         }
       }
+    },
+    "/v1/admin/orkg/sync": {
+      "post": {
+        "tags": [
+          "Admin - ORKG Sync"
+        ],
+        "summary": "Trigger Orkg Sync",
+        "description": "Trigger ORKG extraction, normalization, diff, and review batch creation.",
+        "operationId": "trigger_orkg_sync_v1_admin_orkg_sync_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/OrkgSyncRequest"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Payload"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrkgSyncResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/admin/orkg/comparisons": {
+      "get": {
+        "tags": [
+          "Admin - ORKG Sync"
+        ],
+        "summary": "List Orkg Comparisons",
+        "description": "List ORKG comparisons from the registry.",
+        "operationId": "list_orkg_comparisons_v1_admin_orkg_comparisons_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "only_active",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Only Active"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/OrkgComparisonRead"
+                  },
+                  "title": "Response List Orkg Comparisons V1 Admin Orkg Comparisons Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/admin/orkg/snapshots": {
+      "get": {
+        "tags": [
+          "Admin - ORKG Sync"
+        ],
+        "summary": "List Orkg Snapshots",
+        "description": "List recorded ORKG fetch snapshots and administrative alerts.",
+        "operationId": "list_orkg_snapshots_v1_admin_orkg_snapshots_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "comparison_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Comparison Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/OrkgSnapshotRead"
+                  },
+                  "title": "Response List Orkg Snapshots V1 Admin Orkg Snapshots Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -2691,6 +2857,291 @@
         ],
         "title": "NutrientRead",
         "description": "Summary of a canonical nutrient."
+      },
+      "OrkgComparisonRead": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "comparison_id": {
+            "type": "string",
+            "title": "Comparison Id"
+          },
+          "type": {
+            "type": "string",
+            "title": "Type"
+          },
+          "nutrient_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nutrient Label"
+          },
+          "region_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Region Label"
+          },
+          "basis": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Basis"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "replaced_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Replaced By"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "comparison_id",
+          "type",
+          "status"
+        ],
+        "title": "OrkgComparisonRead",
+        "description": "Registry representation of an ORKG comparison."
+      },
+      "OrkgSnapshotRead": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "comparison_id": {
+            "type": "string",
+            "title": "Comparison Id"
+          },
+          "fetched_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Fetched At"
+          },
+          "method": {
+            "type": "string",
+            "title": "Method"
+          },
+          "checksum": {
+            "type": "string",
+            "title": "Checksum"
+          },
+          "raw_file": {
+            "type": "string",
+            "title": "Raw File"
+          },
+          "batch_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Batch Id"
+          },
+          "alert_message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Alert Message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "comparison_id",
+          "fetched_at",
+          "method",
+          "checksum",
+          "raw_file"
+        ],
+        "title": "OrkgSnapshotRead",
+        "description": "Snapshot record representation."
+      },
+      "OrkgSyncComparisonResult": {
+        "properties": {
+          "comparison_id": {
+            "type": "string",
+            "title": "Comparison Id"
+          },
+          "type": {
+            "type": "string",
+            "title": "Type"
+          },
+          "method": {
+            "type": "string",
+            "title": "Method"
+          },
+          "checksum": {
+            "type": "string",
+            "title": "Checksum"
+          },
+          "raw_file": {
+            "type": "string",
+            "title": "Raw File"
+          },
+          "diff_new": {
+            "type": "integer",
+            "title": "Diff New",
+            "default": 0
+          },
+          "diff_modified": {
+            "type": "integer",
+            "title": "Diff Modified",
+            "default": 0
+          },
+          "diff_unchanged": {
+            "type": "integer",
+            "title": "Diff Unchanged",
+            "default": 0
+          },
+          "diff_missing": {
+            "type": "integer",
+            "title": "Diff Missing",
+            "default": 0
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Warnings"
+          },
+          "errors": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Errors"
+          },
+          "alert": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Alert"
+          }
+        },
+        "type": "object",
+        "required": [
+          "comparison_id",
+          "type",
+          "method",
+          "checksum",
+          "raw_file"
+        ],
+        "title": "OrkgSyncComparisonResult",
+        "description": "Result summary for a single synchronized ORKG comparison."
+      },
+      "OrkgSyncRequest": {
+        "properties": {
+          "comparison_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Comparison Ids"
+          }
+        },
+        "type": "object",
+        "title": "OrkgSyncRequest",
+        "description": "Optional list of comparison IDs to synchronize."
+      },
+      "OrkgSyncResponse": {
+        "properties": {
+          "batch_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Batch Id"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "alerts": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Alerts"
+          },
+          "comparisons": {
+            "items": {
+              "$ref": "#/components/schemas/OrkgSyncComparisonResult"
+            },
+            "type": "array",
+            "title": "Comparisons"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status"
+        ],
+        "title": "OrkgSyncResponse",
+        "description": "Response returned by POST /v1/admin/orkg/sync."
       },
       "OtpRequestResponse": {
         "properties": {

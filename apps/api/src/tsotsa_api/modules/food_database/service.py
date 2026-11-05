@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+from decimal import Decimal
+from typing import Any
+
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -17,6 +20,12 @@ from tsotsa_api.modules.food_database.models import (
     FoodNutrientValue,
     ImportBatch,
     ImportBatchRow,
+)
+from tsotsa_api.modules.food_database.orkg_bridge import (
+    ensure_dish_or_ingredient_food,
+    get_current_nutrient_values_map,
+    get_food_names_map,
+    persist_orkg_sync_batch,
 )
 from tsotsa_api.modules.food_database.persistence import persist_imported_row
 from tsotsa_api.modules.food_database.repository import FoodDatabaseRepository
@@ -218,3 +227,62 @@ class FoodDatabaseService:
         self.session.add(new_food)
         await self.session.flush()
         return new_food
+
+    async def get_or_create_region_id(self, region_name: str) -> str:
+        reg = await self.repo.get_or_create_region(region_name)
+        return reg.id
+
+    async def ensure_food_item(
+        self,
+        name: str,
+        kind: str,
+        scientific_name: str | None = None,
+        region_name: str | None = None,
+        user_id: str | None = None,
+    ) -> str:
+        return await ensure_dish_or_ingredient_food(
+            self.session, self.repo, name, kind, scientific_name, region_name, user_id
+        )
+
+    async def find_or_create_orkg_source_id(
+        self,
+        comparison_id: str,
+        contribution_label: str | None = None,
+        paper_title: str | None = None,
+        doi: str | None = None,
+    ) -> str:
+        src = await self.repo.find_or_create_source(
+            article_reference=paper_title,
+            doi=doi,
+            orkg_comparison_id=comparison_id,
+            orkg_contribution_label=contribution_label,
+        )
+        if paper_title and not src.paper_title:
+            src.paper_title = paper_title
+        return src.id
+
+    async def get_current_nutrient_values(
+        self,
+    ) -> dict[tuple[str, str, str], tuple[str, Decimal, int]]:
+        return await get_current_nutrient_values_map(self.session)
+
+    async def get_food_names_by_ids(self, food_ids: list[str]) -> dict[str, str]:
+        return await get_food_names_map(self.session, food_ids)
+
+    async def create_orkg_batch(
+        self,
+        user_id: str,
+        file_name: str,
+        control_report: dict[str, Any],
+        batch_rows: list[dict[str, Any]],
+        composition_changes: list[dict[str, Any]],
+    ) -> str:
+        return await persist_orkg_sync_batch(
+            self.session,
+            self.repo,
+            user_id,
+            file_name,
+            control_report,
+            batch_rows,
+            composition_changes,
+        )
