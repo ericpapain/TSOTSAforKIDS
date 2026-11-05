@@ -35,7 +35,7 @@ def get_test_settings() -> Settings:
     )
 
 
-@pytest_asyncio.fixture(scope="session")
+@pytest_asyncio.fixture
 async def test_engine() -> AsyncGenerator[AsyncEngine, None]:
     """Provide a test database engine (MySQL if running, SQLite fallback)."""
     settings = get_test_settings()
