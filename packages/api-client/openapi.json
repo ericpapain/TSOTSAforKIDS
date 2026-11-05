@@ -500,10 +500,727 @@
           }
         ]
       }
+    },
+    "/v1/nutrients": {
+      "get": {
+        "tags": [
+          "Nutrients"
+        ],
+        "summary": "List Nutrients",
+        "description": "Retrieve canonical nutrients.",
+        "operationId": "list_nutrients_v1_nutrients_get",
+        "parameters": [
+          {
+            "name": "tracked_only",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "description": "Filtrer uniquement les nutriments suivis",
+              "default": true,
+              "title": "Tracked Only"
+            },
+            "description": "Filtrer uniquement les nutriments suivis"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/NutrientRead"
+                  },
+                  "title": "Response List Nutrients V1 Nutrients Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/nutrients/{code}": {
+      "get": {
+        "tags": [
+          "Nutrients"
+        ],
+        "summary": "Get Nutrient",
+        "description": "Retrieve detailed description of a specific nutrient by its canonical code.",
+        "operationId": "get_nutrient_v1_nutrients__code__get",
+        "parameters": [
+          {
+            "name": "code",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Code"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NutrientDetailRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/admin/food-imports": {
+      "post": {
+        "tags": [
+          "Admin - Food Imports"
+        ],
+        "summary": "Upload Food Import File",
+        "description": "Upload a CSV or Excel file for ingestion into the food database.",
+        "operationId": "upload_food_import_file_v1_admin_food_imports_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_upload_food_import_file_v1_admin_food_imports_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImportBatchRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/admin/food-imports/template": {
+      "get": {
+        "tags": [
+          "Admin - Food Imports"
+        ],
+        "summary": "Download Import Template",
+        "description": "Download the official empty XLSX food ingestion template.",
+        "operationId": "download_import_template_v1_admin_food_imports_template_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/admin/food-imports/{batch_id}/mapping": {
+      "put": {
+        "tags": [
+          "Admin - Food Imports"
+        ],
+        "summary": "Update Column Mapping",
+        "description": "Update column mapping for a batch.",
+        "operationId": "update_column_mapping_v1_admin_food_imports__batch_id__mapping_put",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "batch_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Batch Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ColumnMappingUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImportBatchRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/admin/food-imports/{batch_id}/validate": {
+      "post": {
+        "tags": [
+          "Admin - Food Imports"
+        ],
+        "summary": "Validate Batch Dry Run",
+        "description": "Dry-run quality check without inserting data.",
+        "operationId": "validate_batch_dry_run_v1_admin_food_imports__batch_id__validate_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "batch_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Batch Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BatchValidationReport"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/admin/food-imports/{batch_id}/execute": {
+      "post": {
+        "tags": [
+          "Admin - Food Imports"
+        ],
+        "summary": "Execute Batch Import",
+        "description": "Import valid rows into food database with status 'to_review'.",
+        "operationId": "execute_batch_import_v1_admin_food_imports__batch_id__execute_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "batch_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Batch Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImportBatchRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/admin/food-imports/{batch_id}/review": {
+      "post": {
+        "tags": [
+          "Admin - Food Imports"
+        ],
+        "summary": "Review Import Batch",
+        "description": "Review and approve or reject an import batch (reviewer must differ from creator).",
+        "operationId": "review_import_batch_v1_admin_food_imports__batch_id__review_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "batch_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Batch Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BatchReviewDecision"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImportBatchRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/admin/foods": {
+      "post": {
+        "tags": [
+          "Admin - Food Imports"
+        ],
+        "summary": "Create Manual Food",
+        "description": "Manually enter food item and composition through identical quality controls.",
+        "operationId": "create_manual_food_v1_admin_foods_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ManualFoodCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FoodSummaryRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/foods": {
+      "get": {
+        "tags": [
+          "Foods"
+        ],
+        "summary": "Search Published Foods",
+        "description": "Retrieve published food catalog with pagination and filters.",
+        "operationId": "search_published_foods_v1_foods_get",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Recherche textuelle sur le nom",
+              "title": "Q"
+            },
+            "description": "Recherche textuelle sur le nom"
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Code cat\u00e9gorie",
+              "title": "Category"
+            },
+            "description": "Code cat\u00e9gorie"
+          },
+          {
+            "name": "region",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Code r\u00e9gion",
+              "title": "Region"
+            },
+            "description": "Code r\u00e9gion"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "Page number (1-indexed)",
+              "default": 1,
+              "title": "Page"
+            },
+            "description": "Page number (1-indexed)"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "description": "Items per page",
+              "default": 20,
+              "title": "Limit"
+            },
+            "description": "Items per page"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedResponse_FoodSummaryRead_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/foods/{food_id}": {
+      "get": {
+        "tags": [
+          "Foods"
+        ],
+        "summary": "Get Published Food Detail",
+        "description": "Retrieve full details of a published food item.",
+        "operationId": "get_published_food_detail_v1_foods__food_id__get",
+        "parameters": [
+          {
+            "name": "food_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Food Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FoodDetailRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
     "schemas": {
+      "BatchReviewDecision": {
+        "properties": {
+          "decision": {
+            "type": "string",
+            "pattern": "^(publish|reject)$",
+            "title": "Decision"
+          },
+          "comment": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Comment"
+          }
+        },
+        "type": "object",
+        "required": [
+          "decision"
+        ],
+        "title": "BatchReviewDecision",
+        "description": "Admin review decision for an import batch."
+      },
+      "BatchRowMessage": {
+        "properties": {
+          "row_number": {
+            "type": "integer",
+            "title": "Row Number"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "messages": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Messages"
+          }
+        },
+        "type": "object",
+        "required": [
+          "row_number",
+          "status"
+        ],
+        "title": "BatchRowMessage",
+        "description": "Row level check message."
+      },
+      "BatchValidationReport": {
+        "properties": {
+          "batch_id": {
+            "type": "string",
+            "title": "Batch Id"
+          },
+          "file_name": {
+            "type": "string",
+            "title": "File Name"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "rows_valid": {
+            "type": "integer",
+            "title": "Rows Valid"
+          },
+          "rows_warning": {
+            "type": "integer",
+            "title": "Rows Warning"
+          },
+          "rows_error": {
+            "type": "integer",
+            "title": "Rows Error"
+          },
+          "can_execute": {
+            "type": "boolean",
+            "title": "Can Execute"
+          },
+          "details": {
+            "items": {
+              "$ref": "#/components/schemas/BatchRowMessage"
+            },
+            "type": "array",
+            "title": "Details"
+          }
+        },
+        "type": "object",
+        "required": [
+          "batch_id",
+          "file_name",
+          "status",
+          "rows_valid",
+          "rows_warning",
+          "rows_error",
+          "can_execute"
+        ],
+        "title": "BatchValidationReport",
+        "description": "Dry-run and execution control report."
+      },
+      "Body_upload_food_import_file_v1_admin_food_imports_post": {
+        "properties": {
+          "file": {
+            "type": "string",
+            "contentMediaType": "application/octet-stream",
+            "title": "File"
+          }
+        },
+        "type": "object",
+        "required": [
+          "file"
+        ],
+        "title": "Body_upload_food_import_file_v1_admin_food_imports_post"
+      },
+      "ColumnMappingUpdate": {
+        "properties": {
+          "mapping": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Mapping",
+            "description": "Dictionnaire des correspondances entre colonnes du fichier et champs cibles"
+          }
+        },
+        "type": "object",
+        "required": [
+          "mapping"
+        ],
+        "title": "ColumnMappingUpdate",
+        "description": "Admin column mapping correction."
+      },
       "EmailLoginRequest": {
         "properties": {
           "email": {
@@ -573,6 +1290,291 @@
         "title": "EmailVerifyRequest",
         "description": "Verify email address with one-time token."
       },
+      "FoodDetailRead": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind"
+          },
+          "scientific_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scientific Name"
+          },
+          "category": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Category"
+          },
+          "food_group": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Food Group"
+          },
+          "state": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "State"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "version": {
+            "type": "integer",
+            "title": "Version"
+          },
+          "is_current": {
+            "type": "boolean",
+            "title": "Is Current"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "local_names": {
+            "items": {
+              "$ref": "#/components/schemas/FoodNameRead"
+            },
+            "type": "array",
+            "title": "Local Names"
+          },
+          "regions": {
+            "items": {
+              "$ref": "#/components/schemas/FoodRegionRead"
+            },
+            "type": "array",
+            "title": "Regions"
+          },
+          "nutrients": {
+            "items": {
+              "$ref": "#/components/schemas/FoodNutrientValueRead"
+            },
+            "type": "array",
+            "title": "Nutrients"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "kind",
+          "status",
+          "version",
+          "is_current",
+          "created_at"
+        ],
+        "title": "FoodDetailRead",
+        "description": "Complete food representation with composition, local names and sources."
+      },
+      "FoodNameRead": {
+        "properties": {
+          "language_or_dialect": {
+            "type": "string",
+            "title": "Language Or Dialect"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "language_or_dialect",
+          "name"
+        ],
+        "title": "FoodNameRead",
+        "description": "Local dialect food name."
+      },
+      "FoodNutrientValueRead": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "nutrient_code": {
+            "type": "string",
+            "title": "Nutrient Code"
+          },
+          "nutrient_name": {
+            "type": "string",
+            "title": "Nutrient Name"
+          },
+          "value_per_100g": {
+            "type": "string",
+            "title": "Value Per 100G"
+          },
+          "unit": {
+            "type": "string",
+            "title": "Unit"
+          },
+          "basis": {
+            "type": "string",
+            "title": "Basis"
+          },
+          "sample_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sample Label"
+          },
+          "is_estimated": {
+            "type": "boolean",
+            "title": "Is Estimated",
+            "default": false
+          },
+          "source": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SourceRead"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "nutrient_code",
+          "nutrient_name",
+          "value_per_100g",
+          "unit",
+          "basis"
+        ],
+        "title": "FoodNutrientValueRead",
+        "description": "Individual nutrient value for a food."
+      },
+      "FoodRegionRead": {
+        "properties": {
+          "region_code": {
+            "type": "string",
+            "title": "Region Code"
+          },
+          "region_name": {
+            "type": "string",
+            "title": "Region Name"
+          },
+          "availability": {
+            "type": "string",
+            "title": "Availability"
+          },
+          "season_months": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Season Months"
+          }
+        },
+        "type": "object",
+        "required": [
+          "region_code",
+          "region_name",
+          "availability"
+        ],
+        "title": "FoodRegionRead",
+        "description": "Region availability description."
+      },
+      "FoodSummaryRead": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind"
+          },
+          "category": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Category"
+          },
+          "state": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "State"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "version": {
+            "type": "integer",
+            "title": "Version"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "kind",
+          "status",
+          "version"
+        ],
+        "title": "FoodSummaryRead",
+        "description": "Concise representation of a food for catalog search."
+      },
       "GoogleLoginRequest": {
         "properties": {
           "id_token": {
@@ -602,6 +1604,98 @@
         "type": "object",
         "title": "HTTPValidationError"
       },
+      "ImportBatchRead": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "file_name": {
+            "type": "string",
+            "title": "File Name"
+          },
+          "file_type": {
+            "type": "string",
+            "title": "File Type"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "created_by": {
+            "type": "string",
+            "title": "Created By"
+          },
+          "reviewed_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewed By"
+          },
+          "column_mapping": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Column Mapping"
+          },
+          "rows_valid": {
+            "type": "integer",
+            "title": "Rows Valid",
+            "default": 0
+          },
+          "rows_error": {
+            "type": "integer",
+            "title": "Rows Error",
+            "default": 0
+          },
+          "rows_warning": {
+            "type": "integer",
+            "title": "Rows Warning",
+            "default": 0
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "control_report": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Control Report"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "file_name",
+          "file_type",
+          "status",
+          "created_by",
+          "created_at"
+        ],
+        "title": "ImportBatchRead",
+        "description": "Import batch overview."
+      },
       "LogoutRequest": {
         "properties": {
           "refresh_token": {
@@ -618,6 +1712,197 @@
         "title": "LogoutRequest",
         "description": "Revoke a refresh token on logout."
       },
+      "ManualFoodCreate": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind",
+            "default": "dish"
+          },
+          "scientific_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scientific Name"
+          },
+          "category": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Category"
+          },
+          "state": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "State"
+          },
+          "local_names": {
+            "items": {
+              "additionalProperties": {
+                "type": "string"
+              },
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Local Names"
+          },
+          "regions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Regions"
+          },
+          "source": {
+            "$ref": "#/components/schemas/ManualSourceEntry"
+          },
+          "nutrients": {
+            "items": {
+              "$ref": "#/components/schemas/ManualNutrientEntry"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Nutrients"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "source",
+          "nutrients"
+        ],
+        "title": "ManualFoodCreate",
+        "description": "Payload for manual food and composition creation."
+      },
+      "ManualNutrientEntry": {
+        "properties": {
+          "nutrient": {
+            "type": "string",
+            "title": "Nutrient"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Value"
+          },
+          "unit": {
+            "type": "string",
+            "title": "Unit"
+          },
+          "basis": {
+            "type": "string",
+            "title": "Basis",
+            "default": "poids frais"
+          },
+          "sample_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sample Label"
+          }
+        },
+        "type": "object",
+        "required": [
+          "nutrient",
+          "value",
+          "unit"
+        ],
+        "title": "ManualNutrientEntry",
+        "description": "Nutrient composition row in manual entry."
+      },
+      "ManualSourceEntry": {
+        "properties": {
+          "article_reference": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Article Reference"
+          },
+          "doi": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Doi"
+          },
+          "orkg_comparison_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Orkg Comparison Id"
+          },
+          "paper_title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Paper Title"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Url"
+          }
+        },
+        "type": "object",
+        "title": "ManualSourceEntry",
+        "description": "Source input during manual entry."
+      },
       "MessageResponse": {
         "properties": {
           "message": {
@@ -631,6 +1916,157 @@
         ],
         "title": "MessageResponse",
         "description": "Generic message response."
+      },
+      "NutrientDetailRead": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "name_fr": {
+            "type": "string",
+            "title": "Name Fr"
+          },
+          "name_en": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name En"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category"
+          },
+          "reference_unit_code": {
+            "type": "string",
+            "title": "Reference Unit Code"
+          },
+          "plausible_min": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plausible Min"
+          },
+          "plausible_max": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plausible Max"
+          },
+          "is_tracked": {
+            "type": "boolean",
+            "title": "Is Tracked",
+            "default": true
+          },
+          "synonyms": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Synonyms"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "code",
+          "name_fr",
+          "category",
+          "reference_unit_code"
+        ],
+        "title": "NutrientDetailRead",
+        "description": "Detailed nutrient description with its known synonyms."
+      },
+      "NutrientRead": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "name_fr": {
+            "type": "string",
+            "title": "Name Fr"
+          },
+          "name_en": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name En"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category"
+          },
+          "reference_unit_code": {
+            "type": "string",
+            "title": "Reference Unit Code"
+          },
+          "plausible_min": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plausible Min"
+          },
+          "plausible_max": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Plausible Max"
+          },
+          "is_tracked": {
+            "type": "boolean",
+            "title": "Is Tracked",
+            "default": true
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "code",
+          "name_fr",
+          "category",
+          "reference_unit_code"
+        ],
+        "title": "NutrientRead",
+        "description": "Summary of a canonical nutrient."
       },
       "OtpRequestResponse": {
         "properties": {
@@ -650,6 +2086,46 @@
         ],
         "title": "OtpRequestResponse",
         "description": "Response returned upon OTP code generation."
+      },
+      "PaginatedResponse_FoodSummaryRead_": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/FoodSummaryRead"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "total": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Total"
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Page"
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Limit"
+          },
+          "total_pages": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Total Pages"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "total",
+          "page",
+          "limit",
+          "total_pages"
+        ],
+        "title": "PaginatedResponse[FoodSummaryRead]"
       },
       "PasswordForgotRequest": {
         "properties": {
@@ -739,6 +2215,86 @@
         ],
         "title": "PhoneOtpVerifyRequest",
         "description": "Verify received SMS OTP code and authenticate."
+      },
+      "SourceRead": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "article_reference": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Article Reference"
+          },
+          "doi": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Doi"
+          },
+          "orkg_comparison_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Orkg Comparison Id"
+          },
+          "orkg_contribution_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Orkg Contribution Label"
+          },
+          "paper_title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Paper Title"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Url"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "title": "SourceRead",
+        "description": "Source reference metadata."
       },
       "TokenRefreshRequest": {
         "properties": {

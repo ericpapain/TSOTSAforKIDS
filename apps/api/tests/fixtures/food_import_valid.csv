@@ -1,0 +1,5 @@
+aliment,nom_local,categorie,etat,nutriment,valeur,unite,base,region,article_reference,doi
+Condrès,Kondres,plat_compose,cuit,Zinc,2.29,mg,poids frais,centre,Ponka et al. 2005,10.1016/j.foodchem.2005.01.001
+Coucouma,Kukuma,plat_compose,cuit,Zinc,4.04,mg,poids frais,centre,Ponka et al. 2005,10.1016/j.foodchem.2005.01.001
+Condrès,Kondres,plat_compose,cuit,Magnésium,100.0,mg,poids frais,centre,Ponka et al. 2005,10.1016/j.foodchem.2005.01.001
+

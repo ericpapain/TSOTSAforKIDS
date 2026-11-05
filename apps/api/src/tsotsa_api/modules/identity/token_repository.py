@@ -51,11 +51,7 @@ class TokenRepository:
 
     async def mark_otp_consumed(self, otp_id: str) -> None:
         """Mark an OTP code as consumed."""
-        stmt = (
-            update(OtpCode)
-            .where(OtpCode.id == otp_id)
-            .values(consumed_at=datetime.now(UTC))
-        )
+        stmt = update(OtpCode).where(OtpCode.id == otp_id).values(consumed_at=datetime.now(UTC))
         await self.session.execute(stmt)
 
     async def create_email_token(
@@ -90,11 +86,7 @@ class TokenRepository:
 
     async def mark_email_token_used(self, token_id: str) -> None:
         """Mark an email token as used."""
-        stmt = (
-            update(EmailToken)
-            .where(EmailToken.id == token_id)
-            .values(used_at=datetime.now(UTC))
-        )
+        stmt = update(EmailToken).where(EmailToken.id == token_id).values(used_at=datetime.now(UTC))
         await self.session.execute(stmt)
 
     async def create_refresh_token(

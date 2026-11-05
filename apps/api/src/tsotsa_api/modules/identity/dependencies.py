@@ -97,9 +97,7 @@ async def require_verified_caregiver(
             code="CARE_GIVER_NOT_VERIFIED",
             message="Profil soignant non vérifié. Accès aux données de santé refusé.",
             details={
-                "verification_status": (
-                    profile.verification_status if profile else "missing"
-                )
+                "verification_status": (profile.verification_status if profile else "missing")
             },
         )
 

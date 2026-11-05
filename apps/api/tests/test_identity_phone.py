@@ -34,9 +34,7 @@ async def test_phone_otp_request_valid_and_invalid_formats(client: AsyncClient) 
 
 
 @pytest.mark.asyncio
-async def test_phone_otp_verify_success(
-    client: AsyncClient, db_session: AsyncSession
-) -> None:
+async def test_phone_otp_verify_success(client: AsyncClient, db_session: AsyncSession) -> None:
     """Correct OTP code creates user account and issues tokens."""
     RateLimiter.clear()
     phone = "+237699000002"
@@ -125,9 +123,7 @@ async def test_phone_otp_wrong_code_and_max_attempts(
 
 
 @pytest.mark.asyncio
-async def test_phone_otp_expired_code(
-    client: AsyncClient, db_session: AsyncSession
-) -> None:
+async def test_phone_otp_expired_code(client: AsyncClient, db_session: AsyncSession) -> None:
     """Expired OTP code is rejected."""
     RateLimiter.clear()
     phone = "+237699000004"

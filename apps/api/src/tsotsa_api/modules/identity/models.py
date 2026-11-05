@@ -13,13 +13,10 @@ from sqlalchemy import (
     String,
     UniqueConstraint,
 )
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
+from tsotsa_api.core.database import Base
 from tsotsa_api.shared.types import BinaryUUID, generate_uuid7
-
-
-class Base(DeclarativeBase):
-    """Base class for all SQLAlchemy declarative models."""
 
 
 class User(Base):

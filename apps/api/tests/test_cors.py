@@ -27,7 +27,9 @@ async def test_cors_allowed_origin() -> None:
                 "Access-Control-Request-Method": "GET",
             },
         )
-        assert response.headers.get("access-control-allow-origin") == "https://app.tsotsa-for-kids.com"
+        assert (
+            response.headers.get("access-control-allow-origin") == "https://app.tsotsa-for-kids.com"
+        )
 
 
 @pytest.mark.asyncio

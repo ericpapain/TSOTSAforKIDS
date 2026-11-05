@@ -22,7 +22,9 @@ from tsotsa_api.core.errors import (
     validation_exception_handler,
 )
 from tsotsa_api.core.logging import get_logger, setup_logging
+from tsotsa_api.modules.food_database import food_admin_router, foods_router
 from tsotsa_api.modules.identity import auth_router
+from tsotsa_api.modules.nutrients import nutrients_router
 
 logger = get_logger(__name__)
 
@@ -84,6 +86,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         return {"message": "TSOTSA Kids API v1", "status": "active"}
 
     v1_router.include_router(auth_router)
+    v1_router.include_router(nutrients_router)
+    v1_router.include_router(food_admin_router)
+    v1_router.include_router(foods_router)
     app.include_router(v1_router)
 
     return app

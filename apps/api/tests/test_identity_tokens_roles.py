@@ -26,35 +26,25 @@ async def test_refresh_token_rotation_and_logout(client: AsyncClient) -> None:
         "/v1/auth/email/register",
         json={"email": email, "password": pwd, "display_name": "Session User"},
     )
-    login_resp = await client.post(
-        "/v1/auth/email/login", json={"email": email, "password": pwd}
-    )
+    login_resp = await client.post("/v1/auth/email/login", json={"email": email, "password": pwd})
     initial_refresh = login_resp.json()["refresh_token"]
 
     # 1. First refresh rotation
-    ref_resp1 = await client.post(
-        "/v1/auth/refresh", json={"refresh_token": initial_refresh}
-    )
+    ref_resp1 = await client.post("/v1/auth/refresh", json={"refresh_token": initial_refresh})
     assert ref_resp1.status_code == 200
     new_refresh = ref_resp1.json()["refresh_token"]
     assert new_refresh != initial_refresh
 
     # Old refresh token is revoked
-    replay_resp = await client.post(
-        "/v1/auth/refresh", json={"refresh_token": initial_refresh}
-    )
+    replay_resp = await client.post("/v1/auth/refresh", json={"refresh_token": initial_refresh})
     assert replay_resp.status_code == 401
 
     # 2. Logout with current refresh token
-    logout_resp = await client.post(
-        "/v1/auth/logout", json={"refresh_token": new_refresh}
-    )
+    logout_resp = await client.post("/v1/auth/logout", json={"refresh_token": new_refresh})
     assert logout_resp.status_code == 200
 
     # Current refresh token is revoked
-    post_logout_ref = await client.post(
-        "/v1/auth/refresh", json={"refresh_token": new_refresh}
-    )
+    post_logout_ref = await client.post("/v1/auth/refresh", json={"refresh_token": new_refresh})
     assert post_logout_ref.status_code == 401
 
 
@@ -81,14 +71,10 @@ async def test_me_endpoint_authentication(client: AsyncClient) -> None:
         "/v1/auth/email/register",
         json={"email": email, "password": pwd, "display_name": "Me User"},
     )
-    login_resp = await client.post(
-        "/v1/auth/email/login", json={"email": email, "password": pwd}
-    )
+    login_resp = await client.post("/v1/auth/email/login", json={"email": email, "password": pwd})
     access_token = login_resp.json()["access_token"]
 
-    ok_me = await client.get(
-        "/v1/auth/me", headers={"Authorization": f"Bearer {access_token}"}
-    )
+    ok_me = await client.get("/v1/auth/me", headers={"Authorization": f"Bearer {access_token}"})
     assert ok_me.status_code == 200
     assert ok_me.json()["display_name"] == "Me User"
     assert ok_me.json()["roles"] == ["user"]

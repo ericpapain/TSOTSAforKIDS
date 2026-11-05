@@ -1,0 +1,8 @@
+aliment,nom_local,categorie,etat,nutriment,valeur,unite,base,region,article_reference,doi
+Condrès,Kondres,plat_compose,cuit,Zinc,2.29,mg,poids frais,centre,Ponka et al. 2005,10.1016/j.foodchem.2005.01.001
+Koki,Koki beans,plat_compose,cuit,Inconnuium,15.0,mg,poids frais,centre,Ponka et al. 2005,10.1016/j.foodchem.2005.01.001
+Tapsi,,plat_compose,cuit,Zinc,2.0,litres,poids frais,extreme_nord,Ponka et al. 2005,10.1016/j.foodchem.2005.01.001
+Baskodjé,,plat_compose,cuit,Zinc,9999.0,mg,poids frais,extreme_nord,Ponka et al. 2005,10.1016/j.foodchem.2005.01.001
+Foléré,,plat_compose,cuit,Fer,5.5,mg,poids frais,extreme_nord,,
+Condrès,Kondres,plat_compose,cuit,Zinc,2.29,mg,poids frais,centre,Ponka et al. 2005,10.1016/j.foodchem.2005.01.001
+

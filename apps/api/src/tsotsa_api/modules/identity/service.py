@@ -247,9 +247,7 @@ class IdentityService:
         await self.repository.mark_email_token_used(token.id)
         await self.repository.mark_email_verified(token.user_identity_id)
 
-    async def request_password_reset(
-        self, email: str, ip_address: str = "127.0.0.1"
-    ) -> str | None:
+    async def request_password_reset(self, email: str, ip_address: str = "127.0.0.1") -> str | None:
         """Generate a password reset token if account exists."""
         clean_email = email.lower().strip()
         RateLimiter.check_limit(f"ip:{ip_address}", max_attempts=5, window_seconds=60)
