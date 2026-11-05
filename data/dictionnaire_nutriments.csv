@@ -1,0 +1,31 @@
+nom_canonique,code,categorie,synonymes,unite_reference,facteurs_conversion,plausible_min_100g,plausible_max_100g
+Énergie,energy,macro,Énergie|energie|Energy|energy|calories|kcal|Kcal|Valeur énergétique,kcal,kcal:1.0|kJ:0.239006|cal:0.001,0.0,900.0
+Protéines,protein,macro,Protéines|proteines|Proteines|Protein|protein|proteins|total protein|matières azotées,g,g:1.0|mg:0.001|ug:0.000001|µg:0.000001,0.0,100.0
+Lipides,fat,macro,Lipides|lipides|Fat|fat|total fat|lipids|matière grasse|matières grasses,g,g:1.0|mg:0.001|ug:0.000001|µg:0.000001,0.0,100.0
+Glucides,carbohydrates,macro,Glucides|glucides|Carbohydrates|carbohydrates|carbs|total carbohydrate|sucres totaux,g,g:1.0|mg:0.001|ug:0.000001|µg:0.000001,0.0,100.0
+Fibres,fiber,macro,Fibres|fibres|Fiber|fiber|dietary fiber|fibres alimentaires,g,g:1.0|mg:0.001|ug:0.000001|µg:0.000001,0.0,100.0
+Eau,water,macro,Eau|eau|Water|water|moisture|Humidité|humidité,g,g:1.0|%:1.0|mg:0.001,0.0,100.0
+Zinc,zinc,mineral,Zinc|zinc|Zn|food component name:Zinc,mg,mg:1.0|g:1000.0|ug:0.001|µg:0.001,0.0,100.0
+Magnésium,magnesium,mineral,Magnésium|magnesium|Magnesium|Mg|food component name:Magnesium,mg,mg:1.0|g:1000.0|ug:0.001|µg:0.001,0.0,2000.0
+Cuivre,copper,mineral,Cuivre|cuivre|Copper|copper|Cu|food component name:Copper,mg,mg:1.0|g:1000.0|ug:0.001|µg:0.001,0.0,50.0
+Fer,iron,mineral,Fer|fer|Iron|iron|Fe|food component name:Iron,mg,mg:1.0|g:1000.0|ug:0.001|µg:0.001,0.0,200.0
+Calcium,calcium,mineral,Calcium|calcium|Ca|food component name:Calcium,mg,mg:1.0|g:1000.0|ug:0.001|µg:0.001,0.0,3000.0
+Sodium,sodium,mineral,Sodium|sodium|Na|sel|salt,mg,mg:1.0|g:1000.0|ug:0.001|µg:0.001,0.0,5000.0
+Potassium,potassium,mineral,Potassium|potassium|K,mg,mg:1.0|g:1000.0|ug:0.001|µg:0.001,0.0,5000.0
+Phosphore,phosphorus,mineral,Phosphore|phosphore|Phosphorus|phosphorus|P,mg,mg:1.0|g:1000.0|ug:0.001|µg:0.001,0.0,3000.0
+Iode,iodine,mineral,Iode|iode|Iodine|iodine|I,µg,ug:1.0|µg:1.0|mg:1000.0|g:1000000.0,0.0,2000.0
+Sélénium,selenium,mineral,Sélénium|selenium|Selenium|selenium|Se,µg,ug:1.0|µg:1.0|mg:1000.0|g:1000000.0,0.0,1000.0
+Vitamine A,vitamin_a,vitamin,Vitamine A|vitamine a|Vitamin A|vitamin a|rétinol|retinol|bêta-carotène|beta-carotene,µg,ug:1.0|µg:1.0|mg:1000.0|g:1000000.0,0.0,10000.0
+Vitamine D,vitamin_d,vitamin,Vitamine D|vitamine d|Vitamin D|vitamin d|calciférol|cholecalciferol,µg,ug:1.0|µg:1.0|mg:1000.0|g:1000000.0,0.0,100.0
+Vitamine E,vitamin_e,vitamin,Vitamine E|vitamine e|Vitamin E|vitamin e|tocophérol|tocopherol,mg,mg:1.0|g:1000.0|ug:0.001|µg:0.001,0.0,500.0
+Vitamine K,vitamin_k,vitamin,Vitamine K|vitamine k|Vitamin K|vitamin k|phylloquinone,µg,ug:1.0|µg:1.0|mg:1000.0|g:1000000.0,0.0,1000.0
+Vitamine C,vitamin_c,vitamin,Vitamine C|vitamine c|Vitamin C|vitamin c|acide ascorbique|ascorbic acid,mg,mg:1.0|g:1000.0|ug:0.001|µg:0.001,0.0,2000.0
+Vitamine B1,vitamin_b1,vitamin,Vitamine B1|vitamine b1|Vitamin B1|vitamin b1|thiamine|thiamin,mg,mg:1.0|g:1000.0|ug:0.001|µg:0.001,0.0,100.0
+Vitamine B2,vitamin_b2,vitamin,Vitamine B2|vitamine b2|Vitamin B2|vitamin b2|riboflavine|riboflavin,mg,mg:1.0|g:1000.0|ug:0.001|µg:0.001,0.0,100.0
+Vitamine B3,vitamin_b3,vitamin,Vitamine B3|vitamine b3|Vitamin B3|vitamin b3|niacine|niacin|PP|vitamine pp,mg,mg:1.0|g:1000.0|ug:0.001|µg:0.001,0.0,200.0
+Vitamine B5,vitamin_b5,vitamin,Vitamine B5|vitamine b5|Vitamin B5|vitamin b5|acide pantothénique|pantothenic acid,mg,mg:1.0|g:1000.0|ug:0.001|µg:0.001,0.0,100.0
+Vitamine B6,vitamin_b6,vitamin,Vitamine B6|vitamine b6|Vitamin B6|vitamin b6|pyridoxine,mg,mg:1.0|g:1000.0|ug:0.001|µg:0.001,0.0,100.0
+Vitamine B8,vitamin_b8,vitamin,Vitamine B8|vitamine b8|Vitamin B8|vitamin b8|biotine|biotin|vitamine h,µg,ug:1.0|µg:1.0|mg:1000.0|g:1000000.0,0.0,2000.0
+Vitamine B9,vitamin_b9,vitamin,Vitamine B9|vitamine b9|Vitamin B9|vitamin b9|folates|folate|acide folique|folic acid,µg,ug:1.0|µg:1.0|mg:1000.0|g:1000000.0,0.0,5000.0
+Vitamine B12,vitamin_b12,vitamin,Vitamine B12|vitamine b12|Vitamin B12|vitamin b12|cobalamine|cobalamin,µg,ug:1.0|µg:1.0|mg:1000.0|g:1000000.0,0.0,200.0
+Phytate,phytate,antinutrient,Phytate|phytate|Phytates|phytates|acide phytique|phytic acid|Phyttate|phyttate|food component name:Phytate,mg,mg:1.0|g:1000.0|ug:0.001|µg:0.001,0.0,10000.0
