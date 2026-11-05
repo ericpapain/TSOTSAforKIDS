@@ -10,11 +10,21 @@ from __future__ import annotations
 
 import csv
 from pathlib import Path
+import subprocess
+import sys
 from typing import Any
 
-from openpyxl import Workbook
-from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
-from openpyxl.worksheet.datavalidation import DataValidation
+try:
+    import openpyxl
+    from openpyxl import Workbook
+    from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
+    from openpyxl.worksheet.datavalidation import DataValidation
+except ImportError:
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "openpyxl"])
+    import openpyxl
+    from openpyxl import Workbook
+    from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
+    from openpyxl.worksheet.datavalidation import DataValidation
 
 HEADER_FILL = PatternFill(
     start_color="0F7B5F", end_color="0F7B5F", fill_type="solid"

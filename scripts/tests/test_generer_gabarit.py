@@ -1,8 +1,15 @@
 """Tests unitaires pour scripts/generer_gabarit.py."""
 
 from pathlib import Path
+import subprocess
+import sys
 import tempfile
-import openpyxl
+
+try:
+    import openpyxl
+except ImportError:
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "openpyxl"])
+    import openpyxl
 
 from scripts.generer_gabarit import (
     COLUMNS,
