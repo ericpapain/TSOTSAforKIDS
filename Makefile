@@ -12,12 +12,12 @@ check-quality:
 	$(PYTHON) -m pytest scripts/tests -q
 
 check-api:
-	uv run --directory apps/api ruff check src tests
-	uv run --directory apps/api mypy src --config-file pyproject.toml
-	uv run --directory apps/api pytest tests --cov=tsotsa_api --cov-report=term-missing --cov-fail-under=80
+	uv run --directory apps/api --extra dev ruff check src tests
+	uv run --directory apps/api --extra dev mypy src --config-file pyproject.toml
+	uv run --directory apps/api --extra dev pytest tests --cov=tsotsa_api --cov-report=term-missing --cov-fail-under=80
 
 test-api:
-	uv run --directory apps/api pytest tests -v
+	uv run --directory apps/api --extra dev pytest tests -v
 
 check-web:
 	@$(PYTHON) -c "import os, sys; sys.exit(0) if not os.path.isfile('apps/web/package.json') else os.system('pnpm --filter web check')"
