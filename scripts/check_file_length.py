@@ -29,6 +29,8 @@ DEFAULT_IGNORE_DIRS = {
     "generated",
     ".git",
     ".pytest_cache",
+    ".mypy_cache",
+    ".ruff_cache",
     ".expo",
     "__pycache__",
 }
@@ -62,13 +64,20 @@ def scan_files(
     ignore_dirs: set[str] | None = None,
 ) -> tuple[list[tuple[Path, int]], list[tuple[Path, int]]]:
     """Scan directory and return lists of (path, line_count) for errors and warnings."""
+    import os
+
     errors: list[tuple[Path, int]] = []
     warnings: list[tuple[Path, int]] = []
+    ignored = ignore_dirs or DEFAULT_IGNORE_DIRS
 
+    candidates: list[Path] = []
     if root.is_file():
         candidates = [root]
     else:
-        candidates = [p for p in root.rglob("*") if p.is_file()]
+        for dirpath, dirnames, filenames in os.walk(root):
+            dirnames[:] = [d for d in dirnames if d not in ignored and "generated" not in d.lower()]
+            for f in filenames:
+                candidates.append(Path(dirpath) / f)
 
     for path in sorted(candidates):
         if path.suffix not in TARGET_EXTENSIONS:
@@ -144,3 +153,4 @@ def main(argv: list[str] | None = None) -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
+

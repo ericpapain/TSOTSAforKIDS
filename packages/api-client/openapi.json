@@ -2,7 +2,57 @@
   "openapi": "3.1.0",
   "info": {
     "title": "TSOTSA Kids API",
+    "description": "Infant nutrition platform backend API",
     "version": "0.1.0"
   },
-  "paths": {}
+  "paths": {
+    "/health": {
+      "get": {
+        "tags": [
+          "System"
+        ],
+        "summary": "Health Check",
+        "operationId": "health_check_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Health Check Health Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/": {
+      "get": {
+        "tags": [
+          "Root"
+        ],
+        "summary": "V1 Root",
+        "operationId": "v1_root_v1__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "type": "object",
+                  "title": "Response V1 Root V1  Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 }

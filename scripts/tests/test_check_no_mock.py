@@ -81,3 +81,4 @@ def test_main_cli(tmp_path: Path) -> None:
     d_word = "d" + "ummy"
     (bad_dir / "service.py").write_text(f"val = '{d_word}'\n", encoding="utf-8")
     assert main([str(bad_dir)]) == 1
+

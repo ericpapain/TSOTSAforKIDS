@@ -36,6 +36,8 @@ DEFAULT_IGNORE_DIRS = {
     "docs",
     "scripts",
     ".pytest_cache",
+    ".mypy_cache",
+    ".ruff_cache",
     ".expo",
     "__pycache__",
 }
@@ -117,11 +119,19 @@ def scan_for_forbidden_words(
 
     Returns a list of (file_path, line_no, matched_word, line_text).
     """
+    import os
+
     violations: list[tuple[Path, int, str, str]] = []
+    ignored = ignore_dirs or DEFAULT_IGNORE_DIRS
+
+    candidates: list[Path] = []
     if root.is_file():
         candidates = [root]
     else:
-        candidates = [p for p in root.rglob("*") if p.is_file()]
+        for dirpath, dirnames, filenames in os.walk(root):
+            dirnames[:] = [d for d in dirnames if d not in ignored and "generated" not in d.lower()]
+            for f in filenames:
+                candidates.append(Path(dirpath) / f)
 
     for path in sorted(candidates):
         if should_skip_path(path, ignore_dirs):

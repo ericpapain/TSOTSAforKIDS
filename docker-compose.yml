@@ -1,0 +1,66 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: tsotsa-mysql
+    restart: unless-stopped
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: tsotsa_dev
+      MYSQL_USER: tsotsa_app
+      MYSQL_PASSWORD: devpassword
+    volumes:
+      - mysql_data:/var/lib/mysql
+    command: >
+      --default-authentication-plugin=mysql_native_password
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_0900_ai_ci
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpassword"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  mysql-test:
+    image: mysql:8.0
+    container_name: tsotsa-mysql-test
+    restart: "no"
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: test
+      MYSQL_DATABASE: tsotsa_test
+    tmpfs:
+      - /var/lib/mysql:rw,noexec,nosuid,size=512m
+    command: >
+      --default-authentication-plugin=mysql_native_password
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_0900_ai_ci
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-ptest"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    container_name: tsotsa-api
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./apps/api:/app/apps/api
+    environment:
+      APP_ENV: development
+      DATABASE_URL: mysql+asyncmy://tsotsa_app:devpassword@mysql:3306/tsotsa_dev
+      DATABASE_MIGRATIONS_URL: mysql+asyncmy://root:rootpassword@mysql:3306/tsotsa_dev
+      CORS_ALLOWED_ORIGINS: http://localhost:3000,http://localhost:3001
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+volumes:
+  mysql_data:
