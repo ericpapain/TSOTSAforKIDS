@@ -1,0 +1,94 @@
+# Déploiement : à chaque merge sur main.
+# 1) toutes les vérifications de la CI ; 2) construction des images ; 3) recette ; 4) production.
+# Le déploiement ne s'exécute que si la variable de dépôt DEPLOY_ENABLED vaut "true" (à activer à l'étape X-B).
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-main
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_API: ghcr.io/ericpapain/tsotsa-kids-api
+  IMAGE_WEB: ghcr.io/ericpapain/tsotsa-kids-web
+
+jobs:
+  checks:
+    name: Vérifications (CI complète)
+    uses: ./.github/workflows/ci.yml
+    secrets: inherit
+
+  build:
+    name: Construction des images Docker
+    needs: checks
+    if: vars.DEPLOY_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Image du serveur
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: infra/docker/api.Dockerfile
+          push: true
+          tags: ${{ env.IMAGE_API }}:${{ github.sha }}
+      - name: Image du web
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: infra/docker/web.Dockerfile
+          push: true
+          tags: ${{ env.IMAGE_WEB }}:${{ github.sha }}
+
+  staging:
+    name: Recette (OVH)
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: staging
+      url: ${{ vars.STAGING_URL }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.OVH_SSH_KEY }}
+      - name: Déployer en recette (sauvegarde, migrations, redémarrage, retour arrière si échec)
+        run: |
+          ssh -o StrictHostKeyChecking=accept-new ${{ secrets.OVH_SSH_USER }}@${{ secrets.OVH_STAGING_HOST }} \
+            "cd /opt/tsotsa-kids && ./infra/deploy.sh ${{ github.sha }}"
+      - name: Tests de fumée en recette
+        run: make smoke URL=${{ vars.STAGING_URL }}
+
+  production:
+    name: Production (OVH)
+    needs: staging
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: ${{ vars.PRODUCTION_URL }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.OVH_SSH_KEY }}
+      - name: Déployer en production
+        run: |
+          ssh -o StrictHostKeyChecking=accept-new ${{ secrets.OVH_SSH_USER }}@${{ secrets.OVH_PROD_HOST }} \
+            "cd /opt/tsotsa-kids && ./infra/deploy.sh ${{ github.sha }}"
+      - name: Tests de fumée en production
+        run: make smoke URL=${{ vars.PRODUCTION_URL }}
