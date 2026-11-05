@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Any
 
 from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile, status
 from fastapi.responses import FileResponse
@@ -27,7 +28,6 @@ from tsotsa_api.modules.food_database.schemas import (
 )
 from tsotsa_api.modules.food_database.service import FoodDatabaseService
 from tsotsa_api.modules.identity import require_role
-from tsotsa_api.modules.identity.models import User
 
 admin_router = APIRouter(prefix="/admin", tags=["Admin - Food Imports"])
 public_router = APIRouter(prefix="/foods", tags=["Foods"])
@@ -38,7 +38,7 @@ public_router = APIRouter(prefix="/foods", tags=["Foods"])
 )
 async def upload_food_import_file(
     file: UploadFile = File(...),
-    admin: User = Depends(require_role("admin")),
+    admin: Any = Depends(require_role("admin")),
     db: AsyncSession = Depends(get_db_session),
 ) -> ImportBatchRead:
     """Upload a CSV or Excel file for ingestion into the food database."""
@@ -54,7 +54,7 @@ async def upload_food_import_file(
 
 @admin_router.get("/food-imports/template")
 async def download_import_template(
-    _: User = Depends(require_role("admin")),
+    _: Any = Depends(require_role("admin")),
 ) -> FileResponse:
     """Download the official empty XLSX food ingestion template."""
     candidates = [
@@ -79,7 +79,7 @@ async def download_import_template(
 async def update_column_mapping(
     batch_id: str,
     payload: ColumnMappingUpdate,
-    _: User = Depends(require_role("admin")),
+    _: Any = Depends(require_role("admin")),
     db: AsyncSession = Depends(get_db_session),
 ) -> ImportBatchRead:
     """Update column mapping for a batch."""
@@ -91,7 +91,7 @@ async def update_column_mapping(
 @admin_router.post("/food-imports/{batch_id}/validate", response_model=BatchValidationReport)
 async def validate_batch_dry_run(
     batch_id: str,
-    _: User = Depends(require_role("admin")),
+    _: Any = Depends(require_role("admin")),
     db: AsyncSession = Depends(get_db_session),
 ) -> BatchValidationReport:
     """Dry-run quality check without inserting data."""
@@ -102,7 +102,7 @@ async def validate_batch_dry_run(
 @admin_router.post("/food-imports/{batch_id}/execute", response_model=ImportBatchRead)
 async def execute_batch_import(
     batch_id: str,
-    _: User = Depends(require_role("admin")),
+    _: Any = Depends(require_role("admin")),
     db: AsyncSession = Depends(get_db_session),
 ) -> ImportBatchRead:
     """Import valid rows into food database with status 'to_review'."""
@@ -115,7 +115,7 @@ async def execute_batch_import(
 async def review_import_batch(
     batch_id: str,
     decision: BatchReviewDecision,
-    admin: User = Depends(require_role("admin")),
+    admin: Any = Depends(require_role("admin")),
     db: AsyncSession = Depends(get_db_session),
 ) -> ImportBatchRead:
     """Review and approve or reject an import batch (reviewer must differ from creator)."""
@@ -127,7 +127,7 @@ async def review_import_batch(
 @admin_router.post("/foods", response_model=FoodSummaryRead, status_code=status.HTTP_201_CREATED)
 async def create_manual_food(
     payload: ManualFoodCreate,
-    admin: User = Depends(require_role("admin")),
+    admin: Any = Depends(require_role("admin")),
     db: AsyncSession = Depends(get_db_session),
 ) -> FoodSummaryRead:
     """Manually enter food item and composition through identical quality controls."""

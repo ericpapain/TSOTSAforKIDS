@@ -52,6 +52,36 @@ async def get_current_user(
     return user
 
 
+async def get_optional_user(
+    credentials: HTTPAuthorizationCredentials | None = Depends(bearer_scheme),
+    db: AsyncSession = Depends(get_db_session),
+) -> User | None:
+    """Resolve authenticated user if bearer token is present, otherwise return None."""
+    if not credentials:
+        return None
+    try:
+        payload = decode_access_token(credentials.credentials)
+    except Exception:
+        return None
+    user_id = payload.get("sub")
+    if not user_id or not isinstance(user_id, str):
+        return None
+    repo = IdentityRepository(db)
+    user = await repo.get_user_by_id(user_id)
+    if not user or user.status != "active":
+        return None
+    return user
+
+
+async def is_user_admin(user: Any, db: AsyncSession) -> bool:
+    """Check whether the given user holds the admin role."""
+    if not user:
+        return False
+    repo = IdentityRepository(db)
+    roles = await repo.get_user_role_codes(user.id)
+    return "admin" in roles
+
+
 def require_role(*allowed_roles: str) -> Callable[..., Any]:
     """Dependency factory checking user has one of the specified roles."""
 

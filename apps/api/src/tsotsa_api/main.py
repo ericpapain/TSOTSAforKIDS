@@ -22,18 +22,43 @@ from tsotsa_api.core.errors import (
     validation_exception_handler,
 )
 from tsotsa_api.core.logging import get_logger, setup_logging
+from tsotsa_api.modules.custom_products import (
+    custom_products_admin_router,
+    custom_products_router,
+)
 from tsotsa_api.modules.food_database import food_admin_router, foods_router
 from tsotsa_api.modules.identity import auth_router
 from tsotsa_api.modules.nutrients import nutrients_router
+from tsotsa_api.modules.reference_products import (
+    products_router,
+    reference_products_admin_router,
+)
 
 logger = get_logger(__name__)
+
+
+def _build_v1_router() -> APIRouter:
+    """Create and configure the /v1 API router."""
+    v1_router = APIRouter(prefix="/v1")
+
+    @v1_router.get("/", tags=["Root"])
+    async def v1_root() -> dict[str, str]:
+        return {"message": "TSOTSA Kids API v1", "status": "active"}
+
+    v1_router.include_router(auth_router)
+    v1_router.include_router(nutrients_router)
+    v1_router.include_router(food_admin_router)
+    v1_router.include_router(foods_router)
+    v1_router.include_router(products_router)
+    v1_router.include_router(reference_products_admin_router)
+    v1_router.include_router(custom_products_router)
+    v1_router.include_router(custom_products_admin_router)
+    return v1_router
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:
     """Create and configure the FastAPI application instance."""
     cfg = settings or get_settings()
-
-    # Enforce strict validation in production environments
     if cfg.is_production:
         cfg.check_production_requirements()
 
@@ -55,7 +80,6 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         lifespan=lifespan,
     )
 
-    # Configure CORS middleware
     app.add_middleware(
         CORSMiddleware,
         allow_origins=cfg.cors_origins_list,
@@ -64,13 +88,11 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         allow_headers=["*"],
     )
 
-    # Register error handlers
     app.add_exception_handler(AppException, app_exception_handler)  # type: ignore[arg-type]
     app.add_exception_handler(StarletteHTTPException, http_exception_handler)  # type: ignore[arg-type]
     app.add_exception_handler(RequestValidationError, validation_exception_handler)  # type: ignore[arg-type]
     app.add_exception_handler(Exception, generic_exception_handler)
 
-    # System Health Check endpoint
     @app.get("/health", tags=["System"])
     async def health_check(session: AsyncSession = Depends(get_db_session)) -> dict[str, Any]:
         is_healthy = await check_database_connection(session)
@@ -78,19 +100,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             raise ServiceUnavailableError("Database unreachable")
         return {"status": "ok", "database": "connected"}
 
-    # V1 API Router
-    v1_router = APIRouter(prefix="/v1")
-
-    @v1_router.get("/", tags=["Root"])
-    async def v1_root() -> dict[str, str]:
-        return {"message": "TSOTSA Kids API v1", "status": "active"}
-
-    v1_router.include_router(auth_router)
-    v1_router.include_router(nutrients_router)
-    v1_router.include_router(food_admin_router)
-    v1_router.include_router(foods_router)
-    app.include_router(v1_router)
-
+    app.include_router(_build_v1_router())
     return app
 
 

@@ -5,6 +5,8 @@ Provides authentication, user management, and authorization dependencies.
 
 from tsotsa_api.modules.identity.dependencies import (
     get_current_user,
+    get_optional_user,
+    is_user_admin,
     require_role,
     require_verified_caregiver,
 )
@@ -17,6 +19,8 @@ __all__ = [
     "IdentityService",
     "auth_router",
     "get_current_user",
+    "get_optional_user",
+    "is_user_admin",
     "require_role",
     "require_verified_caregiver",
 ]
