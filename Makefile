@@ -1,4 +1,4 @@
-.PHONY: all check check-quality check-api check-web check-mobile e2e-web openapi smoke
+.PHONY: all check check-quality check-api test-api check-web check-mobile e2e-web openapi up smoke
 
 PYTHON ?= python
 
@@ -12,8 +12,12 @@ check-quality:
 	$(PYTHON) -m pytest scripts/tests -q
 
 check-api:
-	@$(PYTHON) -c "import os, sys; sys.exit(0) if not os.path.isfile('apps/api/pyproject.toml') else os.system('make -C apps/api check')"
-	@echo apps/api : pas encore créé
+	uv run --directory apps/api --extra dev ruff check src tests
+	uv run --directory apps/api --extra dev mypy src --config-file pyproject.toml
+	uv run --directory apps/api --extra dev pytest tests --cov=tsotsa_api --cov-report=term-missing --cov-fail-under=80
+
+test-api:
+	uv run --directory apps/api --extra dev pytest tests -v
 
 check-web:
 	@$(PYTHON) -c "import os, sys; sys.exit(0) if not os.path.isfile('apps/web/package.json') else os.system('pnpm --filter web check')"
@@ -28,8 +32,10 @@ e2e-web:
 	@echo e2e-web : pas encore créé
 
 openapi:
-	@$(PYTHON) -c "import os, sys; sys.exit(0) if not os.path.isfile('apps/api/pyproject.toml') else os.system('make -C apps/api openapi')"
-	@echo openapi : pas encore créé
+	uv run --directory apps/api python -c "import json; from tsotsa_api.main import app; open('../../packages/api-client/openapi.json', 'w', encoding='utf-8').write(json.dumps(app.openapi(), indent=2) + '\n')"
+
+up:
+	docker compose up -d
 
 smoke:
 	@echo "Test smoke sur l'URL: $(URL)"

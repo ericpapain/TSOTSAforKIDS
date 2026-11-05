@@ -79,3 +79,4 @@ def test_main_cli(tmp_path: Path) -> None:
     (bad_dir / "too_long.py").write_text("\n".join(f"val_{i} = {i}" for i in range(510)), encoding="utf-8")
 
     assert main([str(bad_dir)]) == 1
+

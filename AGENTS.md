@@ -140,3 +140,4 @@ Ce contrat doit être **relu au début de CHAQUE étape**.
   - `tsotsa_migrator` : migrations de schéma (DDL + DML).
   - `tsotsa_readonly` : requêtes en lecture seule pour reporting et audits.
 - TLS obligatoire vers la base de données avec vérification du certificat CA OVH.
+
