@@ -1,0 +1,139 @@
+# Vérifications automatiques : à chaque push sur une branche de travail et à chaque pull request vers main.
+# Aussi appelé par deploy.yml avant tout déploiement (workflow_call).
+name: CI
+
+on:
+  push:
+    branches-ignore: [main]
+  pull_request:
+    branches: [main]
+  workflow_call:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    name: Qualité (longueur des fichiers, zéro donnée inventée, secrets)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Fichiers de 500 lignes maximum
+        run: python scripts/check_file_length.py
+      - name: Aucune donnée inventée hors des tests
+        run: python scripts/check_no_mock.py
+      - name: Tests des scripts de contrôle
+        run: pip install pytest && python -m pytest scripts/tests -q
+      - name: Aucun secret dans le code
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  dependencies:
+    name: Dépendances (vulnérabilités connues)
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/dependency-review-action@v4
+        with:
+          fail-on-severity: high
+
+  api:
+    name: Serveur (lint, types, migrations, tests, contrat OpenAPI)
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: test
+          MYSQL_DATABASE: tsotsa_test
+        ports: ["3307:3306"]
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -ptest"
+          --health-interval=10s --health-timeout=5s --health-retries=12
+    env:
+      APP_ENV: test
+      DATABASE_URL_TEST: mysql+asyncmy://root:test@127.0.0.1:3307/tsotsa_test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Vérifications du serveur
+        run: make check-api
+      - name: Le contrat OpenAPI versionné est à jour
+        run: make openapi && git diff --exit-code packages/api-client/openapi.json
+
+  web:
+    name: Web (lint, types, tests, build)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Vérifications du web
+        run: make check-web
+
+  mobile:
+    name: Mobile (lint, types, tests)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Vérifications du mobile
+        run: make check-mobile
+
+  e2e-web:
+    name: Parcours web de bout en bout (Playwright)
+    needs: [api, web]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Démarrer la base et le serveur de test, puis lancer les parcours
+        run: make e2e-web
+      - name: Rapport Playwright en cas d'échec
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: apps/web/playwright-report
+          retention-days: 7
+
+  ci-ok:
+    name: CI OK
+    if: always()
+    needs: [quality, api, web, mobile, e2e-web]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Une vérification a échoué
+        if: ${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}
+        run: exit 1
+      - name: Toutes les vérifications sont vertes
+        run: echo "CI OK"
