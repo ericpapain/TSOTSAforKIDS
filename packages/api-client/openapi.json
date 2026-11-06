@@ -1490,6 +1490,167 @@
         }
       }
     },
+    "/v1/products/{id}/equivalents": {
+      "get": {
+        "tags": [
+          "Nutrition - Equivalence"
+        ],
+        "summary": "Get Product Equivalents",
+        "description": "Retrieve ranked local food equivalents for a reference or custom product.",
+        "operationId": "get_product_equivalents_v1_products__id__equivalents_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Id"
+            }
+          },
+          {
+            "name": "nutrients",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Liste de nutriments essentiels s\u00e9par\u00e9s par des virgules",
+              "title": "Nutrients"
+            },
+            "description": "Liste de nutriments essentiels s\u00e9par\u00e9s par des virgules"
+          },
+          {
+            "name": "region",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Nom ou code de r\u00e9gion cible",
+              "title": "Region"
+            },
+            "description": "Nom ou code de r\u00e9gion cible"
+          },
+          {
+            "name": "strict",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "description": "Filtre strict (seulement la r\u00e9gion sp\u00e9cifi\u00e9e)",
+              "default": false,
+              "title": "Strict"
+            },
+            "description": "Filtre strict (seulement la r\u00e9gion sp\u00e9cifi\u00e9e)"
+          },
+          {
+            "name": "threshold_pct",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "maximum": 100.0,
+                  "minimum": 1.0
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Pourcentage seuil (ex: 10 pour 10%)",
+              "title": "Threshold Pct"
+            },
+            "description": "Pourcentage seuil (ex: 10 pour 10%)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EquivalenceResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/optimization/solve": {
+      "post": {
+        "tags": [
+          "Nutrition - Optimization (Futur)"
+        ],
+        "summary": "Solve Ration Optimization",
+        "description": "Reserved endpoint for future LP/MIP optimization model. Always returns 501.",
+        "operationId": "solve_ration_optimization_v1_optimization_solve_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OptimizationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "501": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OptimizationResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/admin/orkg/sync": {
       "post": {
         "tags": [
@@ -4154,6 +4315,171 @@
         "title": "EmailVerifyRequest",
         "description": "Verify email address with one-time token."
       },
+      "EquivalenceResponse": {
+        "properties": {
+          "product_id": {
+            "type": "string",
+            "title": "Product Id"
+          },
+          "product_name": {
+            "type": "string",
+            "title": "Product Name"
+          },
+          "essential_nutrients": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Essential Nutrients"
+          },
+          "target_region": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Region"
+          },
+          "strict_region": {
+            "type": "boolean",
+            "title": "Strict Region",
+            "default": false
+          },
+          "threshold_pct": {
+            "type": "string",
+            "title": "Threshold Pct"
+          },
+          "equivalents": {
+            "items": {
+              "$ref": "#/components/schemas/EquivalentFoodItem"
+            },
+            "type": "array",
+            "title": "Equivalents"
+          }
+        },
+        "type": "object",
+        "required": [
+          "product_id",
+          "product_name",
+          "essential_nutrients",
+          "threshold_pct",
+          "equivalents"
+        ],
+        "title": "EquivalenceResponse",
+        "description": "Response containing product info and ordered food equivalents."
+      },
+      "EquivalentFoodItem": {
+        "properties": {
+          "food_id": {
+            "type": "string",
+            "title": "Food Id"
+          },
+          "food_name": {
+            "type": "string",
+            "title": "Food Name"
+          },
+          "local_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Local Name"
+          },
+          "category": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Category"
+          },
+          "m": {
+            "type": "integer",
+            "title": "M",
+            "description": "Nombre de nutriments essentiels pr\u00e9sents"
+          },
+          "e": {
+            "type": "integer",
+            "title": "E",
+            "description": "Nombre de nutriments en plus"
+          },
+          "distance": {
+            "type": "string",
+            "title": "Distance",
+            "description": "Moyenne des \u00e9carts relatifs sur N"
+          },
+          "is_in_target_region": {
+            "type": "boolean",
+            "title": "Is In Target Region"
+          },
+          "common_nutrients": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Common Nutrients",
+            "description": "Nutriments de N pr\u00e9sents"
+          },
+          "extra_nutrients": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Extra Nutrients",
+            "description": "Nutriments suivis en plus"
+          },
+          "teneurs": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Teneurs",
+            "description": "Teneurs pour 100g"
+          },
+          "regions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Regions"
+          },
+          "source": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source"
+          }
+        },
+        "type": "object",
+        "required": [
+          "food_id",
+          "food_name",
+          "m",
+          "e",
+          "distance",
+          "is_in_target_region",
+          "common_nutrients",
+          "extra_nutrients",
+          "teneurs"
+        ],
+        "title": "EquivalentFoodItem",
+        "description": "An equivalent food candidate with nutritional match scoring."
+      },
       "FoodDetailRead": {
         "properties": {
           "id": {
@@ -4347,6 +4673,41 @@
         ],
         "title": "FoodNutrientValueRead",
         "description": "Individual nutrient value for a food."
+      },
+      "FoodPortionOutput": {
+        "properties": {
+          "food_id": {
+            "type": "string",
+            "title": "Food Id"
+          },
+          "food_name": {
+            "type": "string",
+            "title": "Food Name"
+          },
+          "portion_grams": {
+            "type": "string",
+            "title": "Portion Grams"
+          },
+          "cost_fcfa": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cost Fcfa"
+          }
+        },
+        "type": "object",
+        "required": [
+          "food_id",
+          "food_name",
+          "portion_grams"
+        ],
+        "title": "FoodPortionOutput",
+        "description": "Calculated portion for an optimal food component."
       },
       "FoodRegionRead": {
         "properties": {
@@ -5058,6 +5419,173 @@
         ],
         "title": "NutrientRead",
         "description": "Summary of a canonical nutrient."
+      },
+      "OptimizationConstraintInput": {
+        "properties": {
+          "nutrient_code": {
+            "type": "string",
+            "title": "Nutrient Code"
+          },
+          "target_value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Target Value",
+            "description": "Target quantity in reference unit"
+          },
+          "min_value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min Value"
+          },
+          "max_value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Value"
+          }
+        },
+        "type": "object",
+        "required": [
+          "nutrient_code",
+          "target_value"
+        ],
+        "title": "OptimizationConstraintInput",
+        "description": "Nutrient constraints for linear/mixed-integer optimization."
+      },
+      "OptimizationRequest": {
+        "properties": {
+          "target_product_id": {
+            "type": "string",
+            "title": "Target Product Id"
+          },
+          "portion_target_grams": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Portion Target Grams",
+            "default": "100.0"
+          },
+          "region": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Region"
+          },
+          "max_cost_fcfa": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Cost Fcfa"
+          },
+          "allowed_food_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Allowed Food Ids"
+          },
+          "nutrient_constraints": {
+            "items": {
+              "$ref": "#/components/schemas/OptimizationConstraintInput"
+            },
+            "type": "array",
+            "title": "Nutrient Constraints"
+          }
+        },
+        "type": "object",
+        "required": [
+          "target_product_id"
+        ],
+        "title": "OptimizationRequest",
+        "description": "Contract input for diet / ration quantity optimization."
+      },
+      "OptimizationResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "Solver status: optimal, infeasible, etc."
+          },
+          "total_grams": {
+            "type": "string",
+            "title": "Total Grams"
+          },
+          "total_cost_fcfa": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Total Cost Fcfa"
+          },
+          "portions": {
+            "items": {
+              "$ref": "#/components/schemas/FoodPortionOutput"
+            },
+            "type": "array",
+            "title": "Portions"
+          },
+          "nutritional_achievement": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Nutritional Achievement"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "total_grams",
+          "portions",
+          "nutritional_achievement"
+        ],
+        "title": "OptimizationResponse",
+        "description": "Contract output for mathematical optimization results."
       },
       "OrganizationCreate": {
         "properties": {

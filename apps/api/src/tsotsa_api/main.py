@@ -32,6 +32,7 @@ from tsotsa_api.modules.custom_products import (
     custom_products_admin_router,
     custom_products_router,
 )
+from tsotsa_api.modules.equivalence import equivalence_router
 from tsotsa_api.modules.food_database import food_admin_router, foods_router
 from tsotsa_api.modules.identity import auth_router
 from tsotsa_api.modules.modules_registry import (
@@ -41,6 +42,7 @@ from tsotsa_api.modules.modules_registry import (
     public_router as modules_public_router,
 )
 from tsotsa_api.modules.nutrients import nutrients_router
+from tsotsa_api.modules.optimization import optimization_router
 from tsotsa_api.modules.organizations import (
     admin_router as organizations_admin_router,
 )
@@ -75,6 +77,8 @@ def _build_v1_router() -> APIRouter:
     v1_router.include_router(reference_products_admin_router)
     v1_router.include_router(custom_products_router)
     v1_router.include_router(custom_products_admin_router)
+    v1_router.include_router(equivalence_router)
+    v1_router.include_router(optimization_router)
     v1_router.include_router(orkg_sync_admin_router)
     v1_router.include_router(modules_public_router)
     v1_router.include_router(modules_admin_router)

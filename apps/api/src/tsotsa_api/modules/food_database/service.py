@@ -207,8 +207,7 @@ class FoodDatabaseService:
         return new_food
 
     async def get_or_create_region_id(self, region_name: str) -> str:
-        reg = await self.repo.get_or_create_region(region_name)
-        return reg.id
+        return (await self.repo.get_or_create_region(region_name)).id
 
     async def list_regions(self) -> list[Region]:
         return await self.repo.list_regions()
@@ -294,3 +293,8 @@ class FoodDatabaseService:
             batch_rows,
             composition_changes,
         )
+
+    async def list_published_candidates(self) -> Any:
+        from tsotsa_api.modules.food_database.catalog_service import FoodCatalogService
+
+        return await FoodCatalogService(self.session).list_published_candidates()
