@@ -96,6 +96,10 @@ class OrganizationsService:
             verification_status=profile.verification_status,
         )
 
+    async def get_caregiver_organization_id(self, user_id: str) -> str | None:
+        """Return the approved organization id of a verified caregiver, or None."""
+        return await self.identity_service.get_caregiver_organization_id(user_id)
+
     async def _enforce_establishment_isolation(
         self, user_id: str, is_admin: bool, target_org_id: str
     ) -> str:

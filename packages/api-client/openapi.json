@@ -3940,6 +3940,316 @@
           }
         }
       }
+    },
+    "/v1/intakes": {
+      "post": {
+        "tags": [
+          "Intakes"
+        ],
+        "summary": "Record Intake",
+        "description": "Record a single intake (food or product). Idempotent on client-generated UUID.",
+        "operationId": "record_intake_v1_intakes_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IntakeCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IntakeRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/sync/intakes": {
+      "post": {
+        "tags": [
+          "Intakes"
+        ],
+        "summary": "Sync Offline Intakes",
+        "description": "Synchronize a batch of offline recorded intakes idempotently.",
+        "operationId": "sync_offline_intakes_v1_sync_intakes_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IntakeSyncRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IntakeSyncResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/persons/{person_id}/intakes": {
+      "get": {
+        "tags": [
+          "Intakes"
+        ],
+        "summary": "List Person Intakes",
+        "description": "Retrieve intake history for a followed person with optional filters.",
+        "operationId": "list_person_intakes_v1_persons__person_id__intakes_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "person_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Person Id"
+            }
+          },
+          {
+            "name": "item_type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filtre: 'product' ou 'food'",
+              "title": "Item Type"
+            },
+            "description": "Filtre: 'product' ou 'food'"
+          },
+          {
+            "name": "consumption",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filtre: 'all', 'half' ou 'refused'",
+              "title": "Consumption"
+            },
+            "description": "Filtre: 'all', 'half' ou 'refused'"
+          },
+          {
+            "name": "start_date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Date de d\u00e9but ISO",
+              "title": "Start Date"
+            },
+            "description": "Date de d\u00e9but ISO"
+          },
+          {
+            "name": "end_date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Date de fin ISO",
+              "title": "End Date"
+            },
+            "description": "Date de fin ISO"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/IntakeRead"
+                  },
+                  "title": "Response List Person Intakes V1 Persons  Person Id  Intakes Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/persons/{person_id}/intakes/compliance-rate": {
+      "get": {
+        "tags": [
+          "Intakes"
+        ],
+        "summary": "Get Intakes Compliance Rate",
+        "description": "Compute confirmed intake compliance rate over 7 days for clinical dashboard.",
+        "operationId": "get_intakes_compliance_rate_v1_persons__person_id__intakes_compliance_rate_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "person_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Person Id"
+            }
+          },
+          {
+            "name": "reference_date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Date de r\u00e9f\u00e9rence (par d\u00e9faut UTC maintenant)",
+              "title": "Reference Date"
+            },
+            "description": "Date de r\u00e9f\u00e9rence (par d\u00e9faut UTC maintenant)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ComplianceRateResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -4411,6 +4721,55 @@
         ],
         "title": "ColumnMappingUpdate",
         "description": "Admin column mapping correction."
+      },
+      "ComplianceRateResponse": {
+        "properties": {
+          "person_id": {
+            "type": "string",
+            "title": "Person Id"
+          },
+          "period_days": {
+            "type": "integer",
+            "title": "Period Days",
+            "default": 7
+          },
+          "total_recorded": {
+            "type": "integer",
+            "title": "Total Recorded"
+          },
+          "confirmed_count": {
+            "type": "integer",
+            "title": "Confirmed Count",
+            "description": "Prises avec consommation 'all' ou 'half'"
+          },
+          "refused_count": {
+            "type": "integer",
+            "title": "Refused Count",
+            "description": "Prises avec consommation 'refused'"
+          },
+          "compliance_rate_pct": {
+            "type": "string",
+            "title": "Compliance Rate Pct",
+            "description": "Pourcentage de prises confirm\u00e9es"
+          },
+          "daily_distribution": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Daily Distribution"
+          }
+        },
+        "type": "object",
+        "required": [
+          "person_id",
+          "total_recorded",
+          "confirmed_count",
+          "refused_count",
+          "compliance_rate_pct"
+        ],
+        "title": "ComplianceRateResponse",
+        "description": "7-day intake compliance metrics for clinical dashboard."
       },
       "ConsentGiveRequest": {
         "properties": {
@@ -5312,6 +5671,248 @@
         ],
         "title": "ImportBatchRead",
         "description": "Import batch overview."
+      },
+      "IntakeCreate": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Id",
+            "description": "UUID g\u00e9n\u00e9r\u00e9 par le t\u00e9l\u00e9phone (\u00e9vite les doublons)"
+          },
+          "person_id": {
+            "type": "string",
+            "title": "Person Id"
+          },
+          "item_type": {
+            "type": "string",
+            "enum": [
+              "product",
+              "food"
+            ],
+            "title": "Item Type"
+          },
+          "item_id": {
+            "type": "string",
+            "title": "Item Id"
+          },
+          "quantity": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Quantity",
+            "description": "Quantit\u00e9 consomm\u00e9e (ex: 1 sachet, 150 ml, 50 g)"
+          },
+          "unit": {
+            "type": "string",
+            "maxLength": 50,
+            "minLength": 1,
+            "title": "Unit",
+            "description": "Unit\u00e9 (sachet, g, ml...)"
+          },
+          "taken_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Taken At",
+            "description": "Date et heure r\u00e9elles de la prise"
+          },
+          "consumption": {
+            "type": "string",
+            "title": "Consumption",
+            "description": "tout / moiti\u00e9 / refus\u00e9 (all / half / refused)",
+            "default": "all"
+          },
+          "origin": {
+            "type": "string",
+            "title": "Origin",
+            "description": "application / confirmation tardive (app / late)",
+            "default": "app"
+          },
+          "schedule_time_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Schedule Time Id"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 255
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "person_id",
+          "item_type",
+          "item_id",
+          "quantity",
+          "unit",
+          "taken_at"
+        ],
+        "title": "IntakeCreate",
+        "description": "Schema to record a food/product intake."
+      },
+      "IntakeRead": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "person_id": {
+            "type": "string",
+            "title": "Person Id"
+          },
+          "item_type": {
+            "type": "string",
+            "title": "Item Type"
+          },
+          "item_id": {
+            "type": "string",
+            "title": "Item Id"
+          },
+          "quantity": {
+            "type": "string",
+            "title": "Quantity"
+          },
+          "unit": {
+            "type": "string",
+            "title": "Unit"
+          },
+          "taken_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Taken At"
+          },
+          "consumption": {
+            "type": "string",
+            "title": "Consumption"
+          },
+          "origin": {
+            "type": "string",
+            "title": "Origin"
+          },
+          "schedule_time_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Schedule Time Id"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes"
+          },
+          "recorded_by": {
+            "type": "string",
+            "title": "Recorded By"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "person_id",
+          "item_type",
+          "item_id",
+          "quantity",
+          "unit",
+          "taken_at",
+          "consumption",
+          "origin",
+          "recorded_by",
+          "created_at"
+        ],
+        "title": "IntakeRead",
+        "description": "Full detail of a recorded intake."
+      },
+      "IntakeSyncRequest": {
+        "properties": {
+          "intakes": {
+            "items": {
+              "$ref": "#/components/schemas/IntakeCreate"
+            },
+            "type": "array",
+            "maxItems": 500,
+            "title": "Intakes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "intakes"
+        ],
+        "title": "IntakeSyncRequest",
+        "description": "Offline batch synchronization request from mobile app."
+      },
+      "IntakeSyncResponse": {
+        "properties": {
+          "received_count": {
+            "type": "integer",
+            "title": "Received Count"
+          },
+          "inserted_count": {
+            "type": "integer",
+            "title": "Inserted Count"
+          },
+          "duplicates_skipped": {
+            "type": "integer",
+            "title": "Duplicates Skipped"
+          },
+          "intakes": {
+            "items": {
+              "$ref": "#/components/schemas/IntakeRead"
+            },
+            "type": "array",
+            "title": "Intakes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "received_count",
+          "inserted_count",
+          "duplicates_skipped",
+          "intakes"
+        ],
+        "title": "IntakeSyncResponse",
+        "description": "Result of batch offline synchronization."
       },
       "LatestPriceResponse": {
         "properties": {

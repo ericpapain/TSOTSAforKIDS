@@ -61,4 +61,3 @@ class LatestPriceResponse(BaseModel):
     observed_at: date | None = None
     source: str | None = None
     message: str | None = None
-

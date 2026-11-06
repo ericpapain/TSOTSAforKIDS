@@ -132,4 +132,3 @@ class PricingRepository:
         stmt = select(PriceRecord).where(PriceRecord.id == record_id)
         res = await self.session.execute(stmt)
         return res.scalar_one_or_none()
-

@@ -5,4 +5,3 @@ from tsotsa_api.modules.pricing.router import admin_pricing_router, pricing_rout
 from tsotsa_api.modules.pricing.service import PricingService
 
 __all__ = ["PriceRecord", "PricingService", "admin_pricing_router", "pricing_router"]
-

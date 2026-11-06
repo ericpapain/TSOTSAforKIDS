@@ -29,7 +29,6 @@ from tsotsa_api.modules.organizations.schemas import (
     UserRegionPreferenceUpdate,
 )
 from tsotsa_api.modules.organizations.service import OrganizationsService
-from tsotsa_api.modules.persons.service import PersonsService
 
 organizations_router = APIRouter(prefix="/organizations", tags=["Organizations"])
 regions_router = APIRouter(prefix="/regions", tags=["Regions"])
@@ -72,6 +71,8 @@ async def register_person_in_establishment(
 ) -> PersonInCareRead:
     """Register a followed person in an establishment (strictly scoped to caregiver's org)."""
     admin_flag = await is_user_admin(caregiver, db)
+    from tsotsa_api.modules.persons.service import PersonsService
+
     service = PersonsService(db)
     care_read = await service.register_person_in_care(
         org_id=org_id,
@@ -103,6 +104,8 @@ async def list_establishment_persons(
 ) -> list[PersonInCareRead]:
     """List persons followed in an establishment (caregiver only sees their own establishment)."""
     admin_flag = await is_user_admin(caregiver, db)
+    from tsotsa_api.modules.persons.service import PersonsService
+
     service = PersonsService(db)
     items = await service.list_establishment_persons(
         caregiver_user_id=caregiver.id,
@@ -133,6 +136,8 @@ async def get_establishment_person(
 ) -> PersonInCareRead:
     """Read a followed person within an establishment (strictly isolated by organization_id)."""
     admin_flag = await is_user_admin(caregiver, db)
+    from tsotsa_api.modules.persons.service import PersonsService
+
     service = PersonsService(db)
     it = await service.get_establishment_person(
         caregiver_user_id=caregiver.id,

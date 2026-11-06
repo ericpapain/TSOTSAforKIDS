@@ -256,6 +256,18 @@ class PersonsService:
             ip=ip,
         )
 
+    async def person_exists(self, person_id: str) -> bool:
+        person = await self.repo.get_person_by_id(person_id)
+        return bool(person and person.deleted_at is None)
+
+    async def is_person_linked_to_user(self, person_id: str, user_id: str) -> bool:
+        link = await self.repo.get_person_link(person_id=person_id, user_id=user_id)
+        return bool(link and link.person.deleted_at is None)
+
+    async def get_active_care_organization_id(self, person_id: str) -> str | None:
+        care = await self.repo.get_active_person_care(person_id)
+        return care.organization_id if care else None
+
     def _person_to_read(self, person: Person, link: PersonLink) -> PersonRead:
         return PersonRead(
             id=person.id,
