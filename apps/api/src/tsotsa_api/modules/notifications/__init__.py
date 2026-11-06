@@ -15,4 +15,3 @@ __all__ = [
     "NotificationsService",
     "notifications_router",
 ]
-

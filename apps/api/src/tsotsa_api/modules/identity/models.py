@@ -217,6 +217,7 @@ class CaregiverProfile(Base):
     licence_number: Mapped[str | None] = mapped_column(String(100), nullable=True)
     document_file: Mapped[str | None] = mapped_column(String(255), nullable=True)
     verification_status: Mapped[str] = mapped_column(String(30), default="pending", nullable=False)
+    verification_notes: Mapped[str | None] = mapped_column(String(500), nullable=True)
     verified_by: Mapped[str | None] = mapped_column(
         BinaryUUID, ForeignKey("users.id"), nullable=True
     )
@@ -248,6 +249,9 @@ class Invitation(Base):
 
     id: Mapped[str] = mapped_column(BinaryUUID, primary_key=True, default=generate_uuid7)
     created_by: Mapped[str] = mapped_column(BinaryUUID, ForeignKey("users.id"), nullable=False)
+    user_id: Mapped[str | None] = mapped_column(
+        BinaryUUID, ForeignKey("users.id", ondelete="CASCADE"), nullable=True, index=True
+    )
     role: Mapped[str] = mapped_column(String(50), nullable=False)
     organization_id: Mapped[str | None] = mapped_column(BinaryUUID, nullable=True)
     phone_or_email: Mapped[str] = mapped_column(String(255), nullable=False, index=True)

@@ -221,4 +221,3 @@ async def set_notification_preference(
     result = await service.set_notification_preference(user_id=current_user.id, payload=payload)
     await db.commit()
     return result
-

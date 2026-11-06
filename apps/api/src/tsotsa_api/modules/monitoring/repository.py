@@ -226,4 +226,3 @@ class MonitoringRepository:
         if not rows:
             return True
         return all(rows)
-

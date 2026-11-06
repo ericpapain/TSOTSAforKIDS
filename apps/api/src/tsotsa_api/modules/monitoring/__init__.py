@@ -15,4 +15,3 @@ __all__ = [
     "dashboard_router",
     "preferences_router",
 ]
-

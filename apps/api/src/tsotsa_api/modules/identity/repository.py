@@ -188,7 +188,7 @@ class IdentityRepository(TokenRepository):
     async def upsert_caregiver_organization(
         self,
         user_id: str,
-        organization_id: str,
+        organization_id: str | None = None,
         licence_number: str | None = None,
         verification_status: str | None = None,
         verified_by: str | None = None,

@@ -128,4 +128,3 @@ class NotificationPreferenceSetRequest(BaseModel):
     notification_type: str = "reminders"
     channel: str = "in_app"
     enabled: bool = True
-

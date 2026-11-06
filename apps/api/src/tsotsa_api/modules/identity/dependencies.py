@@ -43,10 +43,20 @@ async def get_current_user(
 
     repo = IdentityRepository(db)
     user = await repo.get_user_by_id(user_id)
-    if not user or user.status != "active":
+    if not user:
         raise UnauthorizedError(
-            message="Utilisateur non trouvé ou compte inactif.",
-            details={"reason": "inactive_or_missing_user"},
+            message="Utilisateur non trouvé.",
+            details={"reason": "missing_user"},
+        )
+    if user.status == "suspended":
+        raise ForbiddenError(
+            message="Compte suspendu par l'administration.",
+            details={"reason": "account_suspended"},
+        )
+    if user.status != "active":
+        raise UnauthorizedError(
+            message="Compte inactif.",
+            details={"reason": "inactive_user"},
         )
 
     return user

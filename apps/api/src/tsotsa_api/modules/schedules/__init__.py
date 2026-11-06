@@ -12,4 +12,3 @@ __all__ = [
     "SchedulesService",
     "schedules_router",
 ]
-

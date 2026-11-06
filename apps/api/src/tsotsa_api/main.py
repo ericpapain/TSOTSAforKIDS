@@ -22,6 +22,7 @@ from tsotsa_api.core.errors import (
     validation_exception_handler,
 )
 from tsotsa_api.core.logging import get_logger, setup_logging
+from tsotsa_api.modules.admin import admin_router, invitations_public_router
 from tsotsa_api.modules.audit import audit_admin_router
 from tsotsa_api.modules.clinical import clinical_router
 from tsotsa_api.modules.consents import (
@@ -111,6 +112,8 @@ def _build_v1_router() -> APIRouter:
     v1_router.include_router(admin_alerts_router)
     v1_router.include_router(schedules_router)
     v1_router.include_router(notifications_router)
+    v1_router.include_router(admin_router)
+    v1_router.include_router(invitations_public_router)
     return v1_router
 
 
