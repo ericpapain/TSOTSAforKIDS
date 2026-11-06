@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 from decimal import Decimal
-from typing import Any
 
 from sqlalchemy import DateTime, ForeignKey, Numeric, String
 from sqlalchemy.dialects.mysql import JSON
@@ -98,23 +97,3 @@ class ProductEssentialNutrient(Base):
     nutrient_code: Mapped[str] = mapped_column(String(50), nullable=False)
 
     product: Mapped[Product] = relationship("Product", back_populates="essential_nutrients")
-
-
-class AuditLog(Base):
-    """Immutable audit log entry tracing creations, modifications, and validations."""
-
-    __tablename__ = "audit_log"
-
-    id: Mapped[str] = mapped_column(BinaryUUID, primary_key=True, default=generate_uuid7)
-    actor_user_id: Mapped[str | None] = mapped_column(
-        BinaryUUID, ForeignKey("users.id"), index=True, nullable=True
-    )
-    action: Mapped[str] = mapped_column(String(50), nullable=False)
-    entity: Mapped[str] = mapped_column(String(50), index=True, nullable=False)
-    entity_id: Mapped[str] = mapped_column(BinaryUUID, index=True, nullable=False)
-    organization_id: Mapped[str | None] = mapped_column(BinaryUUID, nullable=True)
-    at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), default=lambda: datetime.now(UTC), nullable=False
-    )
-    ip: Mapped[str | None] = mapped_column(String(50), nullable=True)
-    details: Mapped[dict[str, Any] | None] = mapped_column(JSONType, nullable=True)

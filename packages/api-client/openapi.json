@@ -1354,81 +1354,6 @@
         }
       }
     },
-    "/v1/admin/audit-logs": {
-      "get": {
-        "tags": [
-          "admin-reference-products"
-        ],
-        "summary": "List Audit Logs",
-        "description": "Retrieve audit log entries for product modifications.",
-        "operationId": "list_audit_logs_v1_admin_audit_logs_get",
-        "security": [
-          {
-            "HTTPBearer": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "entity",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Entity"
-            }
-          },
-          {
-            "name": "entity_id",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Entity Id"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/AuditLogRead"
-                  },
-                  "title": "Response List Audit Logs V1 Admin Audit Logs Get"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/v1/custom-products": {
       "post": {
         "tags": [
@@ -2580,10 +2505,907 @@
           }
         }
       }
+    },
+    "/v1/family/members": {
+      "get": {
+        "tags": [
+          "Family - Followed Persons"
+        ],
+        "summary": "List My Family Members",
+        "description": "List all followed persons linked to the authenticated family account.",
+        "operationId": "list_my_family_members_v1_family_members_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/PersonRead"
+                  },
+                  "type": "array",
+                  "title": "Response List My Family Members V1 Family Members Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Family - Followed Persons"
+        ],
+        "summary": "Create Family Member",
+        "description": "Add a new followed person (child, self, relative) to the family account.",
+        "operationId": "create_family_member_v1_family_members_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PersonCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PersonRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/family/members/{person_id}": {
+      "get": {
+        "tags": [
+          "Family - Followed Persons"
+        ],
+        "summary": "Get My Family Member",
+        "description": "Get details of a followed person linked to the family account.",
+        "operationId": "get_my_family_member_v1_family_members__person_id__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "person_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Person Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PersonRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Family - Followed Persons"
+        ],
+        "summary": "Update My Family Member",
+        "description": "Update details of a followed person linked to the family account.",
+        "operationId": "update_my_family_member_v1_family_members__person_id__put",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "person_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Person Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PersonUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PersonRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Family - Followed Persons"
+        ],
+        "summary": "Remove My Family Member",
+        "description": "Remove a followed person from the account (soft-deletes if no other links).",
+        "operationId": "remove_my_family_member_v1_family_members__person_id__delete",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "person_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Person Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/family/members/{person_id}/invite": {
+      "post": {
+        "tags": [
+          "Family - Followed Persons"
+        ],
+        "summary": "Invite Second Parent",
+        "description": "Invite a second parent or guardian by phone or email to link the same person.",
+        "operationId": "invite_second_parent_v1_family_members__person_id__invite_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "person_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Person Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SecondParentInviteRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SecondParentInviteResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/family/members/invitations/accept": {
+      "post": {
+        "tags": [
+          "Family - Followed Persons"
+        ],
+        "summary": "Accept Second Parent Invitation",
+        "description": "Accept an invitation to link an existing followed person to the current account.",
+        "operationId": "accept_second_parent_invitation_v1_family_members_invitations_accept_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AcceptInvitationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PersonRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/family/members/{person_id}/care": {
+      "post": {
+        "tags": [
+          "Family - Followed Persons"
+        ],
+        "summary": "Attach Person To Establishment",
+        "description": "Attach a followed person to a health organization for medical care.",
+        "operationId": "attach_person_to_establishment_v1_family_members__person_id__care_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "person_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Person Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CareAttachmentRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "title": "Response Attach Person To Establishment V1 Family Members  Person Id  Care Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/caregiver/organizations/{org_id}/persons": {
+      "get": {
+        "tags": [
+          "Caregiver - Followed Persons"
+        ],
+        "summary": "List Caregiver Establishment Persons",
+        "description": "List followed persons in caregiver's establishment (active consent required).",
+        "operationId": "list_caregiver_establishment_persons_v1_caregiver_organizations__org_id__persons_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Org Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CaregiverPersonRead"
+                  },
+                  "title": "Response List Caregiver Establishment Persons V1 Caregiver Organizations  Org Id  Persons Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/caregiver/organizations/{org_id}/persons/{person_id}": {
+      "get": {
+        "tags": [
+          "Caregiver - Followed Persons"
+        ],
+        "summary": "Get Caregiver Establishment Person",
+        "description": "Read a followed person in caregiver's establishment (active consent required).",
+        "operationId": "get_caregiver_establishment_person_v1_caregiver_organizations__org_id__persons__person_id__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Org Id"
+            }
+          },
+          {
+            "name": "person_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Person Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CaregiverPersonRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/consents/text": {
+      "get": {
+        "tags": [
+          "Consents"
+        ],
+        "summary": "Get Active Consent Text",
+        "description": "Retrieve the current active legal consent text to present to the user.",
+        "operationId": "get_active_consent_text_v1_consents_text_get",
+        "parameters": [
+          {
+            "name": "lang",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Code langue",
+              "default": "fr",
+              "title": "Lang"
+            },
+            "description": "Code langue"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConsentTextRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/admin/consents/text": {
+      "post": {
+        "tags": [
+          "Admin - Consents"
+        ],
+        "summary": "Publish Consent Text",
+        "description": "Publish a new version of legal consent text (admin only).",
+        "operationId": "publish_consent_text_v1_admin_consents_text_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConsentTextCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConsentTextRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/persons/{person_id}/consent": {
+      "get": {
+        "tags": [
+          "Person Consents"
+        ],
+        "summary": "Get Person Consent Status",
+        "description": "Get active consent details for a followed person.",
+        "operationId": "get_person_consent_status_v1_persons__person_id__consent_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "person_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Person Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConsentRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Person Consents"
+        ],
+        "summary": "Give Consent For Person",
+        "description": "Grant explicit consent to process followed person's health data.",
+        "operationId": "give_consent_for_person_v1_persons__person_id__consent_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "person_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Person Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConsentGiveRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConsentRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/persons/{person_id}/consent/withdraw": {
+      "post": {
+        "tags": [
+          "Person Consents"
+        ],
+        "summary": "Withdraw Consent For Person",
+        "description": "Withdraw health data consent for a followed person.",
+        "operationId": "withdraw_consent_for_person_v1_persons__person_id__consent_withdraw_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "person_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Person Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConsentRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/admin/audit-logs": {
+      "get": {
+        "tags": [
+          "Admin - Audit Logs"
+        ],
+        "summary": "List Audit Logs",
+        "description": "Retrieve immutable audit logs with optional filters.",
+        "operationId": "list_audit_logs_v1_admin_audit_logs_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "actor_user_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filtrer par utilisateur",
+              "title": "Actor User Id"
+            },
+            "description": "Filtrer par utilisateur"
+          },
+          {
+            "name": "entity",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filtrer par entit\u00e9",
+              "title": "Entity"
+            },
+            "description": "Filtrer par entit\u00e9"
+          },
+          {
+            "name": "entity_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filtrer par identifiant d'entit\u00e9",
+              "title": "Entity Id"
+            },
+            "description": "Filtrer par identifiant d'entit\u00e9"
+          },
+          {
+            "name": "organization_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filtrer par \u00e9tablissement",
+              "title": "Organization Id"
+            },
+            "description": "Filtrer par \u00e9tablissement"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 500,
+              "minimum": 1,
+              "description": "Nombre maximum de r\u00e9sultats",
+              "default": 100,
+              "title": "Limit"
+            },
+            "description": "Nombre maximum de r\u00e9sultats"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "D\u00e9calage pour la pagination",
+              "default": 0,
+              "title": "Offset"
+            },
+            "description": "D\u00e9calage pour la pagination"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AuditLogRead"
+                  },
+                  "title": "Response List Audit Logs V1 Admin Audit Logs Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
     "schemas": {
+      "AcceptInvitationRequest": {
+        "properties": {
+          "token": {
+            "type": "string",
+            "minLength": 8,
+            "title": "Token"
+          }
+        },
+        "type": "object",
+        "required": [
+          "token"
+        ],
+        "title": "AcceptInvitationRequest",
+        "description": "Payload to accept an invitation to link a followed person."
+      },
       "AppSettingRead": {
         "properties": {
           "key": {
@@ -2662,13 +3484,42 @@
             "title": "Entity"
           },
           "entity_id": {
-            "type": "string",
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Entity Id"
+          },
+          "organization_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Organization Id"
           },
           "at": {
             "type": "string",
             "format": "date-time",
             "title": "At"
+          },
+          "ip": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ip"
           },
           "details": {
             "anyOf": [
@@ -2688,11 +3539,10 @@
           "id",
           "action",
           "entity",
-          "entity_id",
           "at"
         ],
         "title": "AuditLogRead",
-        "description": "Audit log entry representation."
+        "description": "Representation of an audit log entry."
       },
       "BatchReviewDecision": {
         "properties": {
@@ -2811,6 +3661,31 @@
         ],
         "title": "Body_upload_food_import_file_v1_admin_food_imports_post"
       },
+      "CareAttachmentRequest": {
+        "properties": {
+          "organization_id": {
+            "type": "string",
+            "title": "Organization Id"
+          },
+          "primary_caregiver_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Primary Caregiver Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "organization_id"
+        ],
+        "title": "CareAttachmentRequest",
+        "description": "Payload to attach a followed person to a health organization."
+      },
       "CaregiverAttachmentRead": {
         "properties": {
           "user_id": {
@@ -2877,6 +3752,95 @@
         "title": "CaregiverAttachmentRequest",
         "description": "Payload to attach a caregiver account to an organization."
       },
+      "CaregiverPersonRead": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "pseudonym": {
+            "type": "string",
+            "title": "Pseudonym"
+          },
+          "first_name": {
+            "type": "string",
+            "title": "First Name"
+          },
+          "birth_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Birth Date"
+          },
+          "sex": {
+            "type": "string",
+            "enum": [
+              "M",
+              "F"
+            ],
+            "title": "Sex"
+          },
+          "region_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Region Id"
+          },
+          "organization_id": {
+            "type": "string",
+            "title": "Organization Id"
+          },
+          "primary_caregiver_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Primary Caregiver Id"
+          },
+          "care_started_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Care Started At"
+          },
+          "created_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created At"
+          },
+          "has_active_consent": {
+            "type": "boolean",
+            "title": "Has Active Consent",
+            "default": true
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "pseudonym",
+          "first_name",
+          "birth_date",
+          "sex",
+          "organization_id",
+          "care_started_at"
+        ],
+        "title": "CaregiverPersonRead",
+        "description": "Representation of a followed person seen by medical caregiver."
+      },
       "ColumnMappingUpdate": {
         "properties": {
           "mapping": {
@@ -2894,6 +3858,148 @@
         ],
         "title": "ColumnMappingUpdate",
         "description": "Admin column mapping correction."
+      },
+      "ConsentGiveRequest": {
+        "properties": {
+          "legal_guardian": {
+            "type": "boolean",
+            "title": "Legal Guardian",
+            "default": true
+          },
+          "consent_text_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Consent Text Id"
+          }
+        },
+        "type": "object",
+        "title": "ConsentGiveRequest",
+        "description": "Payload to grant health data processing consent for a person."
+      },
+      "ConsentRead": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "person_id": {
+            "type": "string",
+            "title": "Person Id"
+          },
+          "consent_text_id": {
+            "type": "string",
+            "title": "Consent Text Id"
+          },
+          "given_by_user_id": {
+            "type": "string",
+            "title": "Given By User Id"
+          },
+          "legal_guardian": {
+            "type": "boolean",
+            "title": "Legal Guardian"
+          },
+          "given_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Given At"
+          },
+          "withdrawn_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Withdrawn At"
+          },
+          "is_active": {
+            "type": "boolean",
+            "title": "Is Active"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "person_id",
+          "consent_text_id",
+          "given_by_user_id",
+          "legal_guardian",
+          "given_at",
+          "is_active"
+        ],
+        "title": "ConsentRead",
+        "description": "Representation of an active or withdrawn consent."
+      },
+      "ConsentTextCreate": {
+        "properties": {
+          "body": {
+            "type": "string",
+            "minLength": 10,
+            "title": "Body"
+          },
+          "language": {
+            "type": "string",
+            "maxLength": 10,
+            "minLength": 2,
+            "title": "Language",
+            "default": "fr"
+          }
+        },
+        "type": "object",
+        "required": [
+          "body"
+        ],
+        "title": "ConsentTextCreate",
+        "description": "Payload for administration to publish a new version of consent text."
+      },
+      "ConsentTextRead": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "version": {
+            "type": "integer",
+            "title": "Version"
+          },
+          "language": {
+            "type": "string",
+            "title": "Language"
+          },
+          "body": {
+            "type": "string",
+            "title": "Body"
+          },
+          "is_current": {
+            "type": "boolean",
+            "title": "Is Current"
+          },
+          "published_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Published At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "version",
+          "language",
+          "body",
+          "is_current",
+          "published_at"
+        ],
+        "title": "ConsentTextRead",
+        "description": "Representation of a legal consent text version."
       },
       "CustomProductCreate": {
         "properties": {
@@ -4537,6 +5643,58 @@
         "title": "PasswordResetRequest",
         "description": "Reset password using one-time token."
       },
+      "PersonCreate": {
+        "properties": {
+          "first_name": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "First Name"
+          },
+          "birth_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Birth Date"
+          },
+          "sex": {
+            "type": "string",
+            "enum": [
+              "M",
+              "F"
+            ],
+            "title": "Sex"
+          },
+          "region_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Region Id"
+          },
+          "relation": {
+            "type": "string",
+            "enum": [
+              "self",
+              "child",
+              "relative"
+            ],
+            "title": "Relation",
+            "default": "child"
+          }
+        },
+        "type": "object",
+        "required": [
+          "first_name",
+          "birth_date",
+          "sex"
+        ],
+        "title": "PersonCreate",
+        "description": "Payload to register a new family member."
+      },
       "PersonInCareCreate": {
         "properties": {
           "pseudonym": {
@@ -4647,6 +5805,142 @@
         ],
         "title": "PersonInCareRead",
         "description": "Representation of a followed person visible within an establishment."
+      },
+      "PersonRead": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "pseudonym": {
+            "type": "string",
+            "title": "Pseudonym"
+          },
+          "first_name": {
+            "type": "string",
+            "title": "First Name"
+          },
+          "birth_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Birth Date"
+          },
+          "sex": {
+            "type": "string",
+            "enum": [
+              "M",
+              "F"
+            ],
+            "title": "Sex"
+          },
+          "region_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Region Id"
+          },
+          "relation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Relation"
+          },
+          "is_primary": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Primary"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "pseudonym",
+          "first_name",
+          "birth_date",
+          "sex",
+          "created_at"
+        ],
+        "title": "PersonRead",
+        "description": "Representation of a followed person for a family member account."
+      },
+      "PersonUpdate": {
+        "properties": {
+          "first_name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 120,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "First Name"
+          },
+          "birth_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Birth Date"
+          },
+          "sex": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "M",
+                  "F"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sex"
+          },
+          "region_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Region Id"
+          }
+        },
+        "type": "object",
+        "title": "PersonUpdate",
+        "description": "Payload to update an existing family member."
       },
       "PhoneOtpRequest": {
         "properties": {
@@ -5299,6 +6593,62 @@
         "type": "object",
         "title": "RegionUpdate",
         "description": "Payload for administration to update a geographical region."
+      },
+      "SecondParentInviteRequest": {
+        "properties": {
+          "phone_or_email": {
+            "type": "string",
+            "maxLength": 255,
+            "minLength": 3,
+            "title": "Phone Or Email"
+          },
+          "relation": {
+            "type": "string",
+            "enum": [
+              "self",
+              "child",
+              "relative"
+            ],
+            "title": "Relation",
+            "default": "child"
+          }
+        },
+        "type": "object",
+        "required": [
+          "phone_or_email"
+        ],
+        "title": "SecondParentInviteRequest",
+        "description": "Payload to invite a second parent or guardian to share access."
+      },
+      "SecondParentInviteResponse": {
+        "properties": {
+          "invitation_id": {
+            "type": "string",
+            "title": "Invitation Id"
+          },
+          "token": {
+            "type": "string",
+            "title": "Token"
+          },
+          "expires_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Expires At"
+          },
+          "phone_or_email": {
+            "type": "string",
+            "title": "Phone Or Email"
+          }
+        },
+        "type": "object",
+        "required": [
+          "invitation_id",
+          "token",
+          "expires_at",
+          "phone_or_email"
+        ],
+        "title": "SecondParentInviteResponse",
+        "description": "Response containing invitation token for second parent."
       },
       "SourceRead": {
         "properties": {

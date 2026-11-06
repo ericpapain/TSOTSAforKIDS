@@ -5,6 +5,7 @@ from __future__ import annotations
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from tsotsa_api.core.errors import ForbiddenError, NotFoundError, ValidationError
+from tsotsa_api.modules.audit.service import AuditService
 from tsotsa_api.modules.nutrients.service import NutrientService
 from tsotsa_api.modules.reference_products.helpers import (
     build_essential_models,
@@ -34,6 +35,7 @@ class ReferenceProductService:
         self.session = session
         self.repo = ProductsRepository(session)
         self.nutrient_service = NutrientService(session)
+        self.audit = AuditService(session)
 
     async def create_reference_product(
         self, admin_user_id: str, payload: ReferenceProductCreate
@@ -66,7 +68,7 @@ class ReferenceProductService:
         ):
             self.session.add(en)
 
-        await self.repo.record_audit_log(
+        await self.audit.log(
             actor_user_id=admin_user_id,
             action="create",
             entity="reference_product",
@@ -87,7 +89,7 @@ class ReferenceProductService:
         changes = self._apply_reference_field_updates(product, payload)
         await self._apply_reference_composition_updates(product, payload, changes)
 
-        await self.repo.record_audit_log(
+        await self.audit.log(
             actor_user_id=admin_user_id,
             action="update",
             entity="reference_product",
@@ -155,7 +157,7 @@ class ReferenceProductService:
         if new_status == "validated":
             product.validated_by = admin_user_id
 
-        await self.repo.record_audit_log(
+        await self.audit.log(
             actor_user_id=admin_user_id,
             action="status_change",
             entity="reference_product",
@@ -219,7 +221,7 @@ class ReferenceProductService:
         for nv in await build_nutrient_models(product.id, nutrients, self.nutrient_service):
             self.session.add(nv)
 
-        await self.repo.record_audit_log(
+        await self.audit.log(
             actor_user_id=user_id,
             action="create",
             entity="custom_product",
@@ -261,7 +263,7 @@ class ReferenceProductService:
         else:
             raise ValidationError(f"Décision invalide : '{decision}'.")
 
-        await self.repo.record_audit_log(
+        await self.audit.log(
             actor_user_id=admin_user_id,
             action=f"review_{decision}",
             entity="custom_product",
@@ -275,5 +277,5 @@ class ReferenceProductService:
     async def list_audit_logs(
         self, entity: str | None = None, entity_id: str | None = None
     ) -> list[AuditLogRead]:
-        logs = await self.repo.list_audit_logs(entity=entity, entity_id=entity_id)
+        logs = await self.audit.list_logs(entity=entity, entity_id=entity_id)
         return [AuditLogRead.model_validate(entry) for entry in logs]

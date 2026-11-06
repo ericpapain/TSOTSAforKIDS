@@ -1,4 +1,4 @@
-"""Service layer for Domain B (Organizations, Regions) and Caregiver Isolation."""
+"""Service layer for Domain B (Organizations and Regions)."""
 
 from __future__ import annotations
 
@@ -6,7 +6,7 @@ from typing import Any
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from tsotsa_api.core.errors import AppException, ForbiddenError, NotFoundError
+from tsotsa_api.core.errors import ForbiddenError, NotFoundError
 from tsotsa_api.modules.food_database.service import FoodDatabaseService
 from tsotsa_api.modules.identity.repository import IdentityRepository
 from tsotsa_api.modules.identity.service import IdentityService
@@ -17,8 +17,6 @@ from tsotsa_api.modules.organizations.schemas import (
     CaregiverAttachmentRequest,
     OrganizationCreate,
     OrganizationUpdate,
-    PersonInCareCreate,
-    PersonInCareRead,
     RegionCreate,
     RegionRead,
     RegionUpdate,
@@ -27,7 +25,7 @@ from tsotsa_api.modules.organizations.schemas import (
 
 
 class OrganizationsService:
-    """Orchestrates health establishments, regions, user preferences, and strict isolation."""
+    """Orchestrates health establishments, caregiver attachments, and administered regions."""
 
     def __init__(self, session: AsyncSession) -> None:
         self.session = session
@@ -115,83 +113,6 @@ class OrganizationsService:
                 },
             )
         return caregiver_org_id
-
-    async def register_person_in_organization(
-        self,
-        org_id: str,
-        payload: PersonInCareCreate,
-        actor_user_id: str,
-        is_admin: bool,
-    ) -> PersonInCareRead:
-        scoped_org_id = await self._enforce_establishment_isolation(actor_user_id, is_admin, org_id)
-        if await self.repo.get_person_by_pseudonym(payload.pseudonym):
-            raise AppException(
-                status_code=409,
-                code="PSEUDONYM_ALREADY_EXISTS",
-                message=f"Le pseudonyme '{payload.pseudonym}' est déjà attribué.",
-            )
-        person = await self.repo.create_person_with_care(
-            organization_id=scoped_org_id,
-            pseudonym=payload.pseudonym,
-            first_name=payload.first_name,
-            birth_date=payload.birth_date,
-            sex=payload.sex,
-            region_id=payload.region_id,
-            primary_caregiver_id=actor_user_id if not is_admin else None,
-            created_by=actor_user_id,
-        )
-        return PersonInCareRead(
-            id=person.id,
-            pseudonym=person.pseudonym,
-            first_name=person.first_name,
-            birth_date=person.birth_date,
-            sex=person.sex,  # type: ignore[arg-type]
-            region_id=person.region_id,
-            organization_id=scoped_org_id,
-            created_at=person.created_at,
-        )
-
-    async def list_organization_persons(
-        self, org_id: str, actor_user_id: str, is_admin: bool
-    ) -> list[PersonInCareRead]:
-        scoped_org_id = await self._enforce_establishment_isolation(actor_user_id, is_admin, org_id)
-        persons = await self.repo.list_persons_for_organization(scoped_org_id)
-        return [
-            PersonInCareRead(
-                id=p.id,
-                pseudonym=p.pseudonym,
-                first_name=p.first_name,
-                birth_date=p.birth_date,
-                sex=p.sex,  # type: ignore[arg-type]
-                region_id=p.region_id,
-                organization_id=scoped_org_id,
-                created_at=p.created_at,
-            )
-            for p in persons
-        ]
-
-    async def get_organization_person(
-        self, org_id: str, person_id: str, actor_user_id: str, is_admin: bool
-    ) -> PersonInCareRead:
-        scoped_org_id = await self._enforce_establishment_isolation(actor_user_id, is_admin, org_id)
-        person = await self.repo.get_person_for_organization(
-            person_id=person_id, organization_id=scoped_org_id
-        )
-        if not person:
-            raise ForbiddenError(
-                message="Accès refusé : personne suivie introuvable dans votre établissement.",
-                details={"organization_id": scoped_org_id, "person_id": person_id},
-            )
-        return PersonInCareRead(
-            id=person.id,
-            pseudonym=person.pseudonym,
-            first_name=person.first_name,
-            birth_date=person.birth_date,
-            sex=person.sex,  # type: ignore[arg-type]
-            region_id=person.region_id,
-            organization_id=scoped_org_id,
-            created_at=person.created_at,
-        )
 
     async def list_regions(self) -> list[RegionRead]:
         regions = await self.food_service.list_regions()

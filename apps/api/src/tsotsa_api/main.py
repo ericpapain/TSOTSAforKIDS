@@ -22,6 +22,12 @@ from tsotsa_api.core.errors import (
     validation_exception_handler,
 )
 from tsotsa_api.core.logging import get_logger, setup_logging
+from tsotsa_api.modules.audit import audit_admin_router
+from tsotsa_api.modules.consents import (
+    admin_consents_router,
+    consents_router,
+    person_consents_router,
+)
 from tsotsa_api.modules.custom_products import (
     custom_products_admin_router,
     custom_products_router,
@@ -44,6 +50,7 @@ from tsotsa_api.modules.organizations import (
     users_region_router,
 )
 from tsotsa_api.modules.orkg_sync import orkg_sync_admin_router
+from tsotsa_api.modules.persons import caregiver_persons_router, family_router
 from tsotsa_api.modules.reference_products import (
     products_router,
     reference_products_admin_router,
@@ -75,6 +82,12 @@ def _build_v1_router() -> APIRouter:
     v1_router.include_router(regions_router)
     v1_router.include_router(users_region_router)
     v1_router.include_router(organizations_admin_router)
+    v1_router.include_router(family_router)
+    v1_router.include_router(caregiver_persons_router)
+    v1_router.include_router(consents_router)
+    v1_router.include_router(admin_consents_router)
+    v1_router.include_router(person_consents_router)
+    v1_router.include_router(audit_admin_router)
     return v1_router
 
 

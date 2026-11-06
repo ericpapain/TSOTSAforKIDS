@@ -29,6 +29,7 @@ from tsotsa_api.modules.organizations.schemas import (
     UserRegionPreferenceUpdate,
 )
 from tsotsa_api.modules.organizations.service import OrganizationsService
+from tsotsa_api.modules.persons.service import PersonsService
 
 organizations_router = APIRouter(prefix="/organizations", tags=["Organizations"])
 regions_router = APIRouter(prefix="/regions", tags=["Regions"])
@@ -71,12 +72,26 @@ async def register_person_in_establishment(
 ) -> PersonInCareRead:
     """Register a followed person in an establishment (strictly scoped to caregiver's org)."""
     admin_flag = await is_user_admin(caregiver, db)
-    service = OrganizationsService(db)
-    return await service.register_person_in_organization(
+    service = PersonsService(db)
+    care_read = await service.register_person_in_care(
         org_id=org_id,
-        payload=payload,
+        pseudonym=payload.pseudonym,
+        first_name=payload.first_name,
+        birth_date=payload.birth_date,
+        sex=payload.sex,
+        region_id=payload.region_id,
         actor_user_id=caregiver.id,
         is_admin=admin_flag,
+    )
+    return PersonInCareRead(
+        id=care_read.id,
+        pseudonym=care_read.pseudonym,
+        first_name=care_read.first_name,
+        birth_date=care_read.birth_date,
+        sex=care_read.sex,
+        region_id=care_read.region_id,
+        organization_id=care_read.organization_id,
+        created_at=care_read.created_at or care_read.care_started_at,
     )
 
 
@@ -88,12 +103,25 @@ async def list_establishment_persons(
 ) -> list[PersonInCareRead]:
     """List persons followed in an establishment (caregiver only sees their own establishment)."""
     admin_flag = await is_user_admin(caregiver, db)
-    service = OrganizationsService(db)
-    return await service.list_organization_persons(
-        org_id=org_id,
-        actor_user_id=caregiver.id,
+    service = PersonsService(db)
+    items = await service.list_establishment_persons(
+        caregiver_user_id=caregiver.id,
+        organization_id=org_id,
         is_admin=admin_flag,
     )
+    return [
+        PersonInCareRead(
+            id=it.id,
+            pseudonym=it.pseudonym,
+            first_name=it.first_name,
+            birth_date=it.birth_date,
+            sex=it.sex,
+            region_id=it.region_id,
+            organization_id=it.organization_id,
+            created_at=it.created_at or it.care_started_at,
+        )
+        for it in items
+    ]
 
 
 @organizations_router.get("/{org_id}/persons/{person_id}", response_model=PersonInCareRead)
@@ -105,12 +133,22 @@ async def get_establishment_person(
 ) -> PersonInCareRead:
     """Read a followed person within an establishment (strictly isolated by organization_id)."""
     admin_flag = await is_user_admin(caregiver, db)
-    service = OrganizationsService(db)
-    return await service.get_organization_person(
-        org_id=org_id,
+    service = PersonsService(db)
+    it = await service.get_establishment_person(
+        caregiver_user_id=caregiver.id,
+        organization_id=org_id,
         person_id=person_id,
-        actor_user_id=caregiver.id,
         is_admin=admin_flag,
+    )
+    return PersonInCareRead(
+        id=it.id,
+        pseudonym=it.pseudonym,
+        first_name=it.first_name,
+        birth_date=it.birth_date,
+        sex=it.sex,
+        region_id=it.region_id,
+        organization_id=it.organization_id,
+        created_at=it.created_at or it.care_started_at,
     )
 
 

@@ -13,7 +13,7 @@ from tsotsa_api.core.security import create_access_token
 from tsotsa_api.main import create_app
 from tsotsa_api.modules.identity.models import User
 from tsotsa_api.modules.identity.repository import IdentityRepository
-from tsotsa_api.modules.organizations.repository import OrganizationsRepository
+from tsotsa_api.modules.persons.repository import PersonsRepository
 
 
 @pytest.fixture
@@ -191,11 +191,11 @@ async def test_strict_establishment_isolation_and_caregiver_attachment(
         assert unverified_res.json()["error"]["code"] == "CARE_GIVER_NOT_VERIFIED"
 
         # 12. Direct repository-level isolation check
-        org_repo = OrganizationsRepository(db_session)
-        repo_a_persons = await org_repo.list_persons_for_organization(org_a_id)
+        pers_repo = PersonsRepository(db_session)
+        repo_a_persons = await pers_repo.list_persons_for_organization(org_a_id)
         assert [p.pseudonym for p in repo_a_persons] == ["#A-014"]
-        assert await org_repo.get_person_for_organization(person_b_id, org_a_id) is None
-        assert await org_repo.get_person_for_organization(person_a_id, org_b_id) is None
+        assert await pers_repo.get_person_for_organization(person_b_id, org_a_id) is None
+        assert await pers_repo.get_person_for_organization(person_a_id, org_b_id) is None
 
 
 @pytest.mark.asyncio

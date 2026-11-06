@@ -3,14 +3,12 @@
 from __future__ import annotations
 
 import uuid
-from typing import Any
 
 from sqlalchemy import delete, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from tsotsa_api.modules.reference_products.models import (
-    AuditLog,
     Product,
     ProductEssentialNutrient,
     ProductNutrientValue,
@@ -88,36 +86,3 @@ class ProductsRepository:
                 ProductEssentialNutrient.product_id == product_id
             )
         )
-
-    async def record_audit_log(
-        self,
-        actor_user_id: str | None,
-        action: str,
-        entity: str,
-        entity_id: str,
-        details: dict[str, Any] | None = None,
-    ) -> AuditLog:
-        entry = AuditLog(
-            actor_user_id=actor_user_id,
-            action=action,
-            entity=entity,
-            entity_id=entity_id,
-            details=details,
-        )
-        self.session.add(entry)
-        await self.session.flush()
-        return entry
-
-    async def list_audit_logs(
-        self, entity: str | None = None, entity_id: str | None = None
-    ) -> list[AuditLog]:
-        stmt = select(AuditLog)
-        if entity:
-            stmt = stmt.where(AuditLog.entity == entity)
-        if entity_id:
-            if not _is_valid_uuid(entity_id):
-                return []
-            stmt = stmt.where(AuditLog.entity_id == entity_id)
-        stmt = stmt.order_by(AuditLog.at.desc())
-        res = await self.session.execute(stmt)
-        return list(res.scalars().all())

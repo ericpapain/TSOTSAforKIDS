@@ -4,13 +4,12 @@ from __future__ import annotations
 
 from typing import Any
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from tsotsa_api.core.database import get_db_session
 from tsotsa_api.modules.identity import get_optional_user, is_user_admin, require_role
 from tsotsa_api.modules.reference_products.schemas import (
-    AuditLogRead,
     ProductDetailRead,
     ProductSummaryRead,
     ReferenceProductCreate,
@@ -105,15 +104,3 @@ async def update_reference_product_status(
     result = await service.update_reference_product_status(product_id, admin.id, payload.status)
     await db.commit()
     return result
-
-
-@admin_router.get("/audit-logs", response_model=list[AuditLogRead])
-async def list_audit_logs(
-    entity: str | None = Query(default=None),
-    entity_id: str | None = Query(default=None),
-    _admin: Any = Depends(require_role("admin")),
-    db: AsyncSession = Depends(get_db_session),
-) -> list[AuditLogRead]:
-    """Retrieve audit log entries for product modifications."""
-    service = ReferenceProductService(db)
-    return await service.list_audit_logs(entity=entity, entity_id=entity_id)
