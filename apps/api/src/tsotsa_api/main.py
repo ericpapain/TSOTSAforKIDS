@@ -49,12 +49,6 @@ from tsotsa_api.modules.monitoring import (
     dashboard_router,
 )
 from tsotsa_api.modules.notifications import notifications_router
-from tsotsa_api.modules.monitoring import (
-    admin_alerts_router,
-    alerts_router,
-    dashboard_router,
-)
-from tsotsa_api.modules.notifications import notifications_router
 from tsotsa_api.modules.nutrients import nutrients_router
 from tsotsa_api.modules.optimization import optimization_router
 from tsotsa_api.modules.organizations import (
