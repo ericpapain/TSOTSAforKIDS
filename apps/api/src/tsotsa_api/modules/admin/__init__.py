@@ -10,4 +10,3 @@ __all__ = [
     "admin_router",
     "invitations_public_router",
 ]
-

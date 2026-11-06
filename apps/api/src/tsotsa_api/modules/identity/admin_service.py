@@ -120,9 +120,7 @@ class IdentityAdminService:
         if not inv or inv.accepted_at is not None:
             return {"valid": False, "reason": "invalid_or_used"}
         exp = (
-            inv.expires_at.replace(tzinfo=UTC)
-            if inv.expires_at.tzinfo is None
-            else inv.expires_at
+            inv.expires_at.replace(tzinfo=UTC) if inv.expires_at.tzinfo is None else inv.expires_at
         )
         if exp < datetime.now(UTC):
             return {"valid": False, "reason": "expired"}
@@ -148,9 +146,7 @@ class IdentityAdminService:
         if not inv or inv.accepted_at is not None:
             raise NotFoundError(message="Invitation introuvable ou déjà utilisée.")
         exp = (
-            inv.expires_at.replace(tzinfo=UTC)
-            if inv.expires_at.tzinfo is None
-            else inv.expires_at
+            inv.expires_at.replace(tzinfo=UTC) if inv.expires_at.tzinfo is None else inv.expires_at
         )
         if exp < datetime.now(UTC):
             raise ValidationError("Cette invitation a expiré (délai de 7 jours dépassé).")

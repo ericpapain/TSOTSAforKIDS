@@ -36,4 +36,3 @@ async def accept_invitation(
     _, tokens = await srv.accept_invitation(payload)
     await db.commit()
     return tokens
-
