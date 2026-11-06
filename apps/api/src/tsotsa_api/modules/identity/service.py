@@ -16,14 +16,11 @@ from tsotsa_api.core.security import (
     hash_token,
     verify_password,
 )
-from tsotsa_api.modules.identity.models import User
+from tsotsa_api.modules.identity.models import CaregiverProfile, User
 from tsotsa_api.modules.identity.otp import OtpSender, get_otp_sender
 from tsotsa_api.modules.identity.rate_limit import RateLimiter
 from tsotsa_api.modules.identity.repository import IdentityRepository
-from tsotsa_api.modules.identity.schemas import (
-    OtpRequestResponse,
-    TokenResponse,
-)
+from tsotsa_api.modules.identity.schemas import OtpRequestResponse, TokenResponse
 from tsotsa_api.modules.identity.token_service import TokenService
 
 # Precomputed bcrypt hash used for constant-time comparison when user is not found
@@ -127,31 +124,26 @@ class IdentityService:
                 message="Code de confirmation invalide ou expiré.",
                 details={"reason": "otp_expired_or_absent"},
             )
-
         if otp.attempts >= self.settings.OTP_MAX_ATTEMPTS:
             raise AppException(
                 status_code=400,
                 code="OTP_MAX_ATTEMPTS_EXCEEDED",
                 message="Nombre maximal de tentatives dépassé. Veuillez demander un nouveau code.",
             )
-
         if hash_token(code) != otp.code_hash:
             await self.repository.increment_otp_attempts(otp.id)
             raise UnauthorizedError(
-                message="Code de confirmation incorrect.",
-                details={"reason": "invalid_code"},
+                message="Code de confirmation incorrect.", details={"reason": "invalid_code"}
             )
 
         await self.repository.mark_otp_consumed(otp.id)
-
         identity = await self.repository.get_identity("phone", phone_e164)
         if identity:
             user = await self.repository.get_user_by_id(identity.user_id)
             if not user:
                 raise UnauthorizedError("User record not found")
         else:
-            name = display_name or phone_e164
-            user = await self.repository.create_user(display_name=name)
+            user = await self.repository.create_user(display_name=display_name or phone_e164)
             await self.repository.create_identity(
                 user_id=user.id,
                 provider="phone",
@@ -164,18 +156,12 @@ class IdentityService:
         return await self.tokens.issue_tokens(user, device_label="Phone Auth")
 
     async def register_email(
-        self,
-        email: str,
-        password: str,
-        display_name: str,
-        ip_address: str = "127.0.0.1",
+        self, email: str, password: str, display_name: str, ip_address: str = "127.0.0.1"
     ) -> tuple[User, str]:
         """Register a new user account with email and password."""
         RateLimiter.check_limit(f"ip:{ip_address}", max_attempts=5, window_seconds=60)
         clean_email = email.lower().strip()
-
-        existing = await self.repository.get_identity_by_email(clean_email)
-        if existing:
+        if await self.repository.get_identity_by_email(clean_email):
             raise AppException(
                 status_code=409,
                 code="EMAIL_ALREADY_EXISTS",
@@ -195,14 +181,12 @@ class IdentityService:
         await self.repository.assign_role(user.id, "user")
 
         raw_token = generate_random_token(32)
-        expires_at = datetime.now(UTC) + timedelta(minutes=30)
         await self.repository.create_email_token(
             user_identity_id=identity.id,
             purpose="verify",
             token_hash=hash_token(raw_token),
-            expires_at=expires_at,
+            expires_at=datetime.now(UTC) + timedelta(minutes=30),
         )
-
         return user, raw_token
 
     async def login_email(
@@ -220,7 +204,6 @@ class IdentityService:
                 message="Adresse e-mail ou mot de passe incorrect.",
                 details={"reason": "invalid_credentials"},
             )
-
         if not verify_password(password, identity.password_hash):
             raise UnauthorizedError(
                 message="Adresse e-mail ou mot de passe incorrect.",
@@ -230,10 +213,8 @@ class IdentityService:
         user = await self.repository.get_user_by_id(identity.user_id)
         if not user or user.status != "active":
             raise UnauthorizedError(
-                message="Compte inactif ou suspendu.",
-                details={"reason": "inactive_user"},
+                message="Compte inactif ou suspendu.", details={"reason": "inactive_user"}
             )
-
         return await self.tokens.issue_tokens(user, device_label="Email Auth")
 
     async def verify_email_token(self, token_str: str) -> None:
@@ -252,18 +233,15 @@ class IdentityService:
         clean_email = email.lower().strip()
         RateLimiter.check_limit(f"ip:{ip_address}", max_attempts=5, window_seconds=60)
         RateLimiter.check_limit(f"email:{clean_email}", max_attempts=3, window_seconds=60)
-
         identity = await self.repository.get_identity_by_email(clean_email)
         if not identity:
             return None
-
         raw_token = generate_random_token(32)
-        expires_at = datetime.now(UTC) + timedelta(minutes=30)
         await self.repository.create_email_token(
             user_identity_id=identity.id,
             purpose="reset",
             token_hash=hash_token(raw_token),
-            expires_at=expires_at,
+            expires_at=datetime.now(UTC) + timedelta(minutes=30),
         )
         return raw_token
 
@@ -278,11 +256,9 @@ class IdentityService:
                 message="Lien de réinitialisation invalide ou expiré.",
                 details={"reason": "invalid_token"},
             )
-
         new_hash = hash_password(new_password, rounds=self.settings.BCRYPT_ROUNDS)
         await self.repository.update_password_hash(token.user_identity_id, new_hash)
         await self.repository.mark_email_token_used(token.id)
-
         if token.user_identity:
             await self.repository.revoke_all_user_refresh_tokens(token.user_identity.user_id)
 
@@ -293,3 +269,28 @@ class IdentityService:
     async def revoke_refresh_token(self, refresh_token_str: str) -> None:
         """Revoke a refresh token on user logout."""
         await self.tokens.revoke_refresh_token(refresh_token_str)
+
+    async def attach_caregiver_to_organization(
+        self,
+        user_id: str,
+        organization_id: str,
+        licence_number: str | None = None,
+        verification_status: str | None = None,
+        verified_by: str | None = None,
+    ) -> CaregiverProfile:
+        if not await self.repository.get_user_by_id(user_id):
+            raise NotFoundError(message="Compte utilisateur introuvable.")
+        await self.repository.assign_role(user_id, "caregiver")
+        return await self.repository.upsert_caregiver_organization(
+            user_id, organization_id, licence_number, verification_status, verified_by
+        )
+
+    async def get_caregiver_organization_id(self, user_id: str) -> str | None:
+        profile = await self.repository.get_caregiver_profile(user_id)
+        return profile.organization_id if profile and profile.verification_status == "approved" else None
+
+    async def set_preferred_region(self, user_id: str, region_id: str | None) -> User:
+        user = await self.repository.set_preferred_region(user_id, region_id)
+        if not user:
+            raise NotFoundError(message="Utilisateur introuvable.")
+        return user

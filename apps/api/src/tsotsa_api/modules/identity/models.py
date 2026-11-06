@@ -27,6 +27,9 @@ class User(Base):
     id: Mapped[str] = mapped_column(BinaryUUID, primary_key=True, default=generate_uuid7)
     display_name: Mapped[str] = mapped_column(String(150), nullable=False)
     language: Mapped[str] = mapped_column(String(10), default="fr", nullable=False)
+    preferred_region_id: Mapped[str | None] = mapped_column(
+        BinaryUUID, ForeignKey("regions.id"), nullable=True, index=True
+    )
     status: Mapped[str] = mapped_column(String(30), default="active", nullable=False)
     last_login_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     created_at: Mapped[datetime] = mapped_column(

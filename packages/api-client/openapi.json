@@ -1730,10 +1730,912 @@
           }
         }
       }
+    },
+    "/v1/modules": {
+      "get": {
+        "tags": [
+          "Modules Registry"
+        ],
+        "summary": "List Platform Modules",
+        "description": "Return the dynamic list of platform modules (read by mobile and web apps).",
+        "operationId": "list_platform_modules_v1_modules_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ModuleRead"
+                  },
+                  "type": "array",
+                  "title": "Response List Platform Modules V1 Modules Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/admin/modules": {
+      "post": {
+        "tags": [
+          "Admin - Modules & Settings"
+        ],
+        "summary": "Create Platform Module",
+        "description": "Register a new clinical module in the platform registry.",
+        "operationId": "create_platform_module_v1_admin_modules_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ModuleCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModuleRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/admin/modules/{code}": {
+      "put": {
+        "tags": [
+          "Admin - Modules & Settings"
+        ],
+        "summary": "Update Platform Module",
+        "description": "Activate, mark as coming_soon, or disable a platform module.",
+        "operationId": "update_platform_module_v1_admin_modules__code__put",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "code",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Code"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ModuleUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModuleRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/admin/settings": {
+      "get": {
+        "tags": [
+          "Admin - Modules & Settings"
+        ],
+        "summary": "List Application Settings",
+        "description": "List global application settings.",
+        "operationId": "list_application_settings_v1_admin_settings_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/AppSettingRead"
+                  },
+                  "type": "array",
+                  "title": "Response List Application Settings V1 Admin Settings Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/admin/settings/{key}": {
+      "put": {
+        "tags": [
+          "Admin - Modules & Settings"
+        ],
+        "summary": "Update Application Setting",
+        "description": "Create or update a global application setting.",
+        "operationId": "update_application_setting_v1_admin_settings__key__put",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "key",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AppSettingUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppSettingRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/organizations": {
+      "get": {
+        "tags": [
+          "Organizations"
+        ],
+        "summary": "List Active Organizations",
+        "description": "List active health establishments.",
+        "operationId": "list_active_organizations_v1_organizations_get",
+        "parameters": [
+          {
+            "name": "region_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filtrer par r\u00e9gion",
+              "title": "Region Id"
+            },
+            "description": "Filtrer par r\u00e9gion"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/OrganizationRead"
+                  },
+                  "title": "Response List Active Organizations V1 Organizations Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/organizations/{org_id}": {
+      "get": {
+        "tags": [
+          "Organizations"
+        ],
+        "summary": "Get Organization Detail",
+        "description": "Get details of a health establishment.",
+        "operationId": "get_organization_detail_v1_organizations__org_id__get",
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Org Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrganizationRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/organizations/{org_id}/persons": {
+      "post": {
+        "tags": [
+          "Organizations"
+        ],
+        "summary": "Register Person In Establishment",
+        "description": "Register a followed person in an establishment (strictly scoped to caregiver's org).",
+        "operationId": "register_person_in_establishment_v1_organizations__org_id__persons_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Org Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PersonInCareCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PersonInCareRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Organizations"
+        ],
+        "summary": "List Establishment Persons",
+        "description": "List persons followed in an establishment (caregiver only sees their own establishment).",
+        "operationId": "list_establishment_persons_v1_organizations__org_id__persons_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Org Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PersonInCareRead"
+                  },
+                  "title": "Response List Establishment Persons V1 Organizations  Org Id  Persons Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/organizations/{org_id}/persons/{person_id}": {
+      "get": {
+        "tags": [
+          "Organizations"
+        ],
+        "summary": "Get Establishment Person",
+        "description": "Read a followed person within an establishment (strictly isolated by organization_id).",
+        "operationId": "get_establishment_person_v1_organizations__org_id__persons__person_id__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Org Id"
+            }
+          },
+          {
+            "name": "person_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Person Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PersonInCareRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/regions": {
+      "get": {
+        "tags": [
+          "Regions"
+        ],
+        "summary": "List All Regions",
+        "description": "List administered geographical regions.",
+        "operationId": "list_all_regions_v1_regions_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/RegionRead"
+                  },
+                  "type": "array",
+                  "title": "Response List All Regions V1 Regions Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/users/me/region": {
+      "get": {
+        "tags": [
+          "User Preferences"
+        ],
+        "summary": "Get My Preferred Region",
+        "description": "Get the authenticated user's preferred region.",
+        "operationId": "get_my_preferred_region_v1_users_me_region_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserRegionPreferenceRead"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "User Preferences"
+        ],
+        "summary": "Update My Preferred Region",
+        "description": "Update the authenticated user's preferred region.",
+        "operationId": "update_my_preferred_region_v1_users_me_region_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserRegionPreferenceUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserRegionPreferenceRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/admin/organizations": {
+      "post": {
+        "tags": [
+          "Admin - Organizations & Regions"
+        ],
+        "summary": "Admin Create Organization",
+        "description": "Create a health establishment (admin only).",
+        "operationId": "admin_create_organization_v1_admin_organizations_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrganizationCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrganizationRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/admin/organizations/{org_id}": {
+      "put": {
+        "tags": [
+          "Admin - Organizations & Regions"
+        ],
+        "summary": "Admin Update Organization",
+        "description": "Update a health establishment (admin only).",
+        "operationId": "admin_update_organization_v1_admin_organizations__org_id__put",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Org Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrganizationUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrganizationRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/admin/organizations/{org_id}/caregivers": {
+      "post": {
+        "tags": [
+          "Admin - Organizations & Regions"
+        ],
+        "summary": "Admin Attach Caregiver To Organization",
+        "description": "Attach a caregiver to a health establishment and optionally approve them.",
+        "operationId": "admin_attach_caregiver_to_organization_v1_admin_organizations__org_id__caregivers_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "org_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Org Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CaregiverAttachmentRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CaregiverAttachmentRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/admin/regions": {
+      "post": {
+        "tags": [
+          "Admin - Organizations & Regions"
+        ],
+        "summary": "Admin Create Region",
+        "description": "Create an administered geographical region (admin only).",
+        "operationId": "admin_create_region_v1_admin_regions_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegionCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegionRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/admin/regions/{region_id}": {
+      "put": {
+        "tags": [
+          "Admin - Organizations & Regions"
+        ],
+        "summary": "Admin Update Region",
+        "description": "Update an administered geographical region (admin only).",
+        "operationId": "admin_update_region_v1_admin_regions__region_id__put",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "region_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Region Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegionUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegionRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
     "schemas": {
+      "AppSettingRead": {
+        "properties": {
+          "key": {
+            "type": "string",
+            "title": "Key"
+          },
+          "value": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Value"
+          },
+          "updated_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updated By"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "key",
+          "value",
+          "updated_at"
+        ],
+        "title": "AppSettingRead",
+        "description": "Representation of an application setting."
+      },
+      "AppSettingUpdate": {
+        "properties": {
+          "value": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Value"
+          }
+        },
+        "type": "object",
+        "required": [
+          "value"
+        ],
+        "title": "AppSettingUpdate",
+        "description": "Payload to update an application setting."
+      },
       "AuditLogRead": {
         "properties": {
           "id": {
@@ -1908,6 +2810,72 @@
           "file"
         ],
         "title": "Body_upload_food_import_file_v1_admin_food_imports_post"
+      },
+      "CaregiverAttachmentRead": {
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "title": "User Id"
+          },
+          "organization_id": {
+            "type": "string",
+            "title": "Organization Id"
+          },
+          "licence_number": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Licence Number"
+          },
+          "verification_status": {
+            "type": "string",
+            "title": "Verification Status"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_id",
+          "organization_id",
+          "verification_status"
+        ],
+        "title": "CaregiverAttachmentRead",
+        "description": "Result of attaching a caregiver to an organization."
+      },
+      "CaregiverAttachmentRequest": {
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "title": "User Id"
+          },
+          "licence_number": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Licence Number"
+          },
+          "approve": {
+            "type": "boolean",
+            "title": "Approve",
+            "default": true
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_id"
+        ],
+        "title": "CaregiverAttachmentRequest",
+        "description": "Payload to attach a caregiver account to an organization."
       },
       "ColumnMappingUpdate": {
         "properties": {
@@ -2707,6 +3675,133 @@
         "title": "MessageResponse",
         "description": "Generic message response."
       },
+      "ModuleCreate": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "maxLength": 50,
+            "minLength": 2,
+            "title": "Code"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 150,
+            "minLength": 2,
+            "title": "Name"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "coming_soon",
+              "disabled"
+            ],
+            "title": "Status",
+            "default": "coming_soon"
+          },
+          "sort_order": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Sort Order",
+            "default": 10
+          }
+        },
+        "type": "object",
+        "required": [
+          "code",
+          "name"
+        ],
+        "title": "ModuleCreate",
+        "description": "Payload to register a new module in the platform registry."
+      },
+      "ModuleRead": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "coming_soon",
+              "disabled"
+            ],
+            "title": "Status"
+          },
+          "sort_order": {
+            "type": "integer",
+            "title": "Sort Order"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "code",
+          "name",
+          "status",
+          "sort_order",
+          "updated_at"
+        ],
+        "title": "ModuleRead",
+        "description": "Public representation of a platform module read by mobile and web apps."
+      },
+      "ModuleUpdate": {
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 150,
+                "minLength": 2
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "active",
+                  "coming_soon",
+                  "disabled"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status"
+          },
+          "sort_order": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sort Order"
+          }
+        },
+        "type": "object",
+        "title": "ModuleUpdate",
+        "description": "Payload for administration to activate, mark coming_soon, or disable a module."
+      },
       "NutrientDetailRead": {
         "properties": {
           "id": {
@@ -2857,6 +3952,207 @@
         ],
         "title": "NutrientRead",
         "description": "Summary of a canonical nutrient."
+      },
+      "OrganizationCreate": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 2,
+            "title": "Name"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "hopital",
+              "cma",
+              "centre_de_sante",
+              "ong"
+            ],
+            "title": "Type"
+          },
+          "region_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Region Id"
+          },
+          "address": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 255
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Address"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "inactive"
+            ],
+            "title": "Status",
+            "default": "active"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "type"
+        ],
+        "title": "OrganizationCreate",
+        "description": "Payload for administration to register a health establishment."
+      },
+      "OrganizationRead": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "hopital",
+              "cma",
+              "centre_de_sante",
+              "ong"
+            ],
+            "title": "Type"
+          },
+          "region_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Region Id"
+          },
+          "address": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Address"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "inactive"
+            ],
+            "title": "Status"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "type",
+          "status",
+          "created_at"
+        ],
+        "title": "OrganizationRead",
+        "description": "Representation of a health establishment."
+      },
+      "OrganizationUpdate": {
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200,
+                "minLength": 2
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "type": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "hopital",
+                  "cma",
+                  "centre_de_sante",
+                  "ong"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Type"
+          },
+          "region_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Region Id"
+          },
+          "address": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 255
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Address"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "active",
+                  "inactive"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status"
+          }
+        },
+        "type": "object",
+        "title": "OrganizationUpdate",
+        "description": "Payload for administration to update a health establishment."
       },
       "OrkgComparisonRead": {
         "properties": {
@@ -3240,6 +4536,117 @@
         ],
         "title": "PasswordResetRequest",
         "description": "Reset password using one-time token."
+      },
+      "PersonInCareCreate": {
+        "properties": {
+          "pseudonym": {
+            "type": "string",
+            "maxLength": 30,
+            "minLength": 2,
+            "pattern": "^#[A-Z0-9\\-]+$",
+            "title": "Pseudonym"
+          },
+          "first_name": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "First Name"
+          },
+          "birth_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Birth Date"
+          },
+          "sex": {
+            "type": "string",
+            "enum": [
+              "M",
+              "F"
+            ],
+            "title": "Sex"
+          },
+          "region_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Region Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "pseudonym",
+          "first_name",
+          "birth_date",
+          "sex"
+        ],
+        "title": "PersonInCareCreate",
+        "description": "Payload to register a followed person within a health establishment."
+      },
+      "PersonInCareRead": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "pseudonym": {
+            "type": "string",
+            "title": "Pseudonym"
+          },
+          "first_name": {
+            "type": "string",
+            "title": "First Name"
+          },
+          "birth_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Birth Date"
+          },
+          "sex": {
+            "type": "string",
+            "enum": [
+              "M",
+              "F"
+            ],
+            "title": "Sex"
+          },
+          "region_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Region Id"
+          },
+          "organization_id": {
+            "type": "string",
+            "title": "Organization Id"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "pseudonym",
+          "first_name",
+          "birth_date",
+          "sex",
+          "organization_id",
+          "created_at"
+        ],
+        "title": "PersonInCareRead",
+        "description": "Representation of a followed person visible within an establishment."
       },
       "PhoneOtpRequest": {
         "properties": {
@@ -3788,6 +5195,111 @@
         "title": "ReferenceProductUpdate",
         "description": "Admin payload for updating a reference product."
       },
+      "RegionCreate": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "maxLength": 50,
+            "minLength": 2,
+            "title": "Code"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 2,
+            "title": "Name"
+          },
+          "country_code": {
+            "type": "string",
+            "maxLength": 10,
+            "minLength": 2,
+            "title": "Country Code",
+            "default": "CMR"
+          }
+        },
+        "type": "object",
+        "required": [
+          "code",
+          "name"
+        ],
+        "title": "RegionCreate",
+        "description": "Payload for administration to create a geographical region."
+      },
+      "RegionRead": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "country_code": {
+            "type": "string",
+            "title": "Country Code"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "code",
+          "name",
+          "country_code"
+        ],
+        "title": "RegionRead",
+        "description": "Representation of a geographical region."
+      },
+      "RegionUpdate": {
+        "properties": {
+          "code": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 50,
+                "minLength": 2
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Code"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100,
+                "minLength": 2
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "country_code": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 10,
+                "minLength": 2
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Country Code"
+          }
+        },
+        "type": "object",
+        "title": "RegionUpdate",
+        "description": "Payload for administration to update a geographical region."
+      },
       "SourceRead": {
         "properties": {
           "id": {
@@ -3958,6 +5470,59 @@
         ],
         "title": "UserProfileResponse",
         "description": "Public user identity and profile view."
+      },
+      "UserRegionPreferenceRead": {
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "title": "User Id"
+          },
+          "preferred_region_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Preferred Region Id"
+          },
+          "region": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RegionRead"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_id"
+        ],
+        "title": "UserRegionPreferenceRead",
+        "description": "Representation of the user's preferred region."
+      },
+      "UserRegionPreferenceUpdate": {
+        "properties": {
+          "region_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Region Id"
+          }
+        },
+        "type": "object",
+        "title": "UserRegionPreferenceUpdate",
+        "description": "Payload to update the authenticated user's preferred region."
       },
       "ValidationError": {
         "properties": {

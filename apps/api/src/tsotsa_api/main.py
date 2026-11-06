@@ -28,7 +28,21 @@ from tsotsa_api.modules.custom_products import (
 )
 from tsotsa_api.modules.food_database import food_admin_router, foods_router
 from tsotsa_api.modules.identity import auth_router
+from tsotsa_api.modules.modules_registry import (
+    admin_router as modules_admin_router,
+)
+from tsotsa_api.modules.modules_registry import (
+    public_router as modules_public_router,
+)
 from tsotsa_api.modules.nutrients import nutrients_router
+from tsotsa_api.modules.organizations import (
+    admin_router as organizations_admin_router,
+)
+from tsotsa_api.modules.organizations import (
+    organizations_router,
+    regions_router,
+    users_region_router,
+)
 from tsotsa_api.modules.orkg_sync import orkg_sync_admin_router
 from tsotsa_api.modules.reference_products import (
     products_router,
@@ -55,6 +69,12 @@ def _build_v1_router() -> APIRouter:
     v1_router.include_router(custom_products_router)
     v1_router.include_router(custom_products_admin_router)
     v1_router.include_router(orkg_sync_admin_router)
+    v1_router.include_router(modules_public_router)
+    v1_router.include_router(modules_admin_router)
+    v1_router.include_router(organizations_router)
+    v1_router.include_router(regions_router)
+    v1_router.include_router(users_region_router)
+    v1_router.include_router(organizations_admin_router)
     return v1_router
 
 

@@ -128,6 +128,47 @@ class FoodDatabaseRepository:
         await self.session.flush()
         return reg
 
+    async def list_regions(self) -> list[Region]:
+        stmt = select(Region).order_by(Region.name.asc())
+        res = await self.session.execute(stmt)
+        return list(res.scalars().all())
+
+    async def get_region_by_id(self, region_id: str) -> Region | None:
+        stmt = select(Region).where(Region.id == region_id)
+        return (await self.session.execute(stmt)).scalar_one_or_none()
+
+    async def get_region_by_code(self, code: str) -> Region | None:
+        clean = code.strip().lower()
+        stmt = select(Region).where(func.lower(Region.code) == clean)
+        return (await self.session.execute(stmt)).scalar_one_or_none()
+
+    async def create_region(self, code: str, name: str, country_code: str = "CMR") -> Region:
+        reg = Region(
+            code=code.strip().lower(), name=name.strip(), country_code=country_code.strip().upper()
+        )
+        self.session.add(reg)
+        await self.session.flush()
+        return reg
+
+    async def update_region(
+        self,
+        region_id: str,
+        code: str | None = None,
+        name: str | None = None,
+        country_code: str | None = None,
+    ) -> Region | None:
+        reg = await self.get_region_by_id(region_id)
+        if not reg:
+            return None
+        if code is not None:
+            reg.code = code.strip().lower()
+        if name is not None:
+            reg.name = name.strip()
+        if country_code is not None:
+            reg.country_code = country_code.strip().upper()
+        await self.session.flush()
+        return reg
+
     async def find_or_create_source(
         self,
         article_reference: str | None = None,

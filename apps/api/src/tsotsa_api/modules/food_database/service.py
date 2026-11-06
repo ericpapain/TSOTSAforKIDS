@@ -8,7 +8,7 @@ from typing import Any
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from tsotsa_api.core.errors import ForbiddenError, NotFoundError, ValidationError
+from tsotsa_api.core.errors import AppException, ForbiddenError, NotFoundError, ValidationError
 from tsotsa_api.modules.food_database.importer import (
     guess_column_mapping,
     parse_csv_file,
@@ -20,6 +20,7 @@ from tsotsa_api.modules.food_database.models import (
     FoodNutrientValue,
     ImportBatch,
     ImportBatchRow,
+    Region,
 )
 from tsotsa_api.modules.food_database.orkg_bridge import (
     ensure_dish_or_ingredient_food,
@@ -29,10 +30,7 @@ from tsotsa_api.modules.food_database.orkg_bridge import (
 )
 from tsotsa_api.modules.food_database.persistence import persist_imported_row
 from tsotsa_api.modules.food_database.repository import FoodDatabaseRepository
-from tsotsa_api.modules.food_database.schemas import (
-    BatchValidationReport,
-    ManualFoodCreate,
-)
+from tsotsa_api.modules.food_database.schemas import BatchValidationReport, ManualFoodCreate
 from tsotsa_api.modules.food_database.validation import IngestionValidator
 from tsotsa_api.modules.nutrients.service import NutrientService
 
@@ -76,14 +74,9 @@ class FoodDatabaseService:
         await self.session.flush()
 
         for idx, row in enumerate(rows, start=1):
-            batch_row = ImportBatchRow(
-                batch_id=batch.id,
-                row_number=idx,
-                raw_data=row,
-                status="valid",
+            self.session.add(
+                ImportBatchRow(batch_id=batch.id, row_number=idx, raw_data=row, status="valid")
             )
-            self.session.add(batch_row)
-
         await self.session.flush()
         return batch
 
@@ -101,14 +94,12 @@ class FoodDatabaseService:
             raise NotFoundError("Lot d'importation introuvable.")
 
         raw_rows = [r.raw_data for r in sorted(batch.rows, key=lambda x: x.row_number)]
-        mapping = batch.column_mapping or {}
         report = await self.validator.validate_rows(
             batch_id=batch.id,
             file_name=batch.file_name,
             rows=raw_rows,
-            column_mapping=mapping,
+            column_mapping=batch.column_mapping or {},
         )
-
         batch.rows_valid = report.rows_valid
         batch.rows_warning = report.rows_warning
         batch.rows_error = report.rows_error
@@ -116,8 +107,7 @@ class FoodDatabaseService:
 
         row_map = {r.row_number: r for r in batch.rows}
         for det in report.details:
-            r = row_map.get(det.row_number)
-            if r:
+            if r := row_map.get(det.row_number):
                 r.status = det.status
                 r.messages = det.messages
 
@@ -134,14 +124,13 @@ class FoodDatabaseService:
             raise ValidationError("Le lot ne contient aucune ligne valide à importer.")
 
         row_map = {r.row_number: r for r in batch.rows}
-        valid_details = [d for d in report.details if d.status in ("valid", "warning")]
-
-        for det in valid_details:
-            batch_row = row_map[det.row_number]
-            mapped = self.validator._map_row(batch_row.raw_data, batch.column_mapping or {})
-            await persist_imported_row(
-                self.session, self.repo, self.nutrient_service, batch, mapped
-            )
+        for det in report.details:
+            if det.status in ("valid", "warning"):
+                batch_row = row_map[det.row_number]
+                mapped = self.validator._map_row(batch_row.raw_data, batch.column_mapping or {})
+                await persist_imported_row(
+                    self.session, self.repo, self.nutrient_service, batch, mapped
+                )
 
         batch.status = "to_review"
         await self.session.flush()
@@ -149,12 +138,7 @@ class FoodDatabaseService:
 
     async def create_manual_food(self, user_id: str, payload: ManualFoodCreate) -> Food:
         return await create_manual_food_entry(
-            self.session,
-            self.repo,
-            self.nutrient_service,
-            self.validator,
-            user_id,
-            payload,
+            self.session, self.repo, self.nutrient_service, self.validator, user_id, payload
         )
 
     async def review_batch(
@@ -163,8 +147,6 @@ class FoodDatabaseService:
         batch = await self.repo.get_batch_by_id(batch_id)
         if not batch:
             raise NotFoundError("Lot introuvable.")
-
-        # Règle absolue : Le relecteur doit être une AUTRE personne que l'auteur.
         if reviewer_user_id == batch.created_by:
             raise ForbiddenError(
                 "Le relecteur doit obligatoirement être une autre personne que l'auteur du lot."
@@ -175,7 +157,6 @@ class FoodDatabaseService:
             batch.reviewed_by = reviewer_user_id
             for r in batch.rows:
                 r.status = "published"
-
             await self.session.execute(
                 update(FoodNutrientValue)
                 .where(FoodNutrientValue.batch_id == batch.id)
@@ -208,9 +189,6 @@ class FoodDatabaseService:
             raise NotFoundError("Aliment introuvable.")
 
         existing.is_current = False
-        new_version = existing.version + 1
-        root_id = existing.root_food_id or existing.id
-
         new_food = Food(
             name=updated_name or existing.name,
             kind=existing.kind,
@@ -219,9 +197,9 @@ class FoodDatabaseService:
             food_group_id=existing.food_group_id,
             state=existing.state,
             status="to_review",
-            version=new_version,
+            version=existing.version + 1,
             is_current=True,
-            root_food_id=root_id,
+            root_food_id=existing.root_food_id or existing.id,
             created_by=user_id,
         )
         self.session.add(new_food)
@@ -231,6 +209,36 @@ class FoodDatabaseService:
     async def get_or_create_region_id(self, region_name: str) -> str:
         reg = await self.repo.get_or_create_region(region_name)
         return reg.id
+
+    async def list_regions(self) -> list[Region]:
+        return await self.repo.list_regions()
+
+    async def get_region_by_id(self, region_id: str) -> Region | None:
+        return await self.repo.get_region_by_id(region_id)
+
+    async def create_region(self, code: str, name: str, country_code: str = "CMR") -> Region:
+        existing = await self.repo.get_region_by_code(code)
+        if existing:
+            raise AppException(
+                status_code=409,
+                code="REGION_ALREADY_EXISTS",
+                message=f"La région avec le code '{code}' existe déjà.",
+            )
+        return await self.repo.create_region(code=code, name=name, country_code=country_code)
+
+    async def update_region(
+        self,
+        region_id: str,
+        code: str | None = None,
+        name: str | None = None,
+        country_code: str | None = None,
+    ) -> Region:
+        reg = await self.repo.update_region(
+            region_id, code=code, name=name, country_code=country_code
+        )
+        if not reg:
+            raise NotFoundError("Région introuvable.")
+        return reg
 
     async def ensure_food_item(
         self,
