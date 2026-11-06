@@ -37,13 +37,18 @@ async def create_evaluation(
     ip = request.client.host if request.client else None
     admin_flag = await is_user_admin(caregiver, db)
     service = ClinicalService(db)
-    return await service.record_evaluation(
+    result = await service.record_evaluation(
         caregiver_user_id=caregiver.id,
         is_admin=admin_flag,
         person_id=person_id,
         payload=payload,
         ip=ip,
     )
+    from tsotsa_api.modules.monitoring.service import MonitoringService
+
+    monitoring = MonitoringService(db)
+    await monitoring.on_clinical_evaluation_recorded(result)
+    return result
 
 
 @clinical_router.get(

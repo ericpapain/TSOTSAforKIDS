@@ -4499,6 +4499,617 @@
           }
         }
       }
+    },
+    "/v1/dashboard/metrics": {
+      "get": {
+        "tags": [
+          "Caregiver Dashboard"
+        ],
+        "summary": "Get Dashboard Metrics",
+        "operationId": "get_dashboard_metrics_v1_dashboard_metrics_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "organization_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filtrer par \u00e9tablissement (admin)",
+              "title": "Organization Id"
+            },
+            "description": "Filtrer par \u00e9tablissement (admin)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DashboardMetricsResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/dashboard/scheduled-evaluations": {
+      "get": {
+        "tags": [
+          "Caregiver Dashboard"
+        ],
+        "summary": "List Scheduled Evaluations",
+        "operationId": "list_scheduled_evaluations_v1_dashboard_scheduled_evaluations_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "organization_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filtrer par \u00e9tablissement (admin)",
+              "title": "Organization Id"
+            },
+            "description": "Filtrer par \u00e9tablissement (admin)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DashboardScheduledEvaluationItem"
+                  },
+                  "title": "Response List Scheduled Evaluations V1 Dashboard Scheduled Evaluations Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/dashboard/persons": {
+      "get": {
+        "tags": [
+          "Caregiver Dashboard"
+        ],
+        "summary": "List Dashboard Persons",
+        "operationId": "list_dashboard_persons_v1_dashboard_persons_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Statut nutritionnel (MAS, MAM, normal)",
+              "title": "Status"
+            },
+            "description": "Statut nutritionnel (MAS, MAM, normal)"
+          },
+          {
+            "name": "region_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "R\u00e9gion",
+              "title": "Region Id"
+            },
+            "description": "R\u00e9gion"
+          },
+          {
+            "name": "min_age_months",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Min Age Months"
+            }
+          },
+          {
+            "name": "max_age_months",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Max Age Months"
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Recherche pr\u00e9nom ou pseudonyme",
+              "title": "Search"
+            },
+            "description": "Recherche pr\u00e9nom ou pseudonyme"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          },
+          {
+            "name": "organization_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Organization Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DashboardPersonItem"
+                  },
+                  "title": "Response List Dashboard Persons V1 Dashboard Persons Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/alerts": {
+      "get": {
+        "tags": [
+          "Clinical Alerts"
+        ],
+        "summary": "List Alerts",
+        "operationId": "list_alerts_v1_alerts_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Statut : open, handled",
+              "default": "open",
+              "title": "Status"
+            },
+            "description": "Statut : open, handled"
+          },
+          {
+            "name": "priority",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Priorit\u00e9 : urgent, high, normal",
+              "title": "Priority"
+            },
+            "description": "Priorit\u00e9 : urgent, high, normal"
+          },
+          {
+            "name": "person_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filtrer par personne suivie",
+              "title": "Person Id"
+            },
+            "description": "Filtrer par personne suivie"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          },
+          {
+            "name": "organization_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Organization Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AlertRead"
+                  },
+                  "title": "Response List Alerts V1 Alerts Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/alerts/{alert_id}/handle": {
+      "post": {
+        "tags": [
+          "Clinical Alerts"
+        ],
+        "summary": "Handle Alert",
+        "operationId": "handle_alert_v1_alerts__alert_id__handle_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "alert_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Alert Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AlertHandleRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AlertRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/admin/alert-rules": {
+      "get": {
+        "tags": [
+          "Admin - Alert Rules"
+        ],
+        "summary": "List Alert Rules",
+        "operationId": "list_alert_rules_v1_admin_alert_rules_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/AlertRuleRead"
+                  },
+                  "type": "array",
+                  "title": "Response List Alert Rules V1 Admin Alert Rules Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/admin/alert-rules/{rule_id}": {
+      "patch": {
+        "tags": [
+          "Admin - Alert Rules"
+        ],
+        "summary": "Update Alert Rule",
+        "operationId": "update_alert_rule_v1_admin_alert_rules__rule_id__patch",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "rule_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Rule Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AlertRuleUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AlertRuleRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/notification-preferences": {
+      "post": {
+        "tags": [
+          "Preferences"
+        ],
+        "summary": "Set Notification Preference",
+        "operationId": "set_notification_preference_v1_notification_preferences_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NotificationPreferenceSetRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotificationPreferenceRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
     }
   },
   "components": {
@@ -4517,6 +5128,240 @@
         ],
         "title": "AcceptInvitationRequest",
         "description": "Payload to accept an invitation to link a followed person."
+      },
+      "AlertHandleRequest": {
+        "properties": {
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes"
+          }
+        },
+        "type": "object",
+        "title": "AlertHandleRequest"
+      },
+      "AlertRead": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "person_id": {
+            "type": "string",
+            "title": "Person Id"
+          },
+          "organization_id": {
+            "type": "string",
+            "title": "Organization Id"
+          },
+          "rule_id": {
+            "type": "string",
+            "title": "Rule Id"
+          },
+          "rule_code": {
+            "type": "string",
+            "title": "Rule Code"
+          },
+          "priority": {
+            "type": "string",
+            "enum": [
+              "urgent",
+              "high",
+              "normal"
+            ],
+            "title": "Priority"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "open",
+              "handled"
+            ],
+            "title": "Status"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "details": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Details"
+          },
+          "opened_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Opened At"
+          },
+          "handled_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Handled At"
+          },
+          "handled_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Handled By"
+          },
+          "handling_notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Handling Notes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "person_id",
+          "organization_id",
+          "rule_id",
+          "rule_code",
+          "priority",
+          "status",
+          "message",
+          "opened_at"
+        ],
+        "title": "AlertRead"
+      },
+      "AlertRuleRead": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "parameters": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Parameters"
+          },
+          "priority": {
+            "type": "string",
+            "enum": [
+              "urgent",
+              "high",
+              "normal"
+            ],
+            "title": "Priority"
+          },
+          "is_active": {
+            "type": "boolean",
+            "title": "Is Active"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "code",
+          "name",
+          "parameters",
+          "priority",
+          "is_active",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "AlertRuleRead"
+      },
+      "AlertRuleUpdate": {
+        "properties": {
+          "parameters": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parameters"
+          },
+          "priority": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Priority"
+          },
+          "is_active": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Active"
+          }
+        },
+        "type": "object",
+        "title": "AlertRuleUpdate"
       },
       "AppSettingRead": {
         "properties": {
@@ -5245,6 +6090,216 @@
         ],
         "title": "CustomProductReview",
         "description": "Admin review decision for a custom product (publish / keep_private / correct)."
+      },
+      "DashboardMetricsResponse": {
+        "properties": {
+          "organization_id": {
+            "type": "string",
+            "title": "Organization Id"
+          },
+          "total_persons_followed": {
+            "type": "integer",
+            "title": "Total Persons Followed"
+          },
+          "intakes_compliance_7d_pct": {
+            "type": "number",
+            "title": "Intakes Compliance 7D Pct"
+          },
+          "priority_alerts_count": {
+            "type": "integer",
+            "title": "Priority Alerts Count"
+          },
+          "urgent_alerts_count": {
+            "type": "integer",
+            "title": "Urgent Alerts Count"
+          },
+          "late_evaluations_count": {
+            "type": "integer",
+            "title": "Late Evaluations Count"
+          },
+          "open_alerts_count": {
+            "type": "integer",
+            "title": "Open Alerts Count"
+          }
+        },
+        "type": "object",
+        "required": [
+          "organization_id",
+          "total_persons_followed",
+          "intakes_compliance_7d_pct",
+          "priority_alerts_count",
+          "urgent_alerts_count",
+          "late_evaluations_count",
+          "open_alerts_count"
+        ],
+        "title": "DashboardMetricsResponse"
+      },
+      "DashboardPersonItem": {
+        "properties": {
+          "person_id": {
+            "type": "string",
+            "title": "Person Id"
+          },
+          "pseudonym": {
+            "type": "string",
+            "title": "Pseudonym"
+          },
+          "first_name": {
+            "type": "string",
+            "title": "First Name"
+          },
+          "birth_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Birth Date"
+          },
+          "age_months": {
+            "type": "integer",
+            "title": "Age Months"
+          },
+          "sex": {
+            "type": "string",
+            "title": "Sex"
+          },
+          "region_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Region Id"
+          },
+          "current_nutritional_status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Current Nutritional Status"
+          },
+          "last_evaluation_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Evaluation Date"
+          },
+          "last_weight_kg": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Weight Kg"
+          },
+          "open_alerts_count": {
+            "type": "integer",
+            "title": "Open Alerts Count",
+            "default": 0
+          },
+          "has_urgent_alert": {
+            "type": "boolean",
+            "title": "Has Urgent Alert",
+            "default": false
+          },
+          "intakes_compliance_7d_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Intakes Compliance 7D Pct"
+          }
+        },
+        "type": "object",
+        "required": [
+          "person_id",
+          "pseudonym",
+          "first_name",
+          "birth_date",
+          "age_months",
+          "sex"
+        ],
+        "title": "DashboardPersonItem"
+      },
+      "DashboardScheduledEvaluationItem": {
+        "properties": {
+          "person_id": {
+            "type": "string",
+            "title": "Person Id"
+          },
+          "pseudonym": {
+            "type": "string",
+            "title": "Pseudonym"
+          },
+          "first_name": {
+            "type": "string",
+            "title": "First Name"
+          },
+          "last_evaluation_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Evaluation Date"
+          },
+          "days_since_last_evaluation": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Days Since Last Evaluation"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status"
+          },
+          "is_overdue": {
+            "type": "boolean",
+            "title": "Is Overdue",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "person_id",
+          "pseudonym",
+          "first_name"
+        ],
+        "title": "DashboardScheduledEvaluationItem"
       },
       "EmailLoginRequest": {
         "properties": {
@@ -6866,6 +7921,82 @@
         "type": "object",
         "title": "ModuleUpdate",
         "description": "Payload for administration to activate, mark coming_soon, or disable a module."
+      },
+      "NotificationPreferenceRead": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "user_id": {
+            "type": "string",
+            "title": "User Id"
+          },
+          "person_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Person Id"
+          },
+          "notification_type": {
+            "type": "string",
+            "title": "Notification Type"
+          },
+          "channel": {
+            "type": "string",
+            "title": "Channel"
+          },
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "user_id",
+          "notification_type",
+          "channel",
+          "enabled"
+        ],
+        "title": "NotificationPreferenceRead"
+      },
+      "NotificationPreferenceSetRequest": {
+        "properties": {
+          "person_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Person Id"
+          },
+          "notification_type": {
+            "type": "string",
+            "title": "Notification Type",
+            "default": "reminders"
+          },
+          "channel": {
+            "type": "string",
+            "title": "Channel",
+            "default": "in_app"
+          },
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled",
+            "default": true
+          }
+        },
+        "type": "object",
+        "title": "NotificationPreferenceSetRequest"
       },
       "NutrientDetailRead": {
         "properties": {

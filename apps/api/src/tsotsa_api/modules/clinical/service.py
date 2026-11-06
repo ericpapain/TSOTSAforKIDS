@@ -226,6 +226,11 @@ class ClinicalService:
         record = await self.repo.get_latest_evaluation(person_id)
         return self._to_read(record) if record else None
 
+    async def get_latest_evaluation_summary(self, person_id: str) -> EvaluationRead | None:
+        """Fetch latest evaluation without user context (used by internal services)."""
+        record = await self.repo.get_latest_evaluation(person_id)
+        return self._to_read(record) if record else None
+
     async def get_growth_curves_with_points(
         self,
         user_id: str,

@@ -43,6 +43,12 @@ from tsotsa_api.modules.modules_registry import (
 from tsotsa_api.modules.modules_registry import (
     public_router as modules_public_router,
 )
+from tsotsa_api.modules.monitoring import (
+    admin_alerts_router,
+    alerts_router,
+    dashboard_router,
+    preferences_router,
+)
 from tsotsa_api.modules.nutrients import nutrients_router
 from tsotsa_api.modules.optimization import optimization_router
 from tsotsa_api.modules.organizations import (
@@ -99,6 +105,10 @@ def _build_v1_router() -> APIRouter:
     v1_router.include_router(admin_pricing_router)
     v1_router.include_router(intakes_router)
     v1_router.include_router(clinical_router)
+    v1_router.include_router(dashboard_router)
+    v1_router.include_router(alerts_router)
+    v1_router.include_router(admin_alerts_router)
+    v1_router.include_router(preferences_router)
     return v1_router
 
 

@@ -238,6 +238,12 @@ class IntakesService:
             daily_distribution=distribution,
         )
 
+    async def get_unconfirmed_intakes_count(self, person_id: str, days: int = 2) -> int:
+        """Count refused or unconfirmed intakes in the trailing period for monitoring rules."""
+        start_dt = datetime.now(UTC) - timedelta(days=days)
+        intakes = await self.repo.get_intakes_in_range(person_id, start_dt, datetime.now(UTC))
+        return sum(1 for it in intakes if it.consumption == "refused")
+
     def _to_read(self, r: Intake) -> IntakeRead:
         item_id = (r.food_id if r.item_type == "food" else r.product_id) or ""
         return IntakeRead(

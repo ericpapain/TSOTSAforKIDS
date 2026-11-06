@@ -118,7 +118,7 @@ class PersonsCareService:
             action="read",
             entity="establishment_persons",
             organization_id=scoped_org_id,
-            actor_user_id=caregiver_user_id,
+            actor_user_id=caregiver_user_id or None,
             ip=ip,
             details={"count": len(results)},
         )

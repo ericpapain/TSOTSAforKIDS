@@ -37,12 +37,17 @@ async def record_intake(
     ip = request.client.host if request.client else None
     admin_flag = await is_user_admin(user, db)
     service = IntakesService(db)
-    return await service.record_single_intake(
+    result = await service.record_single_intake(
         user_id=user.id,
         is_admin=admin_flag,
         payload=payload,
         ip=ip,
     )
+    from tsotsa_api.modules.monitoring.service import MonitoringService
+
+    monitoring = MonitoringService(db)
+    await monitoring.on_intake_recorded(payload.person_id)
+    return result
 
 
 @intakes_router.post(
@@ -60,12 +65,18 @@ async def sync_offline_intakes(
     ip = request.client.host if request.client else None
     admin_flag = await is_user_admin(user, db)
     service = IntakesService(db)
-    return await service.sync_offline_intakes(
+    result = await service.sync_offline_intakes(
         user_id=user.id,
         is_admin=admin_flag,
         payload=payload,
         ip=ip,
     )
+    from tsotsa_api.modules.monitoring.service import MonitoringService
+
+    monitoring = MonitoringService(db)
+    for it in payload.intakes:
+        await monitoring.on_intake_recorded(it.person_id)
+    return result
 
 
 @intakes_router.get(
