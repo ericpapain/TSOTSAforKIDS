@@ -4250,6 +4250,255 @@
           }
         }
       }
+    },
+    "/v1/persons/{person_id}/evaluations": {
+      "post": {
+        "tags": [
+          "Clinical - Evaluations"
+        ],
+        "summary": "Create Evaluation",
+        "description": "Record an anthropometric consultation (strictly verified caregiver of establishment).",
+        "operationId": "create_evaluation_v1_persons__person_id__evaluations_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "person_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Person Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EvaluationCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EvaluationRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Clinical - Evaluations"
+        ],
+        "summary": "List Person Evaluations",
+        "description": "Retrieve consultation history (family member or authorized caregiver).",
+        "operationId": "list_person_evaluations_v1_persons__person_id__evaluations_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "person_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Person Id"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EvaluationRead"
+                  },
+                  "title": "Response List Person Evaluations V1 Persons  Person Id  Evaluations Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/persons/{person_id}/evaluations/latest": {
+      "get": {
+        "tags": [
+          "Clinical - Evaluations"
+        ],
+        "summary": "Get Latest Person Evaluation",
+        "description": "Retrieve the most recent clinical evaluation for a followed child.",
+        "operationId": "get_latest_person_evaluation_v1_persons__person_id__evaluations_latest_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "person_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Person Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/EvaluationRead"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "title": "Response Get Latest Person Evaluation V1 Persons  Person Id  Evaluations Latest Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/persons/{person_id}/evaluations/curves": {
+      "get": {
+        "tags": [
+          "Clinical - Evaluations"
+        ],
+        "summary": "Get Person Growth Curves",
+        "description": "Fetch WHO reference curves overlaid with child's consultation history.",
+        "operationId": "get_person_growth_curves_v1_persons__person_id__evaluations_curves_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "person_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Person Id"
+            }
+          },
+          {
+            "name": "indicator",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Indicateur: wfl, wfh, lhfa, wfa, acfa, bfa",
+              "default": "wfl",
+              "title": "Indicator"
+            },
+            "description": "Indicateur: wfl, wfh, lhfa, wfa, acfa, bfa"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Get Person Growth Curves V1 Persons  Person Id  Evaluations Curves Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -5230,6 +5479,262 @@
         ],
         "title": "EquivalentFoodItem",
         "description": "An equivalent food candidate with nutritional match scoring."
+      },
+      "EvaluationCreate": {
+        "properties": {
+          "measured_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Measured At",
+            "description": "Date et heure de la consultation"
+          },
+          "weight_kg": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 100.0,
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Weight Kg",
+            "description": "Poids en kilogrammes"
+          },
+          "length_cm": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 150.0,
+                "exclusiveMinimum": 30.0
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Length Cm",
+            "description": "Longueur couch\u00e9e ou taille debout en cm"
+          },
+          "position": {
+            "type": "string",
+            "title": "Position",
+            "description": "Position: 'recumbent' ou 'standing'",
+            "default": "recumbent"
+          },
+          "muac_mm": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 300.0,
+                "exclusiveMinimum": 50.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Muac Mm",
+            "description": "P\u00e9rim\u00e8tre brachial en millim\u00e8tres (PB / MUAC)"
+          },
+          "edema": {
+            "type": "string",
+            "title": "Edema",
+            "description": "\u0152d\u00e8mes bilat\u00e9raux: 'none' (non), 'plus_1' (+), 'plus_2' (++), 'plus_3' (+++)",
+            "default": "none"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes",
+            "description": "Observations cliniques"
+          }
+        },
+        "type": "object",
+        "required": [
+          "measured_at",
+          "weight_kg",
+          "length_cm"
+        ],
+        "title": "EvaluationCreate",
+        "description": "Payload to record a clinical evaluation by a caregiver."
+      },
+      "EvaluationRead": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "person_id": {
+            "type": "string",
+            "title": "Person Id"
+          },
+          "organization_id": {
+            "type": "string",
+            "title": "Organization Id"
+          },
+          "caregiver_id": {
+            "type": "string",
+            "title": "Caregiver Id"
+          },
+          "measured_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Measured At"
+          },
+          "weight_kg": {
+            "type": "string",
+            "title": "Weight Kg"
+          },
+          "length_cm": {
+            "type": "string",
+            "title": "Length Cm"
+          },
+          "position": {
+            "type": "string",
+            "title": "Position"
+          },
+          "muac_mm": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Muac Mm"
+          },
+          "edema": {
+            "type": "string",
+            "title": "Edema"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes"
+          },
+          "weight_gain_velocity": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Weight Gain Velocity",
+            "description": "Vitesse de gain de poids en g/kg/jour"
+          },
+          "proposed_status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Proposed Status",
+            "description": "Classification propos\u00e9e: MAS, MAM, normal"
+          },
+          "proposed_criteria": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Proposed Criteria",
+            "description": "Crit\u00e8res m\u00e9dicaux justifiant la proposition"
+          },
+          "scores": {
+            "items": {
+              "$ref": "#/components/schemas/EvaluationScoreRead"
+            },
+            "type": "array",
+            "title": "Scores"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "person_id",
+          "organization_id",
+          "caregiver_id",
+          "measured_at",
+          "weight_kg",
+          "length_cm",
+          "position",
+          "muac_mm",
+          "edema",
+          "notes",
+          "scores",
+          "created_at"
+        ],
+        "title": "EvaluationRead",
+        "description": "Full detail of a recorded clinical evaluation."
+      },
+      "EvaluationScoreRead": {
+        "properties": {
+          "indicator": {
+            "type": "string",
+            "title": "Indicator",
+            "description": "Indicateur: wfl, lhfa, wfa, acfa, bfa"
+          },
+          "z_score": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Z Score",
+            "description": "Valeur du Z-score (None en cas d'\u0153d\u00e8me)"
+          },
+          "flag": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Flag",
+            "description": "Flag: extreme, oedema"
+          }
+        },
+        "type": "object",
+        "required": [
+          "indicator"
+        ],
+        "title": "EvaluationScoreRead",
+        "description": "Z-score detail for an individual indicator."
       },
       "FoodDetailRead": {
         "properties": {

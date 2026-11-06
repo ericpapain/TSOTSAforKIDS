@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, date, datetime, timedelta
 from typing import Any
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -267,6 +267,12 @@ class PersonsService:
     async def get_active_care_organization_id(self, person_id: str) -> str | None:
         care = await self.repo.get_active_person_care(person_id)
         return care.organization_id if care else None
+
+    async def get_person_demographics(self, person_id: str) -> tuple[date, str] | None:
+        person = await self.repo.get_person_by_id(person_id)
+        if not person or person.deleted_at is not None:
+            return None
+        return person.birth_date, str(person.sex)
 
     def _person_to_read(self, person: Person, link: PersonLink) -> PersonRead:
         return PersonRead(

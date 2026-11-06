@@ -23,6 +23,7 @@ from tsotsa_api.core.errors import (
 )
 from tsotsa_api.core.logging import get_logger, setup_logging
 from tsotsa_api.modules.audit import audit_admin_router
+from tsotsa_api.modules.clinical import clinical_router
 from tsotsa_api.modules.consents import (
     admin_consents_router,
     consents_router,
@@ -97,6 +98,7 @@ def _build_v1_router() -> APIRouter:
     v1_router.include_router(pricing_router)
     v1_router.include_router(admin_pricing_router)
     v1_router.include_router(intakes_router)
+    v1_router.include_router(clinical_router)
     return v1_router
 
 
