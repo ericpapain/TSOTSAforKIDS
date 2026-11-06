@@ -23,4 +23,3 @@ async def solve_ration_optimization(payload: OptimizationRequest) -> Optimizatio
             "est réservé pour une version ultérieure."
         ),
     )
-

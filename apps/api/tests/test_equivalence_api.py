@@ -46,6 +46,7 @@ async def test_equivalence_api_workflow_and_optimization_stub(
 
     app.dependency_overrides[get_db_session] = _override_db
     from tsotsa_api.modules.nutrients.service import NutrientService
+
     await NutrientService(db_session).seed_from_csv()
     _, admin_headers = await _make_admin(db_session)
 

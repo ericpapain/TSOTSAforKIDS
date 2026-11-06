@@ -35,4 +35,3 @@ class EquivalenceResponse(BaseModel):
     strict_region: bool = False
     threshold_pct: Decimal
     equivalents: list[EquivalentFoodItem]
-

@@ -44,4 +44,3 @@ class OptimizationResponse(BaseModel):
     total_cost_fcfa: Decimal | None = None
     portions: list[FoodPortionOutput]
     nutritional_achievement: dict[str, Decimal]
-
