@@ -92,3 +92,4 @@ class DailyMonitoringScan:
                         total_alerts += 1
 
         return total_alerts
+

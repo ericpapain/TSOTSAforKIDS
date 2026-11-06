@@ -91,6 +91,8 @@ class NotificationPreference(Base):
     notification_type: Mapped[str] = mapped_column(String(50), nullable=False)  # reminders, alerts
     channel: Mapped[str] = mapped_column(String(20), nullable=False)  # in_app, push, sms, email
     enabled: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    quiet_start: Mapped[str | None] = mapped_column(String(5), nullable=True)
+    quiet_end: Mapped[str | None] = mapped_column(String(5), nullable=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=lambda: datetime.now(UTC), nullable=False
     )

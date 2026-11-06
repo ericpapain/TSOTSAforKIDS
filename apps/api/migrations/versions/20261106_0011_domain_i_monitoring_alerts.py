@@ -200,3 +200,4 @@ def downgrade() -> None:
     op.drop_table("notification_preferences")
     op.drop_table("alerts")
     op.drop_table("alert_rules")
+

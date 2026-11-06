@@ -47,8 +47,14 @@ from tsotsa_api.modules.monitoring import (
     admin_alerts_router,
     alerts_router,
     dashboard_router,
-    preferences_router,
 )
+from tsotsa_api.modules.notifications import notifications_router
+from tsotsa_api.modules.monitoring import (
+    admin_alerts_router,
+    alerts_router,
+    dashboard_router,
+)
+from tsotsa_api.modules.notifications import notifications_router
 from tsotsa_api.modules.nutrients import nutrients_router
 from tsotsa_api.modules.optimization import optimization_router
 from tsotsa_api.modules.organizations import (
@@ -66,6 +72,7 @@ from tsotsa_api.modules.reference_products import (
     products_router,
     reference_products_admin_router,
 )
+from tsotsa_api.modules.schedules import schedules_router
 
 logger = get_logger(__name__)
 
@@ -108,7 +115,8 @@ def _build_v1_router() -> APIRouter:
     v1_router.include_router(dashboard_router)
     v1_router.include_router(alerts_router)
     v1_router.include_router(admin_alerts_router)
-    v1_router.include_router(preferences_router)
+    v1_router.include_router(schedules_router)
+    v1_router.include_router(notifications_router)
     return v1_router
 
 

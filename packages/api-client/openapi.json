@@ -5065,13 +5065,294 @@
         }
       }
     },
-    "/v1/notification-preferences": {
+    "/v1/schedules": {
       "post": {
         "tags": [
-          "Preferences"
+          "Plans de prises"
         ],
-        "summary": "Set Notification Preference",
-        "operationId": "set_notification_preference_v1_notification_preferences_post",
+        "summary": "Prescrire un plan de prises",
+        "operationId": "create_schedule_v1_schedules_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IntakeScheduleCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IntakeScheduleDetail"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/persons/{person_id}/schedules": {
+      "get": {
+        "tags": [
+          "Plans de prises"
+        ],
+        "summary": "Lister les plans de prises d'un enfant",
+        "operationId": "list_person_schedules_v1_persons__person_id__schedules_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "person_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Person Id"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/IntakeScheduleDetail"
+                  },
+                  "title": "Response List Person Schedules V1 Persons  Person Id  Schedules Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/schedules/{id}": {
+      "get": {
+        "tags": [
+          "Plans de prises"
+        ],
+        "summary": "D\u00e9tail d'un plan de prises",
+        "operationId": "get_schedule_v1_schedules__id__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IntakeScheduleDetail"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Plans de prises"
+        ],
+        "summary": "Modifier un plan de prises",
+        "operationId": "update_schedule_v1_schedules__id__patch",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IntakeScheduleUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IntakeScheduleDetail"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Plans de prises"
+        ],
+        "summary": "Annuler un plan de prises",
+        "operationId": "cancel_schedule_v1_schedules__id__delete",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/notification-preferences": {
+      "get": {
+        "tags": [
+          "Notifications"
+        ],
+        "summary": "R\u00e9cup\u00e9rer ses pr\u00e9f\u00e9rences de notification",
+        "operationId": "get_my_preferences_v1_notification_preferences_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/NotificationPreferenceRead"
+                  },
+                  "type": "array",
+                  "title": "Response Get My Preferences V1 Notification Preferences Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Notifications"
+        ],
+        "summary": "Configurer une pr\u00e9f\u00e9rence de notification",
+        "operationId": "set_my_preference_v1_notification_preferences_post",
         "requestBody": {
           "content": {
             "application/json": {
@@ -5109,6 +5390,445 @@
             "HTTPBearer": []
           }
         ]
+      }
+    },
+    "/v1/device-tokens": {
+      "post": {
+        "tags": [
+          "Notifications"
+        ],
+        "summary": "Enregistrer un jeton push de t\u00e9l\u00e9phone",
+        "operationId": "register_device_token_v1_device_tokens_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeviceTokenCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeviceTokenRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/device-tokens/{token}": {
+      "delete": {
+        "tags": [
+          "Notifications"
+        ],
+        "summary": "R\u00e9voquer un jeton push",
+        "operationId": "revoke_device_token_v1_device_tokens__token__delete",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Token"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/in-app-notifications": {
+      "get": {
+        "tags": [
+          "Notifications"
+        ],
+        "summary": "Centre de notifications de l'utilisateur",
+        "operationId": "list_in_app_notifications_v1_in_app_notifications_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "unread_only",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Unread Only"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 50,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/InAppNotificationRead"
+                  },
+                  "title": "Response List In App Notifications V1 In App Notifications Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/in-app-notifications/{id}/read": {
+      "post": {
+        "tags": [
+          "Notifications"
+        ],
+        "summary": "Marquer une notification comme lue",
+        "operationId": "mark_notification_read_v1_in_app_notifications__id__read_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InAppNotificationRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/in-app-notifications/{id}/snooze": {
+      "post": {
+        "tags": [
+          "Notifications"
+        ],
+        "summary": "Reporter un rappel ('Plus tard' : +15 minutes)",
+        "operationId": "snooze_notification_v1_in_app_notifications__id__snooze_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Id"
+            }
+          },
+          {
+            "name": "minutes",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 120,
+              "minimum": 5,
+              "default": 15,
+              "title": "Minutes"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InAppNotificationRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/admin/notifications/stats": {
+      "get": {
+        "tags": [
+          "Notifications"
+        ],
+        "summary": "Compteurs d'envois de notifications",
+        "operationId": "get_notification_stats_v1_admin_notifications_stats_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotificationStatsResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/admin/notifications/log": {
+      "get": {
+        "tags": [
+          "Notifications"
+        ],
+        "summary": "Journal d'envoi des notifications",
+        "operationId": "list_notification_logs_v1_admin_notifications_log_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 100,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/NotificationLogItem"
+                  },
+                  "title": "Response List Notification Logs V1 Admin Notifications Log Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/admin/notification-templates": {
+      "get": {
+        "tags": [
+          "Notifications"
+        ],
+        "summary": "Lister les gabarits de messages",
+        "operationId": "list_templates_v1_admin_notification_templates_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/NotificationTemplateRead"
+                  },
+                  "type": "array",
+                  "title": "Response List Templates V1 Admin Notification Templates Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/admin/notification-templates/{id}": {
+      "patch": {
+        "tags": [
+          "Notifications"
+        ],
+        "summary": "Mettre \u00e0 jour un gabarit de message",
+        "operationId": "update_template_v1_admin_notification_templates__id__patch",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NotificationTemplateUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotificationTemplateRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
       }
     }
   },
@@ -6301,6 +7021,69 @@
         ],
         "title": "DashboardScheduledEvaluationItem"
       },
+      "DeviceTokenCreate": {
+        "properties": {
+          "platform": {
+            "type": "string",
+            "title": "Platform",
+            "description": "'android', 'ios', ou 'web'"
+          },
+          "expo_push_token": {
+            "type": "string",
+            "title": "Expo Push Token",
+            "description": "Jeton Expo Push (ex. 'ExponentPushToken[...]')"
+          }
+        },
+        "type": "object",
+        "required": [
+          "platform",
+          "expo_push_token"
+        ],
+        "title": "DeviceTokenCreate",
+        "description": "Payload to register an Expo push device token."
+      },
+      "DeviceTokenRead": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "platform": {
+            "type": "string",
+            "title": "Platform"
+          },
+          "expo_push_token": {
+            "type": "string",
+            "title": "Expo Push Token"
+          },
+          "last_seen_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Last Seen At"
+          },
+          "revoked_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Revoked At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "platform",
+          "expo_push_token",
+          "last_seen_at"
+        ],
+        "title": "DeviceTokenRead",
+        "description": "Public read model for registered device tokens."
+      },
       "EmailLoginRequest": {
         "properties": {
           "email": {
@@ -7232,6 +8015,115 @@
         "title": "ImportBatchRead",
         "description": "Import batch overview."
       },
+      "InAppNotificationRead": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "user_id": {
+            "type": "string",
+            "title": "User Id"
+          },
+          "person_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Person Id"
+          },
+          "schedule_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Schedule Id"
+          },
+          "type": {
+            "type": "string",
+            "title": "Type"
+          },
+          "channel": {
+            "type": "string",
+            "title": "Channel"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "body": {
+            "type": "string",
+            "title": "Body"
+          },
+          "payload": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Payload"
+          },
+          "scheduled_for": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Scheduled For"
+          },
+          "sent_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sent At"
+          },
+          "read_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Read At"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "user_id",
+          "type",
+          "channel",
+          "title",
+          "body",
+          "scheduled_for",
+          "created_at"
+        ],
+        "title": "InAppNotificationRead",
+        "description": "Notification item displayed in the user notification center."
+      },
       "IntakeCreate": {
         "properties": {
           "id": {
@@ -7423,6 +8315,348 @@
         ],
         "title": "IntakeRead",
         "description": "Full detail of a recorded intake."
+      },
+      "IntakeScheduleCreate": {
+        "properties": {
+          "person_id": {
+            "type": "string",
+            "title": "Person Id"
+          },
+          "product_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Product Id"
+          },
+          "food_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Food Id"
+          },
+          "product_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Product Name"
+          },
+          "quantity": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Quantity",
+            "description": "Quantit\u00e9 prescrite par prise"
+          },
+          "unit": {
+            "type": "string",
+            "title": "Unit",
+            "description": "Unit\u00e9 (ex. 'sachet', 'g', 'ml')"
+          },
+          "start_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Start Date"
+          },
+          "end_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End Date"
+          },
+          "times": {
+            "items": {
+              "$ref": "#/components/schemas/ScheduleTimeCreate"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Times",
+            "description": "Au moins un horaire de prise requis"
+          },
+          "origin": {
+            "type": "string",
+            "title": "Origin",
+            "description": "'manual' ou 'optimization'",
+            "default": "manual"
+          },
+          "timezone": {
+            "type": "string",
+            "title": "Timezone",
+            "description": "Fuseau horaire de r\u00e9f\u00e9rence (par d\u00e9faut Africa/Douala)",
+            "default": "Africa/Douala"
+          }
+        },
+        "type": "object",
+        "required": [
+          "person_id",
+          "quantity",
+          "unit",
+          "start_date",
+          "times"
+        ],
+        "title": "IntakeScheduleCreate",
+        "description": "Payload to prescribe a new intake schedule for a followed person."
+      },
+      "IntakeScheduleDetail": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "person_id": {
+            "type": "string",
+            "title": "Person Id"
+          },
+          "created_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created By"
+          },
+          "product_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Product Id"
+          },
+          "food_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Food Id"
+          },
+          "product_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Product Name"
+          },
+          "quantity": {
+            "type": "string",
+            "title": "Quantity"
+          },
+          "unit": {
+            "type": "string",
+            "title": "Unit"
+          },
+          "start_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Start Date"
+          },
+          "end_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End Date"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "origin": {
+            "type": "string",
+            "title": "Origin"
+          },
+          "timezone": {
+            "type": "string",
+            "title": "Timezone"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          },
+          "times_count": {
+            "type": "integer",
+            "title": "Times Count",
+            "default": 0
+          },
+          "schedule_times": {
+            "items": {
+              "$ref": "#/components/schemas/ScheduleTimeRead"
+            },
+            "type": "array",
+            "title": "Schedule Times"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "person_id",
+          "quantity",
+          "unit",
+          "start_date",
+          "status",
+          "origin",
+          "timezone",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "IntakeScheduleDetail",
+        "description": "Full detail of an intake schedule including all time slots."
+      },
+      "IntakeScheduleUpdate": {
+        "properties": {
+          "product_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Product Name"
+          },
+          "quantity": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quantity"
+          },
+          "unit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unit"
+          },
+          "start_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Start Date"
+          },
+          "end_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End Date"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status",
+            "description": "'active', 'paused', 'cancelled'"
+          },
+          "timezone": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Timezone"
+          },
+          "times": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/ScheduleTimeCreate"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Times"
+          }
+        },
+        "type": "object",
+        "title": "IntakeScheduleUpdate",
+        "description": "Payload to update an existing intake schedule."
       },
       "IntakeSyncRequest": {
         "properties": {
@@ -7922,6 +9156,79 @@
         "title": "ModuleUpdate",
         "description": "Payload for administration to activate, mark coming_soon, or disable a module."
       },
+      "NotificationLogItem": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "user_id": {
+            "type": "string",
+            "title": "User Id"
+          },
+          "person_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Person Id"
+          },
+          "type": {
+            "type": "string",
+            "title": "Type"
+          },
+          "channel": {
+            "type": "string",
+            "title": "Channel"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "scheduled_for": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Scheduled For"
+          },
+          "sent_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sent At"
+          },
+          "attempts": {
+            "type": "integer",
+            "title": "Attempts"
+          },
+          "dedupe_key": {
+            "type": "string",
+            "title": "Dedupe Key"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "user_id",
+          "type",
+          "channel",
+          "status",
+          "scheduled_for",
+          "attempts",
+          "dedupe_key"
+        ],
+        "title": "NotificationLogItem",
+        "description": "Transmission log row for administrative auditing."
+      },
       "NotificationPreferenceRead": {
         "properties": {
           "id": {
@@ -7954,6 +9261,28 @@
           "enabled": {
             "type": "boolean",
             "title": "Enabled"
+          },
+          "quiet_start": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quiet Start"
+          },
+          "quiet_end": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quiet End"
           }
         },
         "type": "object",
@@ -7964,7 +9293,8 @@
           "channel",
           "enabled"
         ],
-        "title": "NotificationPreferenceRead"
+        "title": "NotificationPreferenceRead",
+        "description": "Notification preference representation."
       },
       "NotificationPreferenceSetRequest": {
         "properties": {
@@ -7982,21 +9312,151 @@
           "notification_type": {
             "type": "string",
             "title": "Notification Type",
-            "default": "reminders"
+            "description": "Type: reminder, reminder_followup, intake_confirmed, clinical_alert, etc."
           },
           "channel": {
             "type": "string",
             "title": "Channel",
-            "default": "in_app"
+            "description": "'push', 'sms', 'email', 'in_app'",
+            "default": "push"
           },
           "enabled": {
             "type": "boolean",
             "title": "Enabled",
             "default": true
+          },
+          "quiet_start": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quiet Start",
+            "description": "D\u00e9but des heures calmes HH:MM (ex: '22:00')"
+          },
+          "quiet_end": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quiet End",
+            "description": "Fin des heures calmes HH:MM (ex: '07:00')"
           }
         },
         "type": "object",
-        "title": "NotificationPreferenceSetRequest"
+        "required": [
+          "notification_type"
+        ],
+        "title": "NotificationPreferenceSetRequest",
+        "description": "Request to configure a notification preference."
+      },
+      "NotificationStatsResponse": {
+        "properties": {
+          "total_sent": {
+            "type": "integer",
+            "title": "Total Sent",
+            "default": 0
+          },
+          "total_queued": {
+            "type": "integer",
+            "title": "Total Queued",
+            "default": 0
+          },
+          "total_failed": {
+            "type": "integer",
+            "title": "Total Failed",
+            "default": 0
+          },
+          "total_cancelled": {
+            "type": "integer",
+            "title": "Total Cancelled",
+            "default": 0
+          },
+          "total_delivered": {
+            "type": "integer",
+            "title": "Total Delivered",
+            "default": 0
+          }
+        },
+        "type": "object",
+        "title": "NotificationStatsResponse",
+        "description": "High-level metrics for notification deliveries."
+      },
+      "NotificationTemplateRead": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "type": {
+            "type": "string",
+            "title": "Type"
+          },
+          "language": {
+            "type": "string",
+            "title": "Language"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "body": {
+            "type": "string",
+            "title": "Body"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "type",
+          "language",
+          "title",
+          "body",
+          "updated_at"
+        ],
+        "title": "NotificationTemplateRead",
+        "description": "Administered notification template."
+      },
+      "NotificationTemplateUpdate": {
+        "properties": {
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          },
+          "body": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Body"
+          }
+        },
+        "type": "object",
+        "title": "NotificationTemplateUpdate",
+        "description": "Update payload for a notification template."
       },
       "NutrientDetailRead": {
         "properties": {
@@ -10009,6 +11469,79 @@
         "type": "object",
         "title": "RegionUpdate",
         "description": "Payload for administration to update a geographical region."
+      },
+      "ScheduleTimeCreate": {
+        "properties": {
+          "local_time": {
+            "type": "string",
+            "title": "Local Time",
+            "description": "Heure locale format HH:MM (ex. '08:00')"
+          },
+          "days_of_week": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "integer"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Days Of Week",
+            "description": "Jours de la semaine [1=Lundi, ..., 7=Dimanche]. Vide = tous les jours."
+          },
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled",
+            "default": true
+          }
+        },
+        "type": "object",
+        "required": [
+          "local_time"
+        ],
+        "title": "ScheduleTimeCreate",
+        "description": "Payload to create or update an intake schedule time."
+      },
+      "ScheduleTimeRead": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "local_time": {
+            "type": "string",
+            "title": "Local Time"
+          },
+          "days_of_week": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "integer"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Days Of Week"
+          },
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "local_time",
+          "enabled"
+        ],
+        "title": "ScheduleTimeRead",
+        "description": "Public read model for an intake schedule time slot."
       },
       "SecondParentInviteRequest": {
         "properties": {

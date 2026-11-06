@@ -44,9 +44,17 @@ async def record_intake(
         ip=ip,
     )
     from tsotsa_api.modules.monitoring.service import MonitoringService
+    from tsotsa_api.modules.notifications.service import NotificationsService
 
     monitoring = MonitoringService(db)
     await monitoring.on_intake_recorded(payload.person_id)
+    notifs = NotificationsService(db)
+    await notifs.on_intake_recorded(
+        payload.person_id,
+        result.item_id,
+        result.quantity,
+        result.unit,
+    )
     return result
 
 
