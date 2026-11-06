@@ -22,6 +22,7 @@ from tsotsa_api.modules.notifications.worker import NotificationWorker
 from tsotsa_api.modules.organizations.schemas import CaregiverAttachmentRequest, OrganizationCreate
 from tsotsa_api.modules.organizations.service import OrganizationsService
 from tsotsa_api.modules.persons.service import PersonsService
+from tsotsa_api.modules.reference_products.models import Product
 from tsotsa_api.modules.schedules.schemas import IntakeScheduleCreate, ScheduleTimeCreate
 from tsotsa_api.modules.schedules.service import SchedulesService
 
@@ -94,6 +95,14 @@ async def test_full_day_simulation_three_children(db_session: AsyncSession) -> N
         payload=CaregiverAttachmentRequest(user_id=cg.id, licence_number="CAM-999", approve=True),
         admin_user_id=cg.id,
     )
+
+    prod = Product(
+        type="reference",
+        name="PlumpyNut",
+        base="100g",
+        status="validated",
+    )
+    db_session.add(prod)
     await db_session.commit()
 
     # 2. Setup 3 children and their schedules (08:00, 12:00, 18:00 local Douala time)
@@ -147,7 +156,7 @@ async def test_full_day_simulation_three_children(db_session: AsyncSession) -> N
             id=str(uuid.uuid4()),
             person_id=c1_id,
             item_type="product",
-            item_id=str(uuid.uuid4()),
+            item_id=prod.id,
             quantity=1.0,
             unit="sachet",
             taken_at=datetime(2026, 11, 6, 7, 10, tzinfo=UTC),
@@ -162,7 +171,7 @@ async def test_full_day_simulation_three_children(db_session: AsyncSession) -> N
             id=str(uuid.uuid4()),
             person_id=c2_id,
             item_type="product",
-            item_id=str(uuid.uuid4()),
+            item_id=prod.id,
             quantity=1.0,
             unit="sachet",
             taken_at=datetime(2026, 11, 6, 7, 12, tzinfo=UTC),
@@ -184,7 +193,7 @@ async def test_full_day_simulation_three_children(db_session: AsyncSession) -> N
             id=str(uuid.uuid4()),
             person_id=c1_id,
             item_type="product",
-            item_id=str(uuid.uuid4()),
+            item_id=prod.id,
             quantity=1.0,
             unit="sachet",
             taken_at=datetime(2026, 11, 6, 11, 10, tzinfo=UTC),
