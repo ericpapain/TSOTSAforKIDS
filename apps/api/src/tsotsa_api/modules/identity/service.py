@@ -286,8 +286,8 @@ class IdentityService:
         )
 
     async def get_caregiver_organization_id(self, user_id: str) -> str | None:
-        profile = await self.repository.get_caregiver_profile(user_id)
-        return profile.organization_id if profile and profile.verification_status == "approved" else None
+        p = await self.repository.get_caregiver_profile(user_id)
+        return p.organization_id if p and p.verification_status == "approved" else None
 
     async def set_preferred_region(self, user_id: str, region_id: str | None) -> User:
         user = await self.repository.set_preferred_region(user_id, region_id)
