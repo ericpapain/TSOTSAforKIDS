@@ -11,9 +11,15 @@ module.exports = {
   collectCoverageFrom: [
     "src/components/**/*.{ts,tsx}",
     "src/api/**/*.{ts,tsx}",
+    "src/offline/**/*.{ts,tsx}",
+    "src/features/intakes/**/*.{ts,tsx}",
     "!src/components/**/__tests__/**",
     "!src/components/**/index.ts",
     "!src/api/**/index.ts",
+    "!src/offline/**/__tests__/**",
+    "!src/offline/**/index.ts",
+    "!src/features/intakes/**/__tests__/**",
+    "!src/features/intakes/**/index.ts",
   ],
   coverageThreshold: {
     global: {
