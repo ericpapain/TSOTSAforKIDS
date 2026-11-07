@@ -4,7 +4,8 @@ WORKDIR /app
 
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
-    PIP_NO_CACHE_DIR=1
+    PIP_NO_CACHE_DIR=1 \
+    PYTHONPATH="/app/apps/api/src:${PYTHONPATH}"
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
@@ -13,11 +14,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 RUN pip install uv
 
-COPY apps/api/pyproject.toml /app/apps/api/
+# Install dependencies first to maximize Docker layer cache
+COPY apps/api/pyproject.toml apps/api/README.md apps/api/uv.lock* /app/apps/api/
 WORKDIR /app/apps/api
-RUN uv pip install --system -e ".[dev]"
+RUN uv pip install --system -r pyproject.toml --extra dev
 
+# Copy full application source and install project in editable mode
 COPY apps/api /app/apps/api
+RUN uv pip install --system --no-deps -e .
 
 EXPOSE 8000
 

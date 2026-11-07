@@ -1,0 +1,40 @@
+# Git & version control
+.git
+.github
+
+# Dependencies & virtual environments
+node_modules
+**/node_modules
+.venv
+**/.venv
+
+# Python cache & bytecode
+__pycache__
+**/__pycache__
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache
+.mypy_cache
+.ruff_cache
+
+# Frontends & non-API apps (not needed in API container build)
+apps/mobile
+apps/web
+
+# Documentation & large data exports
+docs
+data/orkg_exports
+
+# Logs, test coverage & build artifacts
+*.log
+coverage
+.coverage
+htmlcov
+dist
+build
+
+# Environment files
+.env
+**/.env
+
