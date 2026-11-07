@@ -1,0 +1,57 @@
+appId: com.tsotsaforkids.app
+---
+# Étape M-C : Parcours complet modules → personnes → ajouter une personne → consentement → profil
+- launchApp
+
+# 1. Écran Choix du module (M06)
+- assertVisible: "Bonjour"
+- assertVisible: "Que voulez-vous suivre ?"
+- assertVisible: "Nutrition"
+- tapOn: "Nutrition"
+
+# 2. Écran Les personnes que je suis (M08)
+- assertVisible: "Nutrition"
+- assertVisible: "Pour qui ?"
+- assertVisible: "Ajouter une personne"
+- tapOn: "Ajouter une personne"
+
+# 3. Écran Ajouter une personne suivie (M09)
+- assertVisible: "Ajouter une personne"
+- assertVisible: "Qui ?"
+- tapOn:
+    id: "field-first-name"
+- eraseText
+- inputText: "Amina"
+- tapOn:
+    id: "field-birth-date"
+- eraseText
+- inputText: "12/12/2024"
+- tapOn:
+    id: "field-weight"
+- eraseText
+- inputText: "7,0"
+- tapOn:
+    id: "field-height"
+- eraseText
+- inputText: "76,0"
+- tapOn:
+    id: "field-muac"
+- eraseText
+- inputText: "112"
+- tapOn: "Continuer"
+
+# 4. Écran Consentement (M10)
+- assertVisible: "Votre accord"
+- assertVisible: "Les informations d'Amina servent à suivre sa nutrition."
+- assertVisible: "Seul son soignant les voit."
+- assertVisible: "Vous pouvez retirer votre accord à tout moment."
+- assertVisible: "J'ai lu et j'accepte pour Amina"
+- tapOn: "J'accepte"
+
+# 5. Écran Profil de la personne suivie (M11)
+- assertVisible: "Amina"
+- assertVisible: "À surveiller"
+- assertVisible: "Donner un produit"
+- assertVisible: "Mes prises"
+- assertVisible: "Rappels : 08:00 · 12:30 · 18:00"
+

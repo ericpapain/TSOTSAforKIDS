@@ -33,6 +33,12 @@ const mockRouter = {
 let mockParams = {};
 
 jest.mock("expo-router", () => ({
+  useRouter: () => ({
+    push: jest.fn(),
+    replace: jest.fn(),
+    back: jest.fn(),
+  }),
+  useLocalSearchParams: () => ({}),
   useRouter: () => mockRouter,
   useLocalSearchParams: () => mockParams,
   Redirect: () => null,
