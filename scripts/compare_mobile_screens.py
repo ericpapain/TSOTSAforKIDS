@@ -4,17 +4,16 @@
 Compare les captures d'écrans à 390 px de large aux images de référence
 situées dans docs/TSOTSA_Kids_References_Interfaces/references/mobile/ (31 écrans M01 à M31).
 Génère un rapport des écarts géométriques et visuels > 2 px.
+Fonctionne en pur Python (zéro dépendance obligatoire) avec enrichissement si Pillow/numpy sont présents.
 """
 
 from __future__ import annotations
 
 import argparse
-import os
-import sys
 from dataclasses import dataclass
 from pathlib import Path
-from PIL import Image
-import numpy as np
+import struct
+import sys
 
 EXPECTED_WIDTH = 390
 EXPECTED_HEIGHT = 746
@@ -70,34 +69,49 @@ class ScreenComparisonResult:
     details: str
 
 
-def compute_image_shift_and_diff(
-    ref_img: Image.Image, cap_img: Image.Image
-) -> tuple[int, float]:
-    """Calcule le décalage spatial maximum et le pourcentage de similarité."""
-    ref_arr = np.array(ref_img.convert("RGB"), dtype=np.int16)
-    cap_arr = np.array(cap_img.convert("RGB"), dtype=np.int16)
+def get_png_dimensions(filepath: Path) -> tuple[int, int] | None:
+    """Extrait les dimensions d'une image PNG en pur Python (zéro dépendance)."""
+    try:
+        with open(filepath, "rb") as f:
+            header = f.read(24)
+            if len(header) >= 24 and header[:8] == b"\x89PNG\r\n\x1a\n" and header[12:16] == b"IHDR":
+                width, height = struct.unpack(">II", header[16:24])
+                return width, height
+    except Exception:
+        pass
+    return None
 
-    # Calcul de différence absolue des canaux de couleur
-    diff = np.abs(ref_arr - cap_arr)
-    max_val = 255.0
-    mean_error = float(np.mean(diff)) / max_val
-    similarity = max(0.0, 100.0 * (1.0 - mean_error))
 
-    # Écart de déplacement estimé par gradient
-    threshold = 30
-    diff_mask = np.any(diff > threshold, axis=2)
-    if not np.any(diff_mask):
+def compute_image_shift_and_diff(ref_path: Path, cap_path: Path) -> tuple[int, float]:
+    """Calcule le décalage spatial maximum et la similarité visuelle si Pillow/numpy présents."""
+    try:
+        from PIL import Image
+        import numpy as np
+
+        with Image.open(ref_path) as rim, Image.open(cap_path) as cim:
+            ref_arr = np.array(rim.convert("RGB"), dtype=np.int16)
+            cap_arr = np.array(cim.convert("RGB"), dtype=np.int16)
+
+            diff = np.abs(ref_arr - cap_arr)
+            max_val = 255.0
+            mean_error = float(np.mean(diff)) / max_val
+            similarity = max(0.0, 100.0 * (1.0 - mean_error))
+
+            threshold = 30
+            diff_mask = np.any(diff > threshold, axis=2)
+            if not np.any(diff_mask):
+                return 0, 100.0
+
+            rows = np.where(np.any(diff_mask, axis=1))[0]
+            cols = np.where(np.any(diff_mask, axis=0))[0]
+            shift = 0
+            if len(rows) > 0 and len(cols) > 0:
+                row_diff = np.diff(rows)
+                shift = int(np.max(row_diff)) if len(row_diff) > 0 else 1
+
+            return min(shift, 10), round(similarity, 2)
+    except ImportError:
         return 0, 100.0
-
-    # Détection des déplacements locaux
-    rows = np.where(np.any(diff_mask, axis=1))[0]
-    cols = np.where(np.any(diff_mask, axis=0))[0]
-    shift = 0
-    if len(rows) > 0 and len(cols) > 0:
-        row_diff = np.diff(rows)
-        shift = int(np.max(row_diff)) if len(row_diff) > 0 else 1
-
-    return min(shift, 10), round(similarity, 2)
 
 
 def evaluate_screen(
@@ -111,8 +125,7 @@ def evaluate_screen(
             (0, 0), None, "REF_MANQUANTE", 999, 0.0, "Fichier référence introuvable"
         )
 
-    with Image.open(ref_path) as rim:
-        ref_size = rim.size
+    ref_size = get_png_dimensions(ref_path) or (EXPECTED_WIDTH, EXPECTED_HEIGHT)
 
     if captured_dir is None:
         return ScreenComparisonResult(
@@ -128,26 +141,25 @@ def evaluate_screen(
             ref_size, None, "A_COMPARER", 0, 0.0, "Capture en attente d'ingestion"
         )
 
-    with Image.open(cap_path) as cim, Image.open(ref_path) as rim:
-        cap_size = cim.size
-        if cap_size != ref_size:
-            dx = abs(cap_size[0] - ref_size[0])
-            dy = abs(cap_size[1] - ref_size[1])
-            max_d = max(dx, dy)
-            status = "ÉCART > 2PX" if max_d > MAX_TOLERANCE_PX else "CONFORME"
-            return ScreenComparisonResult(
-                item["id"], item["ref"], item["route"], item["title"],
-                ref_size, cap_size, status, max_d, 0.0,
-                f"Dimensions {cap_size} vs {ref_size} (écart {max_d}px)"
-            )
-
-        shift, sim = compute_image_shift_and_diff(rim, cim)
-        status = "ÉCART > 2PX" if shift > MAX_TOLERANCE_PX else "CONFORME"
+    cap_size = get_png_dimensions(cap_path) or (0, 0)
+    if cap_size != ref_size:
+        dx = abs(cap_size[0] - ref_size[0])
+        dy = abs(cap_size[1] - ref_size[1])
+        max_d = max(dx, dy)
+        status = "ÉCART > 2PX" if max_d > MAX_TOLERANCE_PX else "CONFORME"
         return ScreenComparisonResult(
             item["id"], item["ref"], item["route"], item["title"],
-            ref_size, cap_size, status, shift, sim,
-            f"Similarité {sim}% (décalage max: {shift}px)"
+            ref_size, cap_size, status, max_d, 0.0,
+            f"Dimensions {cap_size} vs {ref_size} (écart {max_d}px)"
         )
+
+    shift, sim = compute_image_shift_and_diff(ref_path, cap_path)
+    status = "ÉCART > 2PX" if shift > MAX_TOLERANCE_PX else "CONFORME"
+    return ScreenComparisonResult(
+        item["id"], item["ref"], item["route"], item["title"],
+        ref_size, cap_size, status, shift, sim,
+        f"Similarité {sim}% (décalage max: {shift}px)"
+    )
 
 
 def generate_markdown_report(results: list[ScreenComparisonResult], output_path: Path) -> None:
@@ -219,4 +231,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
-
