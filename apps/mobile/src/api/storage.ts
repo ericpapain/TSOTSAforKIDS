@@ -8,6 +8,7 @@ import type { TokenPair } from "@tsotsa/api-client";
 
 const ACCESS_TOKEN_KEY = "tsotsa_access_token";
 const REFRESH_TOKEN_KEY = "tsotsa_refresh_token";
+const ROLE_KEY = "tsotsa_user_role";
 
 export async function getStoredTokens(): Promise<TokenPair | null> {
   try {
@@ -22,13 +23,27 @@ export async function getStoredTokens(): Promise<TokenPair | null> {
   }
 }
 
-export async function saveStoredTokens(tokens: TokenPair): Promise<void> {
+export async function getStoredRole(): Promise<string | null> {
+  try {
+    return await SecureStore.getItemAsync(ROLE_KEY);
+  } catch {
+    return null;
+  }
+}
+
+export async function saveStoredTokens(
+  tokens: TokenPair,
+  role?: string
+): Promise<void> {
   try {
     if (tokens.accessToken) {
       await SecureStore.setItemAsync(ACCESS_TOKEN_KEY, tokens.accessToken);
     }
     if (tokens.refreshToken) {
       await SecureStore.setItemAsync(REFRESH_TOKEN_KEY, tokens.refreshToken);
+    }
+    if (role) {
+      await SecureStore.setItemAsync(ROLE_KEY, role);
     }
   } catch {
     // Gracefully handle storage errors
@@ -39,6 +54,7 @@ export async function clearStoredTokens(): Promise<void> {
   try {
     await SecureStore.deleteItemAsync(ACCESS_TOKEN_KEY);
     await SecureStore.deleteItemAsync(REFRESH_TOKEN_KEY);
+    await SecureStore.deleteItemAsync(ROLE_KEY);
   } catch {
     // Gracefully handle removal errors
   }

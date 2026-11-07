@@ -1,60 +1,177 @@
+import { FontAwesome5 } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import {
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { AppBar } from "../src/components/AppBar";
 import { colors } from "../src/theme/colors";
 import { fontFamilies, fontSizes } from "../src/theme/typography";
 
-export default function ScreenM31(): React.JSX.Element {
+export default function CaregiverPendingScreen(): React.JSX.Element {
   const router = useRouter();
+
   return (
-    <SafeAreaView style={styles.container} edges={["bottom", "left", "right"]}>
+    <SafeAreaView style={styles.safeArea} edges={["top", "bottom"]}>
       <AppBar
-        title="Compte soignant en attente"
-        onBack={() => router.replace("/u-welcome")}
+        title="Compte soignant"
+        backgroundColor={colors.care}
+        onBack={() => router.replace("/u-signup")}
       />
-      <View style={styles.content} testID="screen-m31">
-        <Text style={styles.codeText}>M31</Text>
-        <Text style={styles.titleText}>Compte soignant en attente</Text>
-        <Text style={styles.descText}>
-          Écran de fondation (M31). L interface complète sera intégrée lors de l étape dédiée.
+
+      <ScrollView
+        contentContainerStyle={styles.container}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* User clock circle */}
+        <View style={styles.circleContainer}>
+          <FontAwesome5 name="user-clock" size={80} color={colors.care} />
+        </View>
+
+        {/* Title & subtitle */}
+        <Text style={styles.title}>Vérification en cours</Text>
+        <Text style={styles.subtitle}>
+          Notre équipe vérifie votre identité professionnelle. Vous serez prévenu par SMS.
         </Text>
-      </View>
+
+        {/* Status items */}
+        <View style={styles.statusList}>
+          {/* Item 1 */}
+          <View style={styles.statusRow}>
+            <Text style={styles.statusLabel}>Carte professionnelle</Text>
+            <Text style={styles.statusValue}>envoyée ✓</Text>
+          </View>
+
+          {/* Item 2 */}
+          <View style={styles.statusRow}>
+            <Text style={styles.statusLabel}>Établissement</Text>
+            <Text style={styles.statusValue}>CMA de démo ✓</Text>
+          </View>
+
+          {/* Item 3 */}
+          <View style={styles.statusRow}>
+            <Text style={styles.statusLabel}>Numéro d'ordre</Text>
+            <Text style={styles.statusValue}>envoyé ✓</Text>
+          </View>
+        </View>
+
+        {/* Admin Link Button */}
+        <Pressable
+          testID="btn-pending-admin"
+          style={({ pressed }) => [
+            styles.adminButton,
+            pressed && styles.pressed,
+          ]}
+          onPress={() => router.replace("/u-modules")}
+        >
+          <Text style={styles.adminButtonText}>Voir côté administration →</Text>
+        </Pressable>
+
+        {/* Understood text link */}
+        <Pressable
+          testID="btn-pending-understood"
+          style={({ pressed }) => [
+            styles.understoodButton,
+            pressed && styles.pressed,
+          ]}
+          onPress={() => router.replace("/u-welcome")}
+        >
+          <Text style={styles.understoodText}>Compris</Text>
+        </Pressable>
+      </ScrollView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  safeArea: {
     flex: 1,
-    backgroundColor: colors.canvas,
+    backgroundColor: colors.white,
   },
-  content: {
-    flex: 1,
-    padding: 17,
-    justifyContent: "center",
+  container: {
+    paddingHorizontal: 17,
+    paddingTop: 24,
+    paddingBottom: 32,
     alignItems: "center",
   },
-  codeText: {
-    fontFamily: fontFamilies.bold,
-    fontSize: fontSizes.xl24,
-    color: colors.primary,
-    marginBottom: 8,
+  circleContainer: {
+    width: 149,
+    height: 149,
+    borderRadius: 74.5,
+    backgroundColor: colors.care50,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 23,
   },
-  titleText: {
+  title: {
     fontFamily: fontFamilies.bold,
-    fontSize: fontSizes.lg22,
+    fontSize: fontSizes.h3_27,
     color: colors.text,
     textAlign: "center",
-    marginBottom: 12,
+    marginBottom: 5,
   },
-  descText: {
+  subtitle: {
     fontFamily: fontFamilies.regular,
-    fontSize: fontSizes.sm14,
+    fontSize: fontSizes.md18,
     color: colors.textMuted,
     textAlign: "center",
-    maxWidth: 300,
+    lineHeight: 24,
+    paddingHorizontal: 12,
+    marginBottom: 28,
+  },
+  statusList: {
+    width: "100%",
+    paddingHorizontal: 12,
+    gap: 4,
+    marginBottom: 22,
+  },
+  statusRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    height: 41,
+  },
+  statusLabel: {
+    fontFamily: fontFamilies.regular,
+    fontSize: fontSizes.base16,
+    color: colors.text,
+  },
+  statusValue: {
+    fontFamily: fontFamilies.bold,
+    fontSize: fontSizes.base16,
+    color: colors.primary,
+  },
+  adminButton: {
+    width: "100%",
+    height: 57,
+    backgroundColor: colors.admin,
+    borderRadius: 11,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 16,
+  },
+  adminButtonText: {
+    fontFamily: fontFamilies.bold,
+    fontSize: fontSizes.md19,
+    color: colors.white,
+  },
+  understoodButton: {
+    paddingVertical: 10,
+    paddingHorizontal: 24,
+  },
+  understoodText: {
+    fontFamily: fontFamilies.bold,
+    fontSize: fontSizes.md18,
+    color: colors.care,
+    textAlign: "center",
+  },
+  pressed: {
+    opacity: 0.85,
   },
 });

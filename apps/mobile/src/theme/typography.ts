@@ -19,6 +19,7 @@ export const fontSizes = {
   lg22: 22,
   xl24: 24,
   xl25: 25,
+  h3_27: 27,
   h3_29: 29,
   h2_32: 32,
   h1_35: 35,

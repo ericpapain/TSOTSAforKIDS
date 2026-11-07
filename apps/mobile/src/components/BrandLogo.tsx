@@ -10,6 +10,8 @@ export interface BrandLogoProps {
   size?: number;
   /** Variant: "light" (dark text on light bg) or "dark" (white text on dark bg) */
   variant?: "light" | "dark";
+  /** Display mode: full (default), symbol only, or word only */
+  mode?: "full" | "symbol" | "word";
   /** Optional testID for automation and testing */
   testID?: string;
 }
@@ -17,6 +19,7 @@ export interface BrandLogoProps {
 export function BrandLogo({
   size = 44,
   variant = "light",
+  mode = "full",
   testID = "brand-logo",
 }: BrandLogoProps): React.JSX.Element {
   const h = size;
@@ -36,81 +39,90 @@ export function BrandLogo({
   const pillFontSize = Math.round(0.42 * h);
   const diskSize = Math.round(1.24 * h);
 
+  const showSymbol = mode === "full" || mode === "symbol";
+  const showWord = mode === "full" || mode === "word";
+
   return (
     <View style={styles.container} testID={testID} accessibilityRole="image">
       {/* Symbol */}
-      <View style={[styles.symbolContainer, { width: diskSize, height: diskSize }]}>
-        {isDark && (
-          <View
-            testID="brand-logo-dark-disk"
-            style={[
-              styles.whiteDisk,
-              {
-                width: diskSize,
-                height: diskSize,
-                borderRadius: diskSize / 2,
-              },
-            ]}
-          />
-        )}
-        <Svg width={h} height={h} viewBox="8 8 84 84">
-          <Defs>
-            <Mask id={maskId}>
-              <Rect width="100" height="100" fill="#fff" />
-              <Rect x="46.9" y="0" width="6.2" height="100" fill="#000" />
-              <Circle cx="50" cy="50" r="11.6" fill="#000" />
-              <Rect x="50" y="46.4" width="50" height="7.2" fill="#000" />
-            </Mask>
-          </Defs>
-          <Circle cx="50" cy="50" r="42" fill={colors.brand} mask={`url(#${maskId})`} />
-        </Svg>
-      </View>
+      {showSymbol && (
+        <View style={[styles.symbolContainer, { width: diskSize, height: diskSize }]}>
+          {isDark && (
+            <View
+              testID="brand-logo-dark-disk"
+              style={[
+                styles.whiteDisk,
+                {
+                  width: diskSize,
+                  height: diskSize,
+                  borderRadius: diskSize / 2,
+                },
+              ]}
+            />
+          )}
+          <Svg width={h} height={h} viewBox="8 8 84 84">
+            <Defs>
+              <Mask id={maskId}>
+                <Rect width="100" height="100" fill="#fff" />
+                <Rect x="46.9" y="0" width="6.2" height="100" fill="#000" />
+                <Circle cx="50" cy="50" r="11.6" fill="#000" />
+                <Rect x="50" y="46.4" width="50" height="7.2" fill="#000" />
+              </Mask>
+            </Defs>
+            <Circle cx="50" cy="50" r="42" fill={colors.brand} mask={`url(#${maskId})`} />
+          </Svg>
+        </View>
+      )}
 
       {/* TSOTSA Word */}
-      <Text
-        testID="brand-logo-text"
-        style={[
-          styles.brandWord,
-          {
-            color: textColor,
-            fontSize: wordFontSize,
-            lineHeight: Math.round(wordFontSize * 1.2),
-            marginLeft: symbolGap - Math.max(0, Math.round((diskSize - h) / 2)),
-            letterSpacing: wordFontSize * 0.04,
-          },
-        ]}
-      >
-        TSOTSA
-      </Text>
-
-      {/* KIDS Pill */}
-      <View
-        testID="brand-logo-pill"
-        style={[
-          styles.pill,
-          {
-            backgroundColor: pillBg,
-            height: pillHeight,
-            borderRadius: pillHeight / 2,
-            marginLeft: pillGap,
-            paddingHorizontal: Math.round(pillHeight * 0.4),
-          },
-        ]}
-      >
+      {showWord && (
         <Text
+          testID="brand-logo-text"
           style={[
-            styles.pillText,
+            styles.brandWord,
             {
-              color: pillTextColor,
-              fontSize: pillFontSize,
-              lineHeight: Math.round(pillFontSize * 1.2),
-              letterSpacing: pillFontSize * 0.08,
+              color: textColor,
+              fontSize: wordFontSize,
+              lineHeight: Math.round(wordFontSize * 1.2),
+              marginLeft: showSymbol ? symbolGap - Math.max(0, Math.round((diskSize - h) / 2)) : 0,
+              letterSpacing: wordFontSize * 0.04,
             },
           ]}
         >
-          KIDS
+          TSOTSA
         </Text>
-      </View>
+      )}
+
+      {/* KIDS Pill */}
+      {showWord && (
+        <View
+          testID="brand-logo-pill"
+          style={[
+            styles.pill,
+            {
+              backgroundColor: pillBg,
+              height: pillHeight,
+              borderRadius: pillHeight / 2,
+              marginLeft: pillGap,
+              paddingHorizontal: Math.round(pillHeight * 0.4),
+            },
+          ]}
+        >
+          <Text
+            style={[
+              styles.pillText,
+              {
+                color: pillTextColor,
+                fontSize: pillFontSize,
+                lineHeight: Math.round(pillFontSize * 1.2),
+                letterSpacing: pillFontSize * 0.08,
+              },
+            ]}
+          >
+            KIDS
+          </Text>
+        </View>
+      )}
     </View>
   );
 }

@@ -1,60 +1,285 @@
+import { FontAwesome5 } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import React, { useState } from "react";
+import {
+  ActivityIndicator,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { AppBar } from "../src/components/AppBar";
+import { requestPhoneOtp } from "../src/features/auth/authService";
 import { colors } from "../src/theme/colors";
 import { fontFamilies, fontSizes } from "../src/theme/typography";
 
-export default function ScreenM03(): React.JSX.Element {
+export default function PhoneSignupScreen(): React.JSX.Element {
   const router = useRouter();
+  const [phone, setPhone] = useState("+237 ");
+  const [selectedProfile, setSelectedProfile] = useState<"family" | "caregiver">("family");
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const handleContinue = async (): Promise<void> => {
+    if (selectedProfile === "caregiver") {
+      router.push("/s-pending");
+      return;
+    }
+
+    const cleanNumber = phone.trim().replace(/\s+/g, "");
+    if (cleanNumber.length < 8) {
+      setErrorMessage("Veuillez saisir un numéro de téléphone valide.");
+      return;
+    }
+
+    setLoading(true);
+    setErrorMessage(null);
+    try {
+      const res = await requestPhoneOtp(cleanNumber);
+      if (res.success) {
+        router.push({
+          pathname: "/u-otp",
+          params: { phone: cleanNumber },
+        });
+      } else {
+        setErrorMessage(res.error || "Impossible d'envoyer le code SMS.");
+      }
+    } catch {
+      setErrorMessage("Erreur réseau. Vérifiez votre connexion.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <SafeAreaView style={styles.container} edges={["bottom", "left", "right"]}>
+    <SafeAreaView style={styles.safeArea} edges={["top", "bottom"]}>
       <AppBar
-        title="Connexion téléphone"
+        title="Mon numéro"
         onBack={() => router.replace("/u-welcome")}
       />
-      <View style={styles.content} testID="screen-m03">
-        <Text style={styles.codeText}>M03</Text>
-        <Text style={styles.titleText}>Connexion téléphone</Text>
-        <Text style={styles.descText}>
-          Écran de fondation (M03). L interface complète sera intégrée lors de l étape dédiée.
+
+      <ScrollView
+        contentContainerStyle={styles.container}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Phone input field */}
+        <View style={styles.fieldBlock}>
+          <Text style={styles.fieldLabel}>Numéro de téléphone</Text>
+          <View style={[styles.inputContainer, errorMessage ? styles.inputError : null]}>
+            <TextInput
+              testID="input-phone"
+              style={styles.input}
+              value={phone}
+              onChangeText={(text) => {
+                setPhone(text);
+                if (errorMessage) setErrorMessage(null);
+              }}
+              placeholder="+237  6XX XX XX XX"
+              placeholderTextColor={colors.textSubtle}
+              keyboardType="phone-pad"
+              autoFocus={false}
+            />
+          </View>
+          {errorMessage && (
+            <Text testID="phone-error-text" style={styles.errorText}>
+              {errorMessage}
+            </Text>
+          )}
+        </View>
+
+        {/* Profile choice title */}
+        <Text style={styles.sectionTitle}>Je m'inscris :</Text>
+
+        {/* Option 1: Family */}
+        <Pressable
+          testID="btn-profile-family"
+          style={({ pressed }) => [
+            styles.cardOption,
+            selectedProfile === "family" ? styles.cardOptionSelected : styles.cardOptionNormal,
+            pressed && styles.pressed,
+          ]}
+          onPress={() => setSelectedProfile("family")}
+        >
+          <View style={styles.iconCol}>
+            <FontAwesome5 name="user-friends" size={32} color={colors.primary} />
+          </View>
+          <View style={styles.cardTextCol}>
+            <Text style={styles.cardTitle}>Pour moi ou un proche</Text>
+            <Text style={styles.cardSubtitle}>Enfant, adulte, parent âgé…</Text>
+          </View>
+          <Text style={styles.chevron}>›</Text>
+        </Pressable>
+
+        {/* Option 2: Caregiver */}
+        <Pressable
+          testID="btn-profile-caregiver"
+          style={({ pressed }) => [
+            styles.cardOption,
+            selectedProfile === "caregiver" ? styles.cardCaregiverSelected : styles.cardOptionNormal,
+            pressed && styles.pressed,
+          ]}
+          onPress={() => {
+            setSelectedProfile("caregiver");
+            router.push("/s-pending");
+          }}
+        >
+          <View style={styles.iconCol}>
+            <FontAwesome5 name="user-md" size={32} color={colors.care} />
+          </View>
+          <View style={styles.cardTextCol}>
+            <Text style={styles.cardTitle}>Je suis soignant</Text>
+            <Text style={styles.cardSubtitle}>Vérification par notre équipe</Text>
+          </View>
+          <Text style={styles.chevron}>›</Text>
+        </Pressable>
+
+        {/* Terms notice */}
+        <Text style={styles.termsText}>
+          En continuant, j'accepte les conditions d'utilisation et la politique de confidentialité.
         </Text>
-      </View>
+
+        {/* Continue Button */}
+        <Pressable
+          testID="btn-signup-continue"
+          style={({ pressed }) => [
+            styles.continueButton,
+            pressed && styles.pressed,
+          ]}
+          onPress={handleContinue}
+          disabled={loading}
+        >
+          {loading ? (
+            <ActivityIndicator size="small" color={colors.white} />
+          ) : (
+            <Text style={styles.continueButtonText}>Continuer</Text>
+          )}
+        </Pressable>
+      </ScrollView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: colors.white,
+  },
   container: {
-    flex: 1,
-    backgroundColor: colors.canvas,
+    paddingHorizontal: 17,
+    paddingTop: 24,
+    paddingBottom: 32,
   },
-  content: {
-    flex: 1,
-    padding: 17,
+  fieldBlock: {
+    marginBottom: 24,
+  },
+  fieldLabel: {
+    fontFamily: fontFamilies.bold,
+    fontSize: fontSizes.sm14,
+    color: colors.textMuted,
+    height: 25,
+  },
+  inputContainer: {
+    height: 44,
+    backgroundColor: colors.surface2,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 7,
+    paddingHorizontal: 14,
     justifyContent: "center",
-    alignItems: "center",
   },
-  codeText: {
-    fontFamily: fontFamilies.bold,
-    fontSize: fontSizes.xl24,
-    color: colors.primary,
-    marginBottom: 8,
+  inputError: {
+    borderColor: colors.danger,
   },
-  titleText: {
-    fontFamily: fontFamilies.bold,
-    fontSize: fontSizes.lg22,
+  input: {
+    fontFamily: fontFamilies.regular,
+    fontSize: fontSizes.md18,
     color: colors.text,
-    textAlign: "center",
+    padding: 0,
+  },
+  errorText: {
+    fontFamily: fontFamilies.regular,
+    fontSize: fontSizes.sm13,
+    color: colors.danger,
+    marginTop: 6,
+  },
+  sectionTitle: {
+    fontFamily: fontFamilies.bold,
+    fontSize: fontSizes.md19,
+    color: colors.text,
     marginBottom: 12,
   },
-  descText: {
+  cardOption: {
+    width: "100%",
+    height: 92,
+    borderRadius: 9,
+    borderWidth: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 14,
+    marginBottom: 15,
+  },
+  cardOptionNormal: {
+    backgroundColor: colors.white,
+    borderColor: colors.border,
+  },
+  cardOptionSelected: {
+    backgroundColor: colors.primary50,
+    borderColor: colors.primary,
+  },
+  cardCaregiverSelected: {
+    backgroundColor: colors.care50,
+    borderColor: colors.care,
+  },
+  iconCol: {
+    width: 32,
+    alignItems: "center",
+    marginRight: 14,
+  },
+  cardTextCol: {
+    flex: 1,
+  },
+  cardTitle: {
+    fontFamily: fontFamilies.bold,
+    fontSize: fontSizes.md18,
+    color: colors.text,
+    marginBottom: 2,
+  },
+  cardSubtitle: {
     fontFamily: fontFamilies.regular,
     fontSize: fontSizes.sm14,
     color: colors.textMuted,
-    textAlign: "center",
-    maxWidth: 300,
+  },
+  chevron: {
+    fontFamily: fontFamilies.bold,
+    fontSize: fontSizes.xl25,
+    color: colors.textSubtle,
+    marginLeft: 8,
+  },
+  termsText: {
+    fontFamily: fontFamilies.regular,
+    fontSize: fontSizes.sm13,
+    color: colors.textMuted,
+    lineHeight: 18,
+    marginTop: 10,
+    marginBottom: 28,
+  },
+  continueButton: {
+    height: 63,
+    backgroundColor: colors.primary,
+    borderRadius: 11,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  continueButtonText: {
+    fontFamily: fontFamilies.bold,
+    fontSize: fontSizes.lg21,
+    color: colors.white,
+  },
+  pressed: {
+    opacity: 0.85,
   },
 });

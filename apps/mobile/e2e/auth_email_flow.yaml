@@ -1,0 +1,18 @@
+appId: com.tsotsaforkids.app
+---
+- launchApp
+- assertVisible: "TSOTSA"
+- assertVisible: "Bien nourrir, bien suivre."
+- tapOn: "Continuer avec mon e-mail"
+- assertVisible: "Mon e-mail"
+- tapOn:
+    id: "input-email"
+- eraseText
+- inputText: "parent.demo@tsotsa.org"
+- tapOn:
+    id: "input-password"
+- eraseText
+- inputText: "Secret12345"
+- tapOn: "Continuer"
+- assertVisible: "Modules"
+
