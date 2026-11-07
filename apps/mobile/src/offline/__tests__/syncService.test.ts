@@ -8,7 +8,7 @@ describe("Sync Service and Network State", () => {
     await clearQueue();
     setOnlineState(true);
     // Reset fetch
-    global.fetch = jest.fn();
+    (globalThis.fetch as jest.Mock) = jest.fn();
   });
 
   const sampleIntake: OfflineIntake = {
@@ -35,7 +35,7 @@ describe("Sync Service and Network State", () => {
 
   it("synchronizes pending intakes successfully and clears queue", async () => {
     await enqueueIntake(sampleIntake);
-    (global.fetch as jest.Mock).mockResolvedValueOnce({
+    (globalThis.fetch as jest.Mock).mockResolvedValueOnce({
       ok: true,
       status: 200,
       json: async () => ({
@@ -55,7 +55,7 @@ describe("Sync Service and Network State", () => {
 
   it("retains queue items when network call fails", async () => {
     await enqueueIntake(sampleIntake);
-    (global.fetch as jest.Mock).mockRejectedValueOnce(
+    (globalThis.fetch as jest.Mock).mockRejectedValueOnce(
       new Error("Network connection error")
     );
 

@@ -9,11 +9,11 @@ describe("Intakes Service", () => {
   beforeEach(async () => {
     await clearQueue();
     setOnlineState(true);
-    global.fetch = jest.fn();
+    (globalThis.fetch as jest.Mock) = jest.fn();
   });
 
   it("records intake online via API successfully", async () => {
-    (global.fetch as jest.Mock).mockResolvedValueOnce({
+    (globalThis.fetch as jest.Mock).mockResolvedValueOnce({
       ok: true,
       status: 201,
       json: async () => ({
@@ -67,7 +67,7 @@ describe("Intakes Service", () => {
   });
 
   it("falls back to offline queue on network error", async () => {
-    (global.fetch as jest.Mock).mockRejectedValueOnce(
+    (globalThis.fetch as jest.Mock).mockRejectedValueOnce(
       new Error("Network timeout")
     );
 
@@ -102,7 +102,7 @@ describe("Intakes Service", () => {
       consumption: "all",
     });
 
-    (global.fetch as jest.Mock).mockResolvedValueOnce({
+    (globalThis.fetch as jest.Mock).mockResolvedValueOnce({
       ok: true,
       status: 200,
       json: async () => [
