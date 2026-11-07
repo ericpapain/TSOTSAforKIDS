@@ -1,60 +1,78 @@
+import React, { useState } from "react";
+import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 import { useRouter } from "expo-router";
-import React from "react";
-import { StyleSheet, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-
 import { AppBar } from "../src/components/AppBar";
-import { colors } from "../src/theme/colors";
-import { fontFamilies, fontSizes } from "../src/theme/typography";
+import { centerStyles } from "../src/features/notifications/centerStyles";
+import {
+  getInAppNotifications,
+  markAsRead,
+  InAppNotificationItem,
+} from "../src/notifications";
 
-export default function ScreenM27(): React.JSX.Element {
+export default function NotifCenterScreen(): React.JSX.Element {
   const router = useRouter();
+  const [notifications, setNotifications] = useState<InAppNotificationItem[]>(() =>
+    getInAppNotifications()
+  );
+
+  const handlePressItem = (item: InAppNotificationItem) => {
+    if (!item.read_at) {
+      markAsRead(item.id);
+      setNotifications(getInAppNotifications());
+    }
+    if (item.target_route === "/u-history") {
+      router.push("/u-history");
+    } else if (item.target_route) {
+      router.push({
+        pathname: "/u-give",
+        params: { person_name: item.person_name ?? "Amina" },
+      });
+    }
+  };
+
   return (
-    <SafeAreaView style={styles.container} edges={["bottom", "left", "right"]}>
+    <View style={centerStyles.container}>
       <AppBar
-        title="Mes notifications"
-        onBack={() => router.replace("/u-modules")}
+        title="Notifications"
+        onBack={() => router.back()}
+        rightIcon="cog"
+        onRightPress={() => router.push("/u-notif-settings")}
+        rightAccessibilityLabel="Réglages"
       />
-      <View style={styles.content} testID="screen-m27">
-        <Text style={styles.codeText}>M27</Text>
-        <Text style={styles.titleText}>Mes notifications</Text>
-        <Text style={styles.descText}>
-          Écran de fondation (M27). L interface complète sera intégrée lors de l étape dédiée.
-        </Text>
-      </View>
-    </SafeAreaView>
+
+      <ScrollView contentContainerStyle={centerStyles.content}>
+        <Text style={centerStyles.sectionTitle}>Récents</Text>
+
+        {notifications.length === 0 ? (
+          <View style={centerStyles.emptyContainer}>
+            <Text style={centerStyles.emptyText}>Aucune notification</Text>
+          </View>
+        ) : (
+          notifications.map((item) => {
+            const isUnread = !item.read_at;
+            return (
+              <TouchableOpacity
+                key={item.id}
+                style={[centerStyles.card, isUnread && centerStyles.cardUnread]}
+                onPress={() => handlePressItem(item)}
+                testID={`notif-item-${item.id}`}
+                activeOpacity={0.7}
+              >
+                <View style={centerStyles.cardHeader}>
+                  <View style={centerStyles.badgeRow}>
+                    <View
+                      style={isUnread ? centerStyles.unreadDot : centerStyles.readDot}
+                    />
+                    <Text style={centerStyles.cardTitle}>{item.title}</Text>
+                  </View>
+                  <Text style={centerStyles.relativeTime}>{item.relative_time}</Text>
+                </View>
+                <Text style={centerStyles.cardBody}>{item.body}</Text>
+              </TouchableOpacity>
+            );
+          })
+        )}
+      </ScrollView>
+    </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.canvas,
-  },
-  content: {
-    flex: 1,
-    padding: 17,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  codeText: {
-    fontFamily: fontFamilies.bold,
-    fontSize: fontSizes.xl24,
-    color: colors.primary,
-    marginBottom: 8,
-  },
-  titleText: {
-    fontFamily: fontFamilies.bold,
-    fontSize: fontSizes.lg22,
-    color: colors.text,
-    textAlign: "center",
-    marginBottom: 12,
-  },
-  descText: {
-    fontFamily: fontFamilies.regular,
-    fontSize: fontSizes.sm14,
-    color: colors.textMuted,
-    textAlign: "center",
-    maxWidth: 300,
-  },
-});

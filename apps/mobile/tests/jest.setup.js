@@ -48,11 +48,34 @@ jest.mock("expo-router", () => ({
 // Expo Notifications
 jest.mock("expo-notifications", () => ({
   setNotificationHandler: jest.fn(),
-  getPermissionsAsync: jest.fn(async () => ({ status: "granted" })),
-  requestPermissionsAsync: jest.fn(async () => ({ status: "granted" })),
+  getPermissionsAsync: jest.fn(async () => ({ granted: true, status: "granted" })),
+  requestPermissionsAsync: jest.fn(async () => ({ granted: true, status: "granted" })),
   getExpoPushTokenAsync: jest.fn(async () => ({
     data: "ExponentPushToken[unit-test-token]",
   })),
+  scheduleNotificationAsync: jest.fn(async () => "mock-scheduled-id"),
+  cancelScheduledNotificationAsync: jest.fn(async () => {}),
+  cancelAllScheduledNotificationsAsync: jest.fn(async () => {}),
+  getAllScheduledNotificationsAsync: jest.fn(async () => []),
+  setNotificationCategoryAsync: jest.fn(async () => {}),
+  setNotificationChannelAsync: jest.fn(async () => {}),
+  AndroidImportance: {
+    MAX: 5,
+    HIGH: 4,
+    DEFAULT: 3,
+    LOW: 2,
+    MIN: 1,
+    NONE: 0,
+  },
+  SchedulableTriggerInputTypes: {
+    CALENDAR: "calendar",
+    DAILY: "daily",
+    WEEKLY: "weekly",
+    MONTHLY: "monthly",
+    YEARLY: "yearly",
+    DATE: "date",
+    TIME_INTERVAL: "timeInterval",
+  },
 }));
 
 // Expo Vector Icons
