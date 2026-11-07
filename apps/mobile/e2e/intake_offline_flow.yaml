@@ -1,0 +1,66 @@
+appId: com.tsotsaforkids.app
+---
+# Étape M-E : Parcours Donner un produit → Confirmer la prise → Prise enregistrée → Historique des prises (en ligne puis en mode avion)
+- launchApp
+
+# --- PARTIE 1 : Enregistrement d'une prise en ligne ---
+# 1. Écran Produit & équivalents (M15)
+- assertVisible: "Donner à Amina"
+- tapOn: "Donner à Amina"
+
+# 2. Écran Confirmer la prise (M20)
+- assertVisible: "Confirmer la prise"
+- assertVisible: "Pour : Amina"
+- assertVisible: "Plumpy'Nut"
+- assertVisible: "Quantité"
+- assertVisible: "1 sachet"
+- assertVisible: "Quand ?"
+- assertVisible: "Amina a mangé :"
+- assertVisible: "Tout"
+- tapOn: "Tout"
+- assertVisible: "Confirmer"
+- tapOn: "Confirmer"
+
+# 3. Écran Prise enregistrée (M21)
+- assertVisible: "Prise enregistrée"
+- assertVisible: "Plumpy'Nut · 1 sachet · 12:30"
+- assertVisible: "Votre soignant est prévenu et la voit dans le suivi d'Amina."
+- assertVisible: "Retour à Amina"
+- tapOn: "Retour à Amina"
+
+# 4. Écran Profil & Historique (M22)
+- assertVisible: "Prises"
+- tapOn: "Prises"
+- assertVisible: "Prises d'Amina"
+- assertVisible: "Aujourd'hui 12:30"
+- assertVisible: "Plumpy'Nut · 1 sachet · tout"
+- assertVisible: "Prises des 7 derniers jours : 11 sur 14 (démo)"
+
+# --- PARTIE 2 : Mode Hors-ligne / Avion (M23) ---
+# Activation du mode avion (offline)
+- setAirplaneMode: true
+
+# Retour pour donner une nouvelle prise hors réseau
+- tapOn: "Produits"
+- assertVisible: "Donner à Amina"
+- tapOn: "Donner à Amina"
+
+# Confirmation de la prise hors-ligne
+- assertVisible: "Confirmer la prise"
+- tapOn: "La moitié"
+- tapOn: "Confirmer"
+
+# Prise enregistrée en local
+- assertVisible: "Prise enregistrée"
+
+# Consultation de l'écran Mode hors ligne (M23)
+- tapOn: "Modules"
+- tapOn: "Connexion"
+- assertVisible: "Pas de réseau. Vos prises sont gardées sur le téléphone."
+- assertVisible: "En attente d'envoi"
+- assertVisible: "Envoi automatique dès le retour du réseau."
+
+# Rétablissement de la connexion (désactivation mode avion)
+- setAirplaneMode: false
+- tapOn: "Réessayer maintenant"
+
