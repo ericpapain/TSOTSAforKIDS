@@ -60,6 +60,7 @@ Thumbs.db
 test-results/
 playwright-report/
 blob-report/
+coverage/
 data/orkg/raw/
 
 # Archives

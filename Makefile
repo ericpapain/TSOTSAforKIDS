@@ -30,8 +30,7 @@ check-web:
 	@echo apps/web : pas encore créé
 
 check-mobile:
-	@$(PYTHON) -c "import os, sys; sys.exit(0) if not os.path.isfile('apps/mobile/package.json') else os.system('pnpm --filter mobile check')"
-	@echo apps/mobile : pas encore créé
+	pnpm --filter @tsotsa/mobile check
 
 e2e-web:
 	@$(PYTHON) -c "import os, sys; sys.exit(0) if not os.path.isdir('apps/web/e2e') else os.system('pnpm --filter web test:e2e')"
