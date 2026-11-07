@@ -1,60 +1,148 @@
-import { useRouter } from "expo-router";
-import React from "react";
-import { StyleSheet, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-
-import { AppBar } from "../src/components/AppBar";
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  SafeAreaView,
+  StatusBar,
+  ScrollView,
+} from "react-native";
+import { useRouter, useLocalSearchParams } from "expo-router";
+import { FontAwesome5 } from "@expo/vector-icons";
 import { colors } from "../src/theme/colors";
-import { fontFamilies, fontSizes } from "../src/theme/typography";
+import { BottomNav } from "../src/components/BottomNav";
+import { f75Styles as styles } from "../src/features/products/f75Styles";
+import { getProduct } from "../src/features/products/productsService";
+import type { ProductDetail } from "../src/features/products/types";
 
-export default function ScreenM14(): React.JSX.Element {
+interface NutrientDisplayRow {
+  label: string;
+  value: string;
+}
+
+const DEFAULT_F75_ROWS: NutrientDisplayRow[] = [
+  { label: "Énergie", value: "75 kcal" },
+  { label: "Protéines", value: "0,9 g" },
+  { label: "Lactose", value: "1,3 g" },
+  { label: "Potassium", value: "3,6 mmol" },
+  { label: "Sodium", value: "0,6 mmol" },
+  { label: "Magnésium", value: "0,43 mmol" },
+  { label: "Zinc", value: "2,0 mg" },
+  { label: "Cuivre", value: "0,25 mg" },
+];
+
+export default function F75Screen() {
   const router = useRouter();
+  const params = useLocalSearchParams<{
+    productId?: string;
+    personId?: string;
+    name?: string;
+    region?: string;
+  }>();
+
+  const [product, setProduct] = useState<ProductDetail | null>(null);
+
+  useEffect(() => {
+    let isMounted = true;
+    if (params.productId && !params.productId.startsWith("ref-")) {
+      getProduct(params.productId).then((data) => {
+        if (isMounted && data) setProduct(data);
+      });
+    }
+    return () => {
+      isMounted = false;
+    };
+  }, [params.productId]);
+
+  const rows: NutrientDisplayRow[] = product?.nutrients?.length
+    ? product.nutrients.map((n) => ({
+        label: n.nutrient_name || n.nutrient_code,
+        value: `${n.value} ${n.unit}`,
+      }))
+    : DEFAULT_F75_ROWS;
+
+  const handleBackToDropdown = () => {
+    router.push({
+      pathname: "/u-dropdown",
+      params: {
+        personId: params.personId ?? "",
+        name: params.name ?? "Amina",
+        region: params.region ?? "Ouest",
+      },
+    });
+  };
+
   return (
-    <SafeAreaView style={styles.container} edges={["bottom", "left", "right"]}>
-      <AppBar
-        title="F-75 (hôpital)"
-        onBack={() => router.replace("/u-dropdown")}
-      />
-      <View style={styles.content} testID="screen-m14">
-        <Text style={styles.codeText}>M14</Text>
-        <Text style={styles.titleText}>F-75 (hôpital)</Text>
-        <Text style={styles.descText}>
-          Écran de fondation (M14). L interface complète sera intégrée lors de l étape dédiée.
-        </Text>
+    <SafeAreaView style={styles.safeArea}>
+      <StatusBar barStyle="light-content" backgroundColor={colors.primary} />
+
+      {/* App Bar */}
+      <View style={styles.appBar}>
+        <TouchableOpacity
+          testID="btn-back"
+          accessibilityLabel="Retour"
+          accessibilityRole="button"
+          onPress={handleBackToDropdown}
+          style={styles.touchIcon}
+        >
+          <FontAwesome5 name="arrow-left" size={24} color={colors.white} />
+        </TouchableOpacity>
+
+        <Text style={styles.appBarTitle}>F-75</Text>
+        <View style={styles.touchIcon} />
       </View>
+
+      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+        {/* Hospital Warning */}
+        <View style={styles.dangerBanner}>
+          <Text style={styles.dangerBannerText}>
+            Lait thérapeutique de stabilisation, donné à l'hôpital sous surveillance médicale.
+          </Text>
+        </View>
+
+        {/* Composition Title */}
+        <Text style={styles.sectionTitle}>Composition pour 100 ml</Text>
+
+        {/* Composition Table */}
+        {rows.map((row, index) => {
+          const isEven = index % 2 === 0;
+          return (
+            <View
+              key={row.label}
+              style={isEven ? styles.tableRow : styles.tableRowAlt}
+            >
+              <Text style={styles.nutrientLabel}>{row.label}</Text>
+              <Text style={styles.nutrientValue}>{row.value}</Text>
+            </View>
+          );
+        })}
+
+        {/* Source citation */}
+        <Text style={styles.sourceText}>
+          Source : OMS, prise en charge de la malnutrition sévère (1999). À confirmer par la référente médicale.
+        </Text>
+
+        {/* Choose other product button */}
+        <TouchableOpacity
+          testID="btn-choose-other"
+          accessibilityRole="button"
+          onPress={handleBackToDropdown}
+          style={styles.btnChooseOther}
+        >
+          <Text style={styles.btnChooseOtherText}>Choisir un autre produit</Text>
+        </TouchableOpacity>
+      </ScrollView>
+
+      {/* Bottom Nav */}
+      <BottomNav
+        activeTab="products"
+        onTabPress={(tab) => {
+          if (tab === "modules") router.push("/u-modules");
+          else if (tab === "persons") router.push("/u-persons");
+          else if (tab === "products") router.push("/u-choose");
+          else if (tab === "intakes") router.push("/u-history");
+        }}
+      />
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.canvas,
-  },
-  content: {
-    flex: 1,
-    padding: 17,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  codeText: {
-    fontFamily: fontFamilies.bold,
-    fontSize: fontSizes.xl24,
-    color: colors.primary,
-    marginBottom: 8,
-  },
-  titleText: {
-    fontFamily: fontFamilies.bold,
-    fontSize: fontSizes.lg22,
-    color: colors.text,
-    textAlign: "center",
-    marginBottom: 12,
-  },
-  descText: {
-    fontFamily: fontFamilies.regular,
-    fontSize: fontSizes.sm14,
-    color: colors.textMuted,
-    textAlign: "center",
-    maxWidth: 300,
-  },
-});

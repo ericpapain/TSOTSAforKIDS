@@ -1,60 +1,181 @@
-import { useRouter } from "expo-router";
-import React from "react";
-import { StyleSheet, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-
-import { AppBar } from "../src/components/AppBar";
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  SafeAreaView,
+  StatusBar,
+  ScrollView,
+} from "react-native";
+import { useRouter, useLocalSearchParams } from "expo-router";
+import { FontAwesome5 } from "@expo/vector-icons";
 import { colors } from "../src/theme/colors";
-import { fontFamilies, fontSizes } from "../src/theme/typography";
+import { myProductStyles as styles } from "../src/features/products/myProductStyles";
+import { getProductEquivalents } from "../src/features/products/productsService";
+import type { EquivalentFoodItem } from "../src/features/products/types";
 
-export default function ScreenM25(): React.JSX.Element {
+interface MyProductEquivalentDisplay {
+  id: string;
+  name: string;
+  score: string;
+  details: string;
+  extra?: string;
+}
+
+const DEFAULT_MY_EQUIVALENTS: MyProductEquivalentDisplay[] = [
+  {
+    id: "eq-1",
+    name: "Niébé",
+    score: "3/3",
+    details: "Prot. 23,5 g · fer 8,3 mg · Ca 110 mg",
+  },
+  {
+    id: "eq-2",
+    name: "Feuilles de moringa",
+    score: "3/3",
+    details: "Prot. 9,4 g · fer 4,0 mg · Ca 185 mg",
+  },
+  {
+    id: "eq-3",
+    name: "Arachide",
+    score: "3/3",
+    details: "Prot. 25,8 g · fer 4,6 mg · Ca 92 mg",
+    extra: "+ lipides",
+  },
+  {
+    id: "eq-4",
+    name: "Soja",
+    score: "3/3",
+    details: "Prot. 36,5 g · fer 15,7 mg · Ca 277 mg",
+    extra: "+ lipides",
+  },
+  {
+    id: "eq-5",
+    name: "Sésame",
+    score: "3/3",
+    details: "Prot. 17,7 g · fer 14,6 mg · Ca 975 mg",
+    extra: "+ lipides",
+  },
+];
+
+export default function MyProductEquivalentsScreen() {
   const router = useRouter();
+  const params = useLocalSearchParams<{
+    productId?: string;
+    productName?: string;
+    personId?: string;
+    name?: string;
+    region?: string;
+  }>();
+
+  const productName = params.productName ?? "Farine infantile enrichie";
+  const personName = params.name ?? "Amina";
+  const regionName = params.region ?? "Ouest";
+
+  const [items, setItems] = useState<MyProductEquivalentDisplay[]>(DEFAULT_MY_EQUIVALENTS);
+
+  useEffect(() => {
+    let isMounted = true;
+    if (params.productId && !params.productId.startsWith("my-")) {
+      getProductEquivalents(params.productId).then((resp) => {
+        if (isMounted && resp?.equivalents?.length) {
+          const mapped = resp.equivalents.map((item: EquivalentFoodItem, idx: number) => ({
+            id: item.food_id || `eq-${idx}`,
+            name: item.food_name,
+            score: `${item.m}/3`,
+            details: `Prot. ${item.teneurs["Protéines"] ?? 20} g · fer ${item.teneurs["Fer"] ?? 5} mg · Ca ${item.teneurs["Calcium"] ?? 100} mg`,
+            extra: item.extra_nutrients?.length ? `+ ${item.extra_nutrients.join(", ")}` : undefined,
+          }));
+          setItems(mapped);
+        }
+      });
+    }
+    return () => {
+      isMounted = false;
+    };
+  }, [params.productId]);
+
   return (
-    <SafeAreaView style={styles.container} edges={["bottom", "left", "right"]}>
-      <AppBar
-        title="Équivalents de mon produit"
-        onBack={() => router.replace("/u-addproduct")}
-      />
-      <View style={styles.content} testID="screen-m25">
-        <Text style={styles.codeText}>M25</Text>
-        <Text style={styles.titleText}>Équivalents de mon produit</Text>
-        <Text style={styles.descText}>
-          Écran de fondation (M25). L interface complète sera intégrée lors de l étape dédiée.
-        </Text>
+    <SafeAreaView style={styles.safeArea}>
+      <StatusBar barStyle="light-content" backgroundColor={colors.primary} />
+
+      {/* App Bar */}
+      <View style={styles.appBar}>
+        <TouchableOpacity
+          testID="btn-back"
+          accessibilityLabel="Retour"
+          accessibilityRole="button"
+          onPress={() => router.push({ pathname: "/u-dropdown", params: { personId: params.personId ?? "", name: personName, region: regionName } })}
+          style={styles.touchIcon}
+        >
+          <FontAwesome5 name="arrow-left" size={24} color={colors.white} />
+        </TouchableOpacity>
+
+        <Text style={styles.appBarTitle}>Mon produit</Text>
+        <View style={styles.touchIcon} />
       </View>
+
+      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+        {/* Product Card */}
+        <View style={styles.customProductCard}>
+          <Text style={styles.productName}>{productName}</Text>
+          <View style={styles.badgeVerificationLarge}>
+            <Text style={styles.badgeVerificationTextLarge}>Privé · en vérification</Text>
+          </View>
+        </View>
+
+        {/* Nutriments summary label */}
+        <Text style={styles.myProductNutrientsSummary}>
+          Nutriments : protéines, fer, calcium
+        </Text>
+
+        {/* Equivalents List */}
+        {items.map((item, index) => {
+          const rank = index + 1;
+          return (
+            <View
+              key={item.id}
+              testID={`my-eq-item-${rank}`}
+              style={styles.equivalentCard}
+            >
+              <Text style={styles.rankText}>{rank}</Text>
+              <View style={styles.eqInfoCol}>
+                <View style={styles.eqNameRow}>
+                  <Text style={styles.eqFoodName}>{item.name}</Text>
+                  <View style={styles.pillScore}>
+                    <Text style={styles.pillScoreText}>{item.score}</Text>
+                  </View>
+                </View>
+                <View style={styles.eqBottomRow}>
+                  <Text style={styles.nutrientsBreakdownText}>{item.details}</Text>
+                  {item.extra ? (
+                    <Text style={styles.extraNutrientText}>{item.extra}</Text>
+                  ) : null}
+                </View>
+              </View>
+            </View>
+          );
+        })}
+
+        {/* Action Button */}
+        <TouchableOpacity
+          testID="btn-give-myproduct"
+          accessibilityRole="button"
+          onPress={() =>
+            router.push({
+              pathname: "/u-give",
+              params: {
+                productName,
+                personId: params.personId ?? "",
+                name: personName,
+              },
+            })
+          }
+          style={styles.btnGiveFull}
+        >
+          <Text style={styles.btnGiveFullText}>Donner à {personName}</Text>
+        </TouchableOpacity>
+      </ScrollView>
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.canvas,
-  },
-  content: {
-    flex: 1,
-    padding: 17,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  codeText: {
-    fontFamily: fontFamilies.bold,
-    fontSize: fontSizes.xl24,
-    color: colors.primary,
-    marginBottom: 8,
-  },
-  titleText: {
-    fontFamily: fontFamilies.bold,
-    fontSize: fontSizes.lg22,
-    color: colors.text,
-    textAlign: "center",
-    marginBottom: 12,
-  },
-  descText: {
-    fontFamily: fontFamilies.regular,
-    fontSize: fontSizes.sm14,
-    color: colors.textMuted,
-    textAlign: "center",
-    maxWidth: 300,
-  },
-});

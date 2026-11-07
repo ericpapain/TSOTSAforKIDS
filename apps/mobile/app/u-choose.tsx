@@ -1,60 +1,137 @@
-import { useRouter } from "expo-router";
-import React from "react";
-import { StyleSheet, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-
-import { AppBar } from "../src/components/AppBar";
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  SafeAreaView,
+  StatusBar,
+  ScrollView,
+} from "react-native";
+import { useRouter, useLocalSearchParams } from "expo-router";
+import { FontAwesome5 } from "@expo/vector-icons";
 import { colors } from "../src/theme/colors";
-import { fontFamilies, fontSizes } from "../src/theme/typography";
+import { BottomNav } from "../src/components/BottomNav";
+import { chooseStyles as styles } from "../src/features/products/chooseStyles";
+import { getUserPreferredRegion } from "../src/features/products/productsService";
 
-export default function ScreenM12(): React.JSX.Element {
+export default function ChooseProductScreen() {
   const router = useRouter();
+  const params = useLocalSearchParams<{
+    personId?: string;
+    name?: string;
+    region?: string;
+  }>();
+
+  const personName = params.name ?? "Amina";
+  const [regionName, setRegionName] = useState<string>(params.region ?? "Ouest");
+
+  useEffect(() => {
+    let isMounted = true;
+    if (!params.region) {
+      getUserPreferredRegion().then((r) => {
+        if (isMounted && r) setRegionName(r);
+      });
+    }
+    return () => {
+      isMounted = false;
+    };
+  }, [params.region]);
+
+  const handleOpenDropdown = () => {
+    router.push({
+      pathname: "/u-dropdown",
+      params: {
+        personId: params.personId ?? "",
+        name: personName,
+        region: regionName,
+      },
+    });
+  };
+
+  const handleAddMyProduct = () => {
+    router.push({
+      pathname: "/u-addproduct",
+      params: {
+        personId: params.personId ?? "",
+        name: personName,
+        region: regionName,
+      },
+    });
+  };
+
   return (
-    <SafeAreaView style={styles.container} edges={["bottom", "left", "right"]}>
-      <AppBar
-        title="Choisir un produit"
-        onBack={() => router.replace("/u-modules")}
-      />
-      <View style={styles.content} testID="screen-m12">
-        <Text style={styles.codeText}>M12</Text>
-        <Text style={styles.titleText}>Choisir un produit</Text>
-        <Text style={styles.descText}>
-          Écran de fondation (M12). L interface complète sera intégrée lors de l étape dédiée.
-        </Text>
+    <SafeAreaView style={styles.safeArea}>
+      <StatusBar barStyle="light-content" backgroundColor={colors.primary} />
+
+      {/* App Bar */}
+      <View style={styles.appBar}>
+        <TouchableOpacity
+          testID="btn-back"
+          accessibilityLabel="Retour"
+          accessibilityRole="button"
+          onPress={() => router.push({ pathname: "/u-profile", params: { personId: params.personId ?? "", name: personName } })}
+          style={styles.touchIcon}
+        >
+          <FontAwesome5 name="arrow-left" size={24} color={colors.white} />
+        </TouchableOpacity>
+
+        <Text style={styles.appBarTitle}>Choisir un produit</Text>
+        <View style={styles.touchIcon} />
       </View>
+
+      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+        {/* Pills row */}
+        <View style={styles.pillRow}>
+          <View style={styles.personPill}>
+            <Text style={styles.personPillText}>Pour : {personName}</Text>
+          </View>
+          <View style={styles.regionPill}>
+            <Text style={styles.regionPillText}>Ma région : {regionName}</Text>
+          </View>
+        </View>
+
+        {/* Select trigger closed */}
+        <TouchableOpacity
+          testID="btn-open-dropdown"
+          accessibilityRole="button"
+          onPress={handleOpenDropdown}
+          style={styles.selectTriggerClosed}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.selectTriggerText}>Choisir un produit</Text>
+          <Text style={styles.chevronText}>▾</Text>
+        </TouchableOpacity>
+
+        {/* Empty state illustration */}
+        <View style={styles.emptyContainer}>
+          <View style={styles.emptyIconBox}>
+            <FontAwesome5 name="search" size={54} color={colors.primary200} />
+          </View>
+          <Text style={styles.emptyText}>
+            Choisissez un produit pour voir sa composition et les aliments locaux équivalents.
+          </Text>
+
+          <TouchableOpacity
+            testID="btn-add-product"
+            accessibilityRole="button"
+            onPress={handleAddMyProduct}
+            style={styles.btnAddMyProduct}
+          >
+            <Text style={styles.btnAddMyProductText}>+ Ajouter mon produit</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+
+      {/* Bottom Nav */}
+      <BottomNav
+        activeTab="products"
+        onTabPress={(tab) => {
+          if (tab === "modules") router.push("/u-modules");
+          else if (tab === "persons") router.push("/u-persons");
+          else if (tab === "products") router.push("/u-choose");
+          else if (tab === "intakes") router.push("/u-history");
+        }}
+      />
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.canvas,
-  },
-  content: {
-    flex: 1,
-    padding: 17,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  codeText: {
-    fontFamily: fontFamilies.bold,
-    fontSize: fontSizes.xl24,
-    color: colors.primary,
-    marginBottom: 8,
-  },
-  titleText: {
-    fontFamily: fontFamilies.bold,
-    fontSize: fontSizes.lg22,
-    color: colors.text,
-    textAlign: "center",
-    marginBottom: 12,
-  },
-  descText: {
-    fontFamily: fontFamilies.regular,
-    fontSize: fontSizes.sm14,
-    color: colors.textMuted,
-    textAlign: "center",
-    maxWidth: 300,
-  },
-});

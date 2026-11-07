@@ -1,0 +1,44 @@
+appId: com.tsotsaforkids.app
+---
+# Étape M-D : Parcours profil → choisir un produit → Plumpy'Nut → arachide → retour → filtre région
+- launchApp
+
+# 1. Écran Profil (M11)
+- assertVisible: "Amina"
+- assertVisible: "Donner un produit"
+- tapOn: "Donner un produit"
+
+# 2. Écran Choisir un produit (M12)
+- assertVisible: "Pour : Amina"
+- assertVisible: "Ma région : Ouest"
+- assertVisible: "Choisir un produit"
+- tapOn: "Choisir un produit"
+
+# 3. Écran Liste des produits (M13)
+- assertVisible: "PRODUITS DE RÉFÉRENCE"
+- assertVisible: "Plumpy'Nut"
+- tapOn: "Plumpy'Nut"
+
+# 4. Écran Produit et équivalents locaux (M15)
+- assertVisible: "Plumpy'Nut"
+- assertVisible: "Aliments locaux équivalents"
+- assertVisible: "Arachide"
+- tapOn: "Arachide"
+
+# 5. Écran Détail de l'aliment local (M18)
+- assertVisible: "Arachide"
+- assertVisible: "3/3 nutriments"
+- assertVisible: "Protéines ★"
+- assertVisible: "25,8 g"
+- assertVisible: "Donner à Amina"
+
+# 6. Retour vers l'écran Produit (M15)
+- back
+- assertVisible: "Plumpy'Nut"
+- assertVisible: "Toutes régions ▾"
+
+# 7. Filtre par région (M16)
+- tapOn: "Toutes régions ▾"
+- assertVisible: "Ouest uniquement ✕"
+- assertVisible: "Disponible dans l'Ouest"
+
