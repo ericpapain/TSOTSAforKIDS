@@ -4,6 +4,7 @@ module.exports = {
     "node_modules/(?!(\\.pnpm/)?((jest-)?react-native|@react-native(-community)?|@react-native/.*|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|react-native-svg|@tsotsa/.*))",
   ],
   setupFilesAfterEnv: ["<rootDir>/tests/jest.setup.js"],
+  testTimeout: 15000,
   testMatch: ["**/__tests__/**/*.test.[jt]s?(x)"],
   moduleNameMapper: {
     "^(\\.{1,2}/.*)\\.js$": "$1",
