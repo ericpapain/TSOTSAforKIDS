@@ -5,6 +5,7 @@ import {
 } from "@expo-google-fonts/carlito";
 import { SplashScreen, Stack } from "expo-router";
 import React, { useEffect } from "react";
+import { Platform } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { colors } from "../src/theme/colors";
@@ -14,18 +15,18 @@ SplashScreen.preventAutoHideAsync().catch(() => {
 });
 
 export default function RootLayout(): React.JSX.Element | null {
-  const [fontsLoaded] = useFonts({
+  const [fontsLoaded, fontError] = useFonts({
     Carlito_400Regular,
     Carlito_700Bold,
   });
 
   useEffect(() => {
-    if (fontsLoaded) {
+    if (fontsLoaded || fontError) {
       SplashScreen.hideAsync().catch(() => {});
     }
-  }, [fontsLoaded]);
+  }, [fontsLoaded, fontError]);
 
-  if (!fontsLoaded) {
+  if (!fontsLoaded && !fontError && Platform.OS !== "web") {
     return null;
   }
 

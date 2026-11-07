@@ -103,6 +103,19 @@ export default function WelcomeScreen(): React.JSX.Element {
         >
           <Text style={styles.languageText}>Français ▾</Text>
         </Pressable>
+
+        {__DEV__ && (
+          <Pressable
+            testID="btn-welcome-catalog"
+            style={({ pressed }) => [
+              styles.catalogDevButton,
+              pressed && styles.pressed,
+            ]}
+            onPress={() => router.push("/dev/catalog")}
+          >
+            <Text style={styles.catalogDevText}>🛠️ Accès direct aux 31 écrans (Dev)</Text>
+          </Pressable>
+        )}
       </ScrollView>
     </SafeAreaView>
   );
@@ -207,5 +220,18 @@ const styles = StyleSheet.create({
   },
   pressed: {
     opacity: 0.85,
+  },
+  catalogDevButton: {
+    marginTop: 14,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    backgroundColor: colors.primary50,
+  },
+  catalogDevText: {
+    fontFamily: fontFamilies.bold,
+    fontSize: fontSizes.sm14,
+    color: colors.primary,
+    textAlign: "center",
   },
 });

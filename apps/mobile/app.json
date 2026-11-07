@@ -22,17 +22,30 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#EEF2F0"
       },
-      "package": "com.tsotsaforkids.app"
+      "package": "com.tsotsaforkids.app",
+      "permissions": [
+        "INTERNET",
+        "VIBRATE",
+        "RECEIVE_BOOT_COMPLETED",
+        "POST_NOTIFICATIONS"
+      ]
     },
     "plugins": [
       "expo-router",
       "expo-font",
       "expo-secure-store",
-      "expo-notifications"
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/notification-icon.png",
+          "color": "#0F7B5F",
+          "sounds": ["default"]
+        }
+      ],
+      "@react-native-google-signin/google-signin"
     ],
     "experiments": {
       "typedRoutes": true
     }
   }
 }
-

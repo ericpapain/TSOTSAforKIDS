@@ -1,0 +1,47 @@
+appId: com.tsotsaforkids.app
+---
+# Étape M-F / M-G : Parcours Centre de notifications → Réglages → Heures prévues (M27, M28, M29, M30)
+- launchApp
+
+# 1. Centre de notifications (M27)
+- tapOn:
+    id: "app-bar-right-action"
+- assertVisible: "Notifications"
+- assertVisible: "Récents"
+- assertVisible: "Amina : Repas du midi (12h30)"
+- assertVisible: "Dr. Mbarga"
+
+# 2. Réglages des notifications (M28)
+- tapOn:
+    id: "app-bar-right-action"
+- assertVisible: "Notifications"
+- assertVisible: "Pour Amina"
+- assertVisible: "Rappels aux heures prévues"
+- assertVisible: "Relance si pas de confirmation"
+- assertVisible: "Général"
+- assertVisible: "Messages du soignant"
+- assertVisible: "Heures calmes"
+
+# 3. Désactivation des rappels (M29)
+- tapOn:
+    id: "toggle-reminders"
+- assertVisible: "Attention"
+- assertVisible: "Le soignant Dr. Mbarga sera informé que les rappels sont désactivés pour Amina."
+
+# 4. Réactivation et retour aux réglages
+- tapOn:
+    id: "toggle-reminders-off"
+- assertVisible: "Pour Amina"
+
+# 5. Heures prévues (M30)
+- back
+- assertVisible: "Rappels d'Amina"
+- assertVisible: "Plan prescrit par Dr. Mbarga"
+- assertVisible: "3 prises par jour de Plumpy'Nut (1 sachet par prise)"
+- assertVisible: "08:00"
+- assertVisible: "12:30"
+- assertVisible: "18:00"
+- tapOn: "+ Ajouter un rappel personnel"
+- assertVisible: "15:30"
+- assertVisible: "Collation"
+

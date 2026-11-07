@@ -1,60 +1,127 @@
+import React, { useEffect, useState } from "react";
+import { View, Text, ScrollView } from "react-native";
 import { useRouter } from "expo-router";
-import React from "react";
-import { StyleSheet, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-
+import { FontAwesome5 } from "@expo/vector-icons";
 import { AppBar } from "../src/components/AppBar";
-import { colors } from "../src/theme/colors";
-import { fontFamilies, fontSizes } from "../src/theme/typography";
+import { Toggle } from "../src/components/Toggle";
+import { settingsStyles } from "../src/features/notifications/settingsStyles";
+import {
+  loadNotificationPreferences,
+  saveNotificationPreferences,
+  NotificationPreferences,
+  DEFAULT_PREFERENCES,
+} from "../src/notifications";
 
-export default function ScreenM29(): React.JSX.Element {
+export default function NotifOffScreen(): React.JSX.Element {
   const router = useRouter();
+  const [prefs, setPrefs] = useState<NotificationPreferences>({
+    ...DEFAULT_PREFERENCES,
+    reminders_enabled: false,
+    followup_enabled: false,
+  });
+
+  useEffect(() => {
+    void loadNotificationPreferences().then((loaded) => {
+      setPrefs({ ...loaded, reminders_enabled: false, followup_enabled: false });
+    });
+  }, []);
+
+  const handleToggleReminders = (enabled: boolean) => {
+    const updated = {
+      ...prefs,
+      reminders_enabled: enabled,
+      followup_enabled: enabled,
+    };
+    setPrefs(updated);
+    void saveNotificationPreferences(updated);
+    if (enabled) {
+      router.replace("/u-notif-settings");
+    }
+  };
+
   return (
-    <SafeAreaView style={styles.container} edges={["bottom", "left", "right"]}>
-      <AppBar
-        title="Rappels désactivés"
-        onBack={() => router.replace("/u-notif-settings")}
-      />
-      <View style={styles.content} testID="screen-m29">
-        <Text style={styles.codeText}>M29</Text>
-        <Text style={styles.titleText}>Rappels désactivés</Text>
-        <Text style={styles.descText}>
-          Écran de fondation (M29). L interface complète sera intégrée lors de l étape dédiée.
-        </Text>
-      </View>
-    </SafeAreaView>
+    <View style={settingsStyles.container}>
+      <AppBar title="Notifications" onBack={() => router.back()} />
+
+      <ScrollView contentContainerStyle={settingsStyles.content}>
+        <View style={settingsStyles.warningCard} testID="warning-caregiver-card">
+          <FontAwesome5 name="exclamation-triangle" size={20} color="#E65100" />
+          <View style={{ flex: 1 }}>
+            <Text style={settingsStyles.warningTitle}>Attention</Text>
+            <Text style={settingsStyles.warningBody}>
+              Le soignant Dr. Mbarga sera informé que les rappels sont désactivés
+              pour Amina.
+            </Text>
+          </View>
+        </View>
+
+        <Text style={settingsStyles.sectionHeader}>Pour Amina</Text>
+
+        <View style={settingsStyles.settingRow}>
+          <View style={settingsStyles.textContainer}>
+            <Text style={settingsStyles.settingLabel}>Rappels aux heures prévues</Text>
+            <Text style={settingsStyles.settingDescription}>
+              Recevoir une notification à chaque créneau prescrit
+            </Text>
+          </View>
+          <Toggle
+            value={prefs.reminders_enabled}
+            onValueChange={handleToggleReminders}
+            testID="toggle-reminders-off"
+          />
+        </View>
+
+        <View
+          style={[settingsStyles.settingRow, settingsStyles.settingRowDisabled]}
+        >
+          <View style={settingsStyles.textContainer}>
+            <Text style={settingsStyles.settingLabel}>
+              Relance si pas de confirmation
+            </Text>
+            <Text style={settingsStyles.settingDescription}>
+              Rappel 30 min après si la prise n'est pas validée
+            </Text>
+          </View>
+          <Toggle
+            value={false}
+            disabled={true}
+            onValueChange={() => {}}
+            testID="toggle-followup-disabled"
+          />
+        </View>
+
+        <Text style={settingsStyles.sectionHeader}>Général</Text>
+
+        <View style={settingsStyles.settingRow}>
+          <View style={settingsStyles.textContainer}>
+            <Text style={settingsStyles.settingLabel}>Messages du soignant</Text>
+            <Text style={settingsStyles.settingDescription}>
+              Conseils et retours de Dr. Mbarga
+            </Text>
+          </View>
+          <Toggle
+            value={prefs.caregiver_messages_enabled}
+            onValueChange={(val) =>
+              setPrefs((p) => ({ ...p, caregiver_messages_enabled: val }))
+            }
+          />
+        </View>
+
+        <View style={settingsStyles.settingRow}>
+          <View style={settingsStyles.textContainer}>
+            <Text style={settingsStyles.settingLabel}>Évaluations de santé</Text>
+            <Text style={settingsStyles.settingDescription}>
+              Rappels de pesée et de mesure du bras
+            </Text>
+          </View>
+          <Toggle
+            value={prefs.evaluations_enabled}
+            onValueChange={(val) =>
+              setPrefs((p) => ({ ...p, evaluations_enabled: val }))
+            }
+          />
+        </View>
+      </ScrollView>
+    </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.canvas,
-  },
-  content: {
-    flex: 1,
-    padding: 17,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  codeText: {
-    fontFamily: fontFamilies.bold,
-    fontSize: fontSizes.xl24,
-    color: colors.primary,
-    marginBottom: 8,
-  },
-  titleText: {
-    fontFamily: fontFamilies.bold,
-    fontSize: fontSizes.lg22,
-    color: colors.text,
-    textAlign: "center",
-    marginBottom: 12,
-  },
-  descText: {
-    fontFamily: fontFamilies.regular,
-    fontSize: fontSizes.sm14,
-    color: colors.textMuted,
-    textAlign: "center",
-    maxWidth: 300,
-  },
-});

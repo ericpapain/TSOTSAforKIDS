@@ -16,6 +16,7 @@ import {
   Notice,
   Toggle,
 } from "../../src/components";
+import { DevScreensList } from "../../src/components/DevScreensList";
 import { colors } from "../../src/theme/colors";
 import { fontFamilies, fontSizes } from "../../src/theme/typography";
 
@@ -47,6 +48,8 @@ export default function ComponentCatalogScreen(): React.JSX.Element {
       />
 
       <ScrollView contentContainerStyle={styles.scroll}>
+        <DevScreensList />
+
         {/* Section 1: Logo */}
         <Text style={styles.sectionTitle}>1. BrandLogo</Text>
         <Card style={styles.sectionCard}>
