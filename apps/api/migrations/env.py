@@ -9,7 +9,7 @@ from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from tsotsa_api.core.config import get_settings
-from tsotsa_api.modules.identity.models import Base
+from tsotsa_api.core.database import Base
 
 config = context.config
 

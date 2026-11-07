@@ -51,9 +51,7 @@ async def test_email_register_password_bounds_and_storage(
     assert resp.status_code == 201
 
     # Verify password is NOT stored in plain text, but as bcrypt hash
-    res = await db_session.execute(
-        select(UserIdentity).where(UserIdentity.email == clean_email)
-    )
+    res = await db_session.execute(select(UserIdentity).where(UserIdentity.email == clean_email))
     identity = res.scalar_one_or_none()
     assert identity is not None
     assert identity.password_hash != plain_password
@@ -123,9 +121,7 @@ async def test_email_login_success_and_failures(client: AsyncClient) -> None:
     )
 
     # Successful login
-    ok_resp = await client.post(
-        "/v1/auth/email/login", json={"email": email, "password": password}
-    )
+    ok_resp = await client.post("/v1/auth/email/login", json={"email": email, "password": password})
     assert ok_resp.status_code == 200
     assert "access_token" in ok_resp.json()
 
@@ -146,9 +142,7 @@ async def test_email_login_success_and_failures(client: AsyncClient) -> None:
 
 
 @pytest.mark.asyncio
-async def test_password_forgot_and_reset(
-    client: AsyncClient, db_session: AsyncSession
-) -> None:
+async def test_password_forgot_and_reset(client: AsyncClient, db_session: AsyncSession) -> None:
     """Password reset changes password and revokes previous refresh tokens."""
     RateLimiter.clear()
     email = "reset.user@tsotsa-for-kids.com"
@@ -166,9 +160,7 @@ async def test_password_forgot_and_reset(
     refresh_token = login_resp.json()["refresh_token"]
 
     # Request reset
-    forgot_resp = await client.post(
-        "/v1/auth/password/forgot", json={"email": email}
-    )
+    forgot_resp = await client.post("/v1/auth/password/forgot", json={"email": email})
     assert forgot_resp.status_code == 200
 
     # Obtain reset token from DB
@@ -205,7 +197,5 @@ async def test_password_forgot_and_reset(
     assert new_login.status_code == 200
 
     # Old refresh token is revoked
-    refresh_attempt = await client.post(
-        "/v1/auth/refresh", json={"refresh_token": refresh_token}
-    )
+    refresh_attempt = await client.post("/v1/auth/refresh", json={"refresh_token": refresh_token})
     assert refresh_attempt.status_code == 401

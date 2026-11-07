@@ -13,13 +13,10 @@ from sqlalchemy import (
     String,
     UniqueConstraint,
 )
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
+from tsotsa_api.core.database import Base
 from tsotsa_api.shared.types import BinaryUUID, generate_uuid7
-
-
-class Base(DeclarativeBase):
-    """Base class for all SQLAlchemy declarative models."""
 
 
 class User(Base):
@@ -30,6 +27,9 @@ class User(Base):
     id: Mapped[str] = mapped_column(BinaryUUID, primary_key=True, default=generate_uuid7)
     display_name: Mapped[str] = mapped_column(String(150), nullable=False)
     language: Mapped[str] = mapped_column(String(10), default="fr", nullable=False)
+    preferred_region_id: Mapped[str | None] = mapped_column(
+        BinaryUUID, ForeignKey("regions.id"), nullable=True, index=True
+    )
     status: Mapped[str] = mapped_column(String(30), default="active", nullable=False)
     last_login_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     created_at: Mapped[datetime] = mapped_column(
@@ -217,6 +217,7 @@ class CaregiverProfile(Base):
     licence_number: Mapped[str | None] = mapped_column(String(100), nullable=True)
     document_file: Mapped[str | None] = mapped_column(String(255), nullable=True)
     verification_status: Mapped[str] = mapped_column(String(30), default="pending", nullable=False)
+    verification_notes: Mapped[str | None] = mapped_column(String(500), nullable=True)
     verified_by: Mapped[str | None] = mapped_column(
         BinaryUUID, ForeignKey("users.id"), nullable=True
     )
@@ -248,6 +249,9 @@ class Invitation(Base):
 
     id: Mapped[str] = mapped_column(BinaryUUID, primary_key=True, default=generate_uuid7)
     created_by: Mapped[str] = mapped_column(BinaryUUID, ForeignKey("users.id"), nullable=False)
+    user_id: Mapped[str | None] = mapped_column(
+        BinaryUUID, ForeignKey("users.id", ondelete="CASCADE"), nullable=True, index=True
+    )
     role: Mapped[str] = mapped_column(String(50), nullable=False)
     organization_id: Mapped[str | None] = mapped_column(BinaryUUID, nullable=True)
     phone_or_email: Mapped[str] = mapped_column(String(255), nullable=False, index=True)

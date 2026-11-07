@@ -94,4 +94,3 @@ def generate_numeric_otp(length: int = 6) -> str:
 def hash_token(token: str) -> str:
     """Compute standard SHA-256 digest of a token string."""
     return hashlib.sha256(token.encode("utf-8")).hexdigest()
-

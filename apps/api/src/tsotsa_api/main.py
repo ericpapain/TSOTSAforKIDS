@@ -22,16 +22,104 @@ from tsotsa_api.core.errors import (
     validation_exception_handler,
 )
 from tsotsa_api.core.logging import get_logger, setup_logging
+from tsotsa_api.modules.admin import admin_router, invitations_public_router
+from tsotsa_api.modules.audit import audit_admin_router
+from tsotsa_api.modules.clinical import clinical_router
+from tsotsa_api.modules.consents import (
+    admin_consents_router,
+    consents_router,
+    person_consents_router,
+)
+from tsotsa_api.modules.custom_products import (
+    custom_products_admin_router,
+    custom_products_router,
+)
+from tsotsa_api.modules.equivalence import equivalence_router
+from tsotsa_api.modules.food_database import food_admin_router, foods_router
 from tsotsa_api.modules.identity import auth_router
+from tsotsa_api.modules.intakes import intakes_router
+from tsotsa_api.modules.modules_registry import (
+    admin_router as modules_admin_router,
+)
+from tsotsa_api.modules.modules_registry import (
+    public_router as modules_public_router,
+)
+from tsotsa_api.modules.monitoring import (
+    admin_alerts_router,
+    alerts_router,
+    dashboard_router,
+)
+from tsotsa_api.modules.notifications import notifications_router
+from tsotsa_api.modules.nutrients import nutrients_router
+from tsotsa_api.modules.optimization import optimization_router
+from tsotsa_api.modules.organizations import (
+    admin_router as organizations_admin_router,
+)
+from tsotsa_api.modules.organizations import (
+    organizations_router,
+    regions_router,
+    users_region_router,
+)
+from tsotsa_api.modules.orkg_sync import orkg_sync_admin_router
+from tsotsa_api.modules.persons import caregiver_persons_router, family_router
+from tsotsa_api.modules.pricing import admin_pricing_router, pricing_router
+from tsotsa_api.modules.reference_products import (
+    products_router,
+    reference_products_admin_router,
+)
+from tsotsa_api.modules.schedules import schedules_router
 
 logger = get_logger(__name__)
+
+
+def _build_v1_router() -> APIRouter:
+    """Create and configure the /v1 API router."""
+    v1_router = APIRouter(prefix="/v1")
+
+    @v1_router.get("/", tags=["Root"])
+    async def v1_root() -> dict[str, str]:
+        return {"message": "TSOTSA Kids API v1", "status": "active"}
+
+    v1_router.include_router(auth_router)
+    v1_router.include_router(nutrients_router)
+    v1_router.include_router(food_admin_router)
+    v1_router.include_router(foods_router)
+    v1_router.include_router(products_router)
+    v1_router.include_router(reference_products_admin_router)
+    v1_router.include_router(custom_products_router)
+    v1_router.include_router(custom_products_admin_router)
+    v1_router.include_router(equivalence_router)
+    v1_router.include_router(optimization_router)
+    v1_router.include_router(orkg_sync_admin_router)
+    v1_router.include_router(modules_public_router)
+    v1_router.include_router(modules_admin_router)
+    v1_router.include_router(organizations_router)
+    v1_router.include_router(regions_router)
+    v1_router.include_router(users_region_router)
+    v1_router.include_router(organizations_admin_router)
+    v1_router.include_router(family_router)
+    v1_router.include_router(caregiver_persons_router)
+    v1_router.include_router(consents_router)
+    v1_router.include_router(admin_consents_router)
+    v1_router.include_router(person_consents_router)
+    v1_router.include_router(audit_admin_router)
+    v1_router.include_router(pricing_router)
+    v1_router.include_router(admin_pricing_router)
+    v1_router.include_router(intakes_router)
+    v1_router.include_router(clinical_router)
+    v1_router.include_router(dashboard_router)
+    v1_router.include_router(alerts_router)
+    v1_router.include_router(admin_alerts_router)
+    v1_router.include_router(schedules_router)
+    v1_router.include_router(notifications_router)
+    v1_router.include_router(admin_router)
+    v1_router.include_router(invitations_public_router)
+    return v1_router
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:
     """Create and configure the FastAPI application instance."""
     cfg = settings or get_settings()
-
-    # Enforce strict validation in production environments
     if cfg.is_production:
         cfg.check_production_requirements()
 
@@ -53,7 +141,6 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         lifespan=lifespan,
     )
 
-    # Configure CORS middleware
     app.add_middleware(
         CORSMiddleware,
         allow_origins=cfg.cors_origins_list,
@@ -62,13 +149,11 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         allow_headers=["*"],
     )
 
-    # Register error handlers
     app.add_exception_handler(AppException, app_exception_handler)  # type: ignore[arg-type]
     app.add_exception_handler(StarletteHTTPException, http_exception_handler)  # type: ignore[arg-type]
     app.add_exception_handler(RequestValidationError, validation_exception_handler)  # type: ignore[arg-type]
     app.add_exception_handler(Exception, generic_exception_handler)
 
-    # System Health Check endpoint
     @app.get("/health", tags=["System"])
     async def health_check(session: AsyncSession = Depends(get_db_session)) -> dict[str, Any]:
         is_healthy = await check_database_connection(session)
@@ -76,16 +161,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             raise ServiceUnavailableError("Database unreachable")
         return {"status": "ok", "database": "connected"}
 
-    # V1 API Router
-    v1_router = APIRouter(prefix="/v1")
-
-    @v1_router.get("/", tags=["Root"])
-    async def v1_root() -> dict[str, str]:
-        return {"message": "TSOTSA Kids API v1", "status": "active"}
-
-    v1_router.include_router(auth_router)
-    app.include_router(v1_router)
-
+    app.include_router(_build_v1_router())
     return app
 
 

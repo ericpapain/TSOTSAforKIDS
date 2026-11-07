@@ -1,0 +1,135 @@
+import { StyleSheet } from "react-native";
+import { colors } from "../../theme/colors";
+import { fontFamilies, fontSizes } from "../../theme/typography";
+
+export const addProductStyles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: colors.white,
+  },
+  appBar: {
+    height: 67,
+    backgroundColor: colors.primary,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 8,
+  },
+  touchIcon: {
+    width: 69,
+    height: 67,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  appBarTitle: {
+    fontFamily: fontFamilies.bold,
+    fontSize: fontSizes.lg22,
+    color: colors.white,
+    textAlign: "center",
+    flex: 1,
+  },
+  content: {
+    paddingHorizontal: 17,
+    paddingTop: 12,
+    paddingBottom: 24,
+  },
+  fieldBlock: {
+    marginBottom: 16,
+  },
+  fieldLabel: {
+    fontFamily: fontFamilies.bold,
+    fontSize: fontSizes.sm14,
+    color: colors.textMuted,
+    marginBottom: 4,
+  },
+  textInput: {
+    height: 44,
+    backgroundColor: colors.surface2,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 7,
+    paddingHorizontal: 14,
+    fontFamily: fontFamilies.regular,
+    fontSize: fontSizes.md18,
+    color: colors.text,
+  },
+  sectionTitle: {
+    fontFamily: fontFamilies.bold,
+    fontSize: fontSizes.base16,
+    color: colors.textMuted,
+    marginBottom: 10,
+  },
+  nutrientRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 8,
+  },
+  nutrientNameText: {
+    width: 145,
+    fontFamily: fontFamilies.regular,
+    fontSize: fontSizes.md18,
+    color: colors.text,
+  },
+  valueInput: {
+    width: 115,
+    height: 44,
+    backgroundColor: colors.surface2,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 6,
+    paddingHorizontal: 12,
+    fontFamily: fontFamilies.bold,
+    fontSize: fontSizes.md18,
+    color: colors.text,
+    textAlign: "left",
+  },
+  unitSelector: {
+    width: 78,
+    height: 44,
+    backgroundColor: colors.white,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 6,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  unitText: {
+    fontFamily: fontFamilies.regular,
+    fontSize: fontSizes.base16,
+    color: colors.text,
+  },
+  actionsRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 10,
+    marginBottom: 24,
+  },
+  linkActionText: {
+    fontFamily: fontFamilies.bold,
+    fontSize: fontSizes.base16,
+    color: colors.primary,
+  },
+  btnSubmit: {
+    width: 356,
+    height: 63,
+    backgroundColor: colors.primary,
+    borderRadius: 11,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  btnSubmitText: {
+    fontFamily: fontFamilies.bold,
+    fontSize: fontSizes.lg21,
+    color: colors.white,
+  },
+  errorText: {
+    fontFamily: fontFamilies.regular,
+    fontSize: fontSizes.sm13,
+    color: colors.danger,
+    marginTop: 4,
+    marginBottom: 8,
+  },
+});
+

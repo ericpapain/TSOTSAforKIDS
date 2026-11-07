@@ -89,6 +89,20 @@ class ForbiddenError(AppException):
         )
 
 
+class ValidationError(AppException):
+    """Validation or business quality rule error (422)."""
+
+    def __init__(self, message: str = "Validation failed", details: Any = None) -> None:
+        super().__init__(
+            code="VALIDATION_ERROR",
+            message=message,
+            status_code=getattr(
+                status, "HTTP_422_UNPROCESSABLE_CONTENT", status.HTTP_422_UNPROCESSABLE_ENTITY
+            ),
+            details=details,
+        )
+
+
 class ServiceUnavailableError(AppException):
     """Service temporarily unavailable (503)."""
 

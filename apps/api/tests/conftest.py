@@ -16,9 +16,8 @@ from sqlalchemy.ext.asyncio import (
 )
 
 from tsotsa_api.core.config import Settings
-from tsotsa_api.core.database import get_db_session
+from tsotsa_api.core.database import Base, get_db_session
 from tsotsa_api.main import create_app
-from tsotsa_api.modules.identity.models import Base
 from tsotsa_api.modules.identity.rate_limit import RateLimiter
 
 

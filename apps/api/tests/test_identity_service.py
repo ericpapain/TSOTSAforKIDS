@@ -120,9 +120,7 @@ async def test_service_phone_otp_flows(
     otp2.code_hash = hash_token("654321")
     await db_session.commit()
 
-    res2 = await identity_service.verify_phone_otp(
-        phone, "654321", ip_address="10.0.0.8"
-    )
+    res2 = await identity_service.verify_phone_otp(phone, "654321", ip_address="10.0.0.8")
     assert res2.user.id == res1.user.id
 
 
@@ -218,4 +216,3 @@ async def test_token_service_flows(
     await identity_service.tokens.revoke_refresh_token(rotated.refresh_token)
     with pytest.raises(UnauthorizedError):
         await identity_service.tokens.refresh_access_token(rotated.refresh_token)
-

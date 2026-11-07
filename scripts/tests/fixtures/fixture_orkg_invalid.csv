@@ -1,0 +1,7 @@
+Properties,PlatInconnu01_NutrimentMystere,PlatErreur01_Zinc,PlatSansValeur01_Zinc
+Titre de l'article,Article test,Article test,Article test
+DOI,10.0000/test,10.0000/test,10.0000/test
+food component name,Inconnuium,Zinc,Zinc
+value,invalide mg,non_num mg,
+numericValue,invalide,non_num,
+unit,mg,mg,mg

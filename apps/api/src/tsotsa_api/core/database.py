@@ -22,8 +22,13 @@ from sqlalchemy.ext.asyncio import (
     async_sessionmaker,
     create_async_engine,
 )
+from sqlalchemy.orm import DeclarativeBase
 
 from tsotsa_api.core.config import Settings, get_settings
+
+
+class Base(DeclarativeBase):
+    """Base declarative class for all SQLAlchemy models across modules."""
 
 
 def create_ssl_context(ca_path: str | None) -> ssl.SSLContext | None:
@@ -101,4 +106,3 @@ async def check_database_connection(session: AsyncSession) -> bool:
         return result.scalar() == 1
     except Exception:
         return False
-

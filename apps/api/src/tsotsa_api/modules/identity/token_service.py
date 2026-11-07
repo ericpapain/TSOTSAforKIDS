@@ -27,9 +27,7 @@ class TokenService:
         self.repository = repository
         self.settings = settings or get_settings()
 
-    async def issue_tokens(
-        self, user: User, device_label: str | None = None
-    ) -> TokenResponse:
+    async def issue_tokens(self, user: User, device_label: str | None = None) -> TokenResponse:
         """Issue an access token and a rotating refresh token."""
         now = datetime.now(UTC)
         await self.repository.update_last_login(user.id)
@@ -37,9 +35,7 @@ class TokenService:
         roles = await self.repository.get_user_role_codes(user.id)
         caregiver_profile = await self.repository.get_caregiver_profile(user.id)
         is_verified_caregiver = (
-            caregiver_profile.verification_status == "approved"
-            if caregiver_profile
-            else False
+            caregiver_profile.verification_status == "approved" if caregiver_profile else False
         )
 
         claims = {
@@ -47,9 +43,7 @@ class TokenService:
             "roles": roles,
             "is_verified_caregiver": is_verified_caregiver,
         }
-        access_token = create_access_token(
-            subject=user.id, claims=claims, settings=self.settings
-        )
+        access_token = create_access_token(subject=user.id, claims=claims, settings=self.settings)
 
         raw_refresh_token = generate_random_token(32)
         refresh_expires = now + timedelta(days=self.settings.JWT_REFRESH_TTL_DAYS)

@@ -1,0 +1,155 @@
+import { StyleSheet } from "react-native";
+import { colors } from "../../theme/colors";
+import { fontFamilies, fontSizes } from "../../theme/typography";
+
+export const foodStyles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: colors.white,
+  },
+  appBar: {
+    height: 67,
+    backgroundColor: colors.primary,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 8,
+  },
+  touchIcon: {
+    width: 69,
+    height: 67,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  appBarTitle: {
+    fontFamily: fontFamilies.bold,
+    fontSize: fontSizes.lg22,
+    color: colors.white,
+    textAlign: "center",
+    flex: 1,
+  },
+  content: {
+    paddingHorizontal: 17,
+    paddingTop: 12,
+    paddingBottom: 24,
+  },
+  subHeaderRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 14,
+  },
+  foodCategoryText: {
+    fontFamily: fontFamilies.regular,
+    fontSize: fontSizes.base16,
+    color: colors.textMuted,
+  },
+  pillScore: {
+    paddingHorizontal: 14,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: colors.primary,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  pillScoreText: {
+    fontFamily: fontFamilies.bold,
+    fontSize: fontSizes.sm13,
+    color: colors.white,
+  },
+  tableHeader: {
+    width: 356,
+    height: 37,
+    backgroundColor: colors.primary,
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 10,
+  },
+  tableHeaderCol: {
+    flex: 1,
+    fontFamily: fontFamilies.bold,
+    fontSize: fontSizes.sm14,
+    color: colors.white,
+  },
+  tableRow: {
+    width: 356,
+    height: 41,
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 10,
+    backgroundColor: colors.surface2,
+  },
+  tableRowAlt: {
+    width: 356,
+    height: 41,
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 10,
+    backgroundColor: colors.white,
+  },
+  nutrientNameCol: {
+    flex: 1,
+    fontFamily: fontFamilies.bold,
+    fontSize: fontSizes.sm14,
+    color: colors.text,
+  },
+  refValueCol: {
+    flex: 1,
+    fontFamily: fontFamilies.regular,
+    fontSize: fontSizes.sm14,
+    color: colors.text,
+  },
+  foodValueCol: {
+    flex: 1,
+    fontFamily: fontFamilies.bold,
+    fontSize: fontSizes.sm14,
+    color: colors.primary,
+  },
+  legendText: {
+    fontFamily: fontFamilies.regular,
+    fontSize: fontSizes.sm13,
+    color: colors.textMuted,
+    marginTop: 8,
+    marginBottom: 12,
+  },
+  sourceCard: {
+    width: 356,
+    backgroundColor: colors.neutral100,
+    borderRadius: 7,
+    padding: 12,
+    marginBottom: 12,
+  },
+  sourceText: {
+    fontFamily: fontFamilies.regular,
+    fontSize: fontSizes.sm13,
+    color: colors.textMuted,
+    lineHeight: 18,
+  },
+  warningNotice: {
+    width: 356,
+    backgroundColor: colors.warning50,
+    borderRadius: 7,
+    padding: 10,
+    marginBottom: 16,
+  },
+  warningNoticeText: {
+    fontFamily: fontFamilies.regular,
+    fontSize: fontSizes.sm13,
+    color: colors.warning900,
+    lineHeight: 18,
+  },
+  btnGiveFood: {
+    width: 356,
+    height: 57,
+    backgroundColor: colors.primary,
+    borderRadius: 11,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  btnGiveFoodText: {
+    fontFamily: fontFamilies.bold,
+    fontSize: fontSizes.md19,
+    color: colors.white,
+  },
+});
+

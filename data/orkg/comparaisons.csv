@@ -1,0 +1,19 @@
+comparison_id,type,nutriment,region,base,statut,remplacee_par,remarque
+R1903384,composition,Zinc,Centre,À CONFIRMER,remplacé,R1903392,Composition en zinc de 32 plats du Centre (Ponka et al. 2005)
+R1903392,composition,Zinc,Centre,À CONFIRMER,actif,,Version à jour de R1903384 (32 plats du Centre)
+R1901266,composition,Phytate,Centre,À CONFIRMER,remplacé,R1903376,Teneur en phytate de plats du Centre (Ponka et al. 2005)
+R1903376,composition,Phytate,Centre,À CONFIRMER,actif,,Version à jour de R1901266 (31 plats - anti-nutriment)
+R1901262,composition,Magnésium,Centre,À CONFIRMER,actif,,Concentration en magnésium de 32 plats du Centre
+R1900300,composition,Cuivre,Centre,À CONFIRMER,remplacé,R1900339,Distribution du cuivre dans 32 plats du Centre
+R1900339,composition,Cuivre,Centre,À CONFIRMER,actif,,Version à jour de R1900300 (32 plats du Centre)
+R1900294,composition,Calcium,Centre,À CONFIRMER,incomplet,,Tableau vide dans ORKG (0 colonne - à resaisir)
+R1898693,composition,Cuivre,Centre,À CONFIRMER,remplacé,R1900339,Version initiale incomplète
+R693268,recette,Multi-ingrédients,Extrême-Nord,100 %,actif,,Recette et proportions du Gari digari (7 ingrédients totalisent 100 %)
+R693264,recette,Multi-ingrédients,Extrême-Nord,100 %,actif,,Recette et proportions du Boko (11 ingrédients)
+R693273,recette,Multi-ingrédients,Extrême-Nord,100 %,actif,,Recette et proportions du Gari karal
+R693279,recette,Multi-ingrédients,Extrême-Nord,100 %,actif,,Recette et proportions du Gari marori
+R693283,recette,Multi-ingrédients,Extrême-Nord,100 %,actif,,Recette et proportions du Gari massardji
+R693287,recette,Multi-ingrédients,Extrême-Nord,100 %,actif,,Recette et proportions du Gari mouscouari
+R677890,recette,Multi-ingrédients,Extrême-Nord,100 %,actif,,Composition en ingrédients du Baskodjé
+R677888,recette,Multi-ingrédients,Extrême-Nord,À CONFIRMER,actif,,Sauces consommées dans l'Extrême-Nord Cameroun
+R677659,recette,Typologie,Extrême-Nord,À CONFIRMER,actif,,Comparaison de 5 bouillies traditionnelles consommées à Maroua

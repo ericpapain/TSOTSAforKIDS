@@ -1,10 +1,10 @@
-.PHONY: all check check-quality check-api test-api check-web check-mobile e2e-web openapi up smoke
+.PHONY: all check check-quality check-api test-api check-openapi check-client check-web check-mobile e2e-web openapi up smoke
 
 PYTHON ?= python
 
 all: check
 
-check: check-quality check-api check-web check-mobile e2e-web openapi
+check: check-quality check-api check-openapi check-client check-web check-mobile e2e-web
 
 check-quality:
 	$(PYTHON) scripts/check_file_length.py
@@ -19,20 +19,26 @@ check-api:
 test-api:
 	uv run --directory apps/api --extra dev pytest tests -v
 
+check-openapi:
+	$(PYTHON) scripts/export_openapi.py --check
+
+check-client:
+	pnpm --filter @tsotsa/api-client check
+
 check-web:
 	@$(PYTHON) -c "import os, sys; sys.exit(0) if not os.path.isfile('apps/web/package.json') else os.system('pnpm --filter web check')"
 	@echo apps/web : pas encore créé
 
 check-mobile:
-	@$(PYTHON) -c "import os, sys; sys.exit(0) if not os.path.isfile('apps/mobile/package.json') else os.system('pnpm --filter mobile check')"
-	@echo apps/mobile : pas encore créé
+	pnpm --filter @tsotsa/mobile check
 
 e2e-web:
 	@$(PYTHON) -c "import os, sys; sys.exit(0) if not os.path.isdir('apps/web/e2e') else os.system('pnpm --filter web test:e2e')"
 	@echo e2e-web : pas encore créé
 
 openapi:
-	uv run --directory apps/api python -c "import json; from tsotsa_api.main import app; open('../../packages/api-client/openapi.json', 'w', encoding='utf-8').write(json.dumps(app.openapi(), indent=2) + '\n')"
+	$(PYTHON) scripts/export_openapi.py
+	pnpm --filter @tsotsa/api-client generate
 
 up:
 	docker compose up -d

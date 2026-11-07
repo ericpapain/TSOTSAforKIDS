@@ -75,7 +75,7 @@ jobs:
       - name: Vérifications du serveur
         run: make check-api
       - name: Le contrat OpenAPI versionné est à jour
-        run: make openapi && git diff --exit-code packages/api-client/openapi.json
+        run: make check-openapi
 
   web:
     name: Web (lint, types, tests, build)
@@ -88,6 +88,8 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      - name: Vérifications du client API partagé
+        run: make check-client
       - name: Vérifications du web
         run: make check-web
 

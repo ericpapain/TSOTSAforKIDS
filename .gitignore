@@ -60,8 +60,11 @@ Thumbs.db
 test-results/
 playwright-report/
 blob-report/
+coverage/
+data/orkg/raw/
 
 # Archives
 *.zip
 *.tar.gz
+docs/TSOTSA_Kids_References_Interfaces/
 

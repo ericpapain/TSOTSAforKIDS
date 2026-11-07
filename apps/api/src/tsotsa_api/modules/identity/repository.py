@@ -184,3 +184,50 @@ class IdentityRepository(TokenRepository):
         self.session.add(profile)
         await self.session.flush()
         return profile
+
+    async def upsert_caregiver_organization(
+        self,
+        user_id: str,
+        organization_id: str | None = None,
+        licence_number: str | None = None,
+        verification_status: str | None = None,
+        verified_by: str | None = None,
+    ) -> CaregiverProfile:
+        """Attach or update a caregiver profile's organization and verification state."""
+        profile = await self.get_caregiver_profile(user_id)
+        now = datetime.now(UTC)
+        if profile:
+            profile.organization_id = organization_id
+            if licence_number is not None:
+                profile.licence_number = licence_number
+            if verification_status is not None:
+                profile.verification_status = verification_status
+                if verification_status == "approved":
+                    profile.verified_by = verified_by
+                    profile.verified_at = now
+            profile.updated_at = now
+            await self.session.flush()
+            return profile
+
+        status = verification_status or "pending"
+        profile = CaregiverProfile(
+            user_id=user_id,
+            organization_id=organization_id,
+            licence_number=licence_number,
+            verification_status=status,
+            verified_by=verified_by if status == "approved" else None,
+            verified_at=now if status == "approved" else None,
+        )
+        self.session.add(profile)
+        await self.session.flush()
+        return profile
+
+    async def set_preferred_region(self, user_id: str, region_id: str | None) -> User | None:
+        """Update a user's preferred region."""
+        user = await self.get_user_by_id(user_id)
+        if not user:
+            return None
+        user.preferred_region_id = region_id
+        user.updated_at = datetime.now(UTC)
+        await self.session.flush()
+        return user

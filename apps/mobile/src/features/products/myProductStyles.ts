@@ -1,0 +1,150 @@
+import { StyleSheet } from "react-native";
+import { colors } from "../../theme/colors";
+import { fontFamilies, fontSizes } from "../../theme/typography";
+
+export const myProductStyles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: colors.white,
+  },
+  appBar: {
+    height: 67,
+    backgroundColor: colors.primary,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 8,
+  },
+  touchIcon: {
+    width: 69,
+    height: 67,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  appBarTitle: {
+    fontFamily: fontFamilies.bold,
+    fontSize: fontSizes.lg22,
+    color: colors.white,
+    textAlign: "center",
+    flex: 1,
+  },
+  content: {
+    paddingHorizontal: 17,
+    paddingTop: 12,
+    paddingBottom: 24,
+  },
+  customProductCard: {
+    width: 356,
+    height: 86,
+    backgroundColor: colors.white,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 9,
+    padding: 14,
+    marginBottom: 14,
+  },
+  productName: {
+    fontFamily: fontFamilies.bold,
+    fontSize: fontSizes.lg21,
+    color: colors.text,
+  },
+  badgeVerificationLarge: {
+    width: 218,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: colors.warning50,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 6,
+  },
+  badgeVerificationTextLarge: {
+    fontFamily: fontFamilies.bold,
+    fontSize: fontSizes.sm13,
+    color: colors.warning,
+  },
+  myProductNutrientsSummary: {
+    fontFamily: fontFamilies.regular,
+    fontSize: fontSizes.base16,
+    color: colors.textMuted,
+    marginBottom: 12,
+  },
+  equivalentCard: {
+    width: 356,
+    minHeight: 57,
+    backgroundColor: colors.white,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 7,
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 8,
+    paddingVertical: 8,
+    marginBottom: 8,
+  },
+  rankText: {
+    width: 28,
+    fontFamily: fontFamilies.bold,
+    fontSize: fontSizes.md18,
+    color: colors.primary,
+    textAlign: "center",
+  },
+  eqInfoCol: {
+    flex: 1,
+    marginLeft: 6,
+  },
+  eqNameRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  eqFoodName: {
+    fontFamily: fontFamilies.bold,
+    fontSize: fontSizes.md18,
+    color: colors.text,
+  },
+  pillScore: {
+    width: 55,
+    height: 23,
+    borderRadius: 12,
+    backgroundColor: colors.primary,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  pillScoreText: {
+    fontFamily: fontFamilies.bold,
+    fontSize: fontSizes.sm13,
+    color: colors.white,
+  },
+  eqBottomRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: 2,
+  },
+  nutrientsBreakdownText: {
+    fontFamily: fontFamilies.regular,
+    fontSize: fontSizes.xs11,
+    color: colors.textMuted,
+    marginTop: 2,
+  },
+  extraNutrientText: {
+    fontFamily: fontFamilies.regular,
+    fontSize: fontSizes.xs11,
+    color: colors.textMuted,
+  },
+  btnGiveFull: {
+    width: 356,
+    height: 57,
+    backgroundColor: colors.primary,
+    borderRadius: 11,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 16,
+  },
+  btnGiveFullText: {
+    fontFamily: fontFamilies.bold,
+    fontSize: fontSizes.md19,
+    color: colors.white,
+  },
+});
+

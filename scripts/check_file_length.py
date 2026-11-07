@@ -32,6 +32,8 @@ DEFAULT_IGNORE_DIRS = {
     ".mypy_cache",
     ".ruff_cache",
     ".expo",
+    "coverage",
+    "htmlcov",
     "__pycache__",
 }
 

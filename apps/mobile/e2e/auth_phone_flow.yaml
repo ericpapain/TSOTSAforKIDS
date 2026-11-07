@@ -1,0 +1,20 @@
+appId: com.tsotsaforkids.app
+---
+- launchApp
+- assertVisible: "TSOTSA"
+- assertVisible: "Bien nourrir, bien suivre."
+- tapOn: "Continuer avec mon téléphone"
+- assertVisible: "Mon numéro"
+- assertVisible: "Numéro de téléphone"
+- tapOn:
+    id: "input-phone"
+- eraseText
+- inputText: "+237 670 12 34 56"
+- tapOn: "Continuer"
+- assertVisible: "Vérification"
+- tapOn:
+    id: "input-otp-code"
+- inputText: "123456"
+- tapOn: "Valider"
+- assertVisible: "Modules"
+

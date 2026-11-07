@@ -241,9 +241,7 @@ async def get_me(
     repo = IdentityRepository(db)
     roles = await repo.get_user_role_codes(user.id)
     profile = await repo.get_caregiver_profile(user.id)
-    is_verified_caregiver = (
-        profile.verification_status == "approved" if profile else False
-    )
+    is_verified_caregiver = profile.verification_status == "approved" if profile else False
 
     return UserProfileResponse(
         id=user.id,
