@@ -1,60 +1,94 @@
-import { useRouter } from "expo-router";
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-
-import { AppBar } from "../src/components/AppBar";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  SafeAreaView,
+  StatusBar,
+} from "react-native";
+import { useRouter, useLocalSearchParams } from "expo-router";
+import { FontAwesome5 } from "@expo/vector-icons";
 import { colors } from "../src/theme/colors";
-import { fontFamilies, fontSizes } from "../src/theme/typography";
+import { givenStyles as styles } from "../src/features/intakes/givenStyles";
+import type { IntakeConsumption } from "../src/offline/types";
 
-export default function ScreenM21(): React.JSX.Element {
+export default function GivenScreen() {
   const router = useRouter();
+  const params = useLocalSearchParams<{
+    personName?: string;
+    productName?: string;
+    quantity?: string;
+    unit?: string;
+    consumption?: IntakeConsumption;
+    timeLabel?: string;
+  }>();
+
+  const personName = params.personName || "Amina";
+  const productName = params.productName || "Plumpy'Nut";
+  const quantity = params.quantity || "1";
+  const unit = params.unit || "sachet";
+  const consumption = params.consumption || "all";
+
+  const getConsumptionSentence = () => {
+    switch (consumption) {
+      case "half":
+        return `${personName} a mangé la moitié.`;
+      case "refused":
+        return `${personName} a refusé.`;
+      case "all":
+      default:
+        return `${personName} a tout mangé.`;
+    }
+  };
+
   return (
-    <SafeAreaView style={styles.container} edges={["bottom", "left", "right"]}>
-      <AppBar
-        title="Prise enregistrée"
-        onBack={() => router.replace("/u-modules")}
-      />
-      <View style={styles.content} testID="screen-m21">
-        <Text style={styles.codeText}>M21</Text>
-        <Text style={styles.titleText}>Prise enregistrée</Text>
-        <Text style={styles.descText}>
-          Écran de fondation (M21). L interface complète sera intégrée lors de l étape dédiée.
+    <SafeAreaView style={styles.safeArea}>
+      <StatusBar barStyle="dark-content" backgroundColor={colors.white} />
+
+      <View style={styles.content}>
+        {/* Large Green Check Circle */}
+        <View style={styles.circleIcon} testID="icon-check-circle">
+          <FontAwesome5 name="check" size={80} color={colors.white} />
+        </View>
+
+        {/* Title */}
+        <Text style={styles.title} testID="title-given">
+          Prise enregistrée
         </Text>
+
+        {/* Summary text */}
+        <Text style={styles.subtitle} testID="text-summary">
+          {productName} · {quantity} {unit} · 12:30{"\n"}
+          {getConsumptionSentence()}
+        </Text>
+
+        {/* Caregiver Notice */}
+        <View style={styles.noticeBox} testID="box-notice">
+          <Text style={styles.noticeText}>
+            Votre soignant est prévenu et la voit dans le suivi d&apos;{personName}.
+          </Text>
+        </View>
+
+        {/* Return Button */}
+        <TouchableOpacity
+          testID="btn-back-profile"
+          accessibilityRole="button"
+          onPress={() => router.replace("/u-profile")}
+          style={styles.btnPrimary}
+        >
+          <Text style={styles.btnPrimaryText}>Retour à {personName}</Text>
+        </TouchableOpacity>
+
+        {/* View Caregiver Side */}
+        <TouchableOpacity
+          testID="btn-view-caregiver"
+          accessibilityRole="button"
+          onPress={() => router.push("/s-pending")}
+          style={styles.btnCare}
+        >
+          <Text style={styles.btnCareText}>Voir côté soignant →</Text>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.canvas,
-  },
-  content: {
-    flex: 1,
-    padding: 17,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  codeText: {
-    fontFamily: fontFamilies.bold,
-    fontSize: fontSizes.xl24,
-    color: colors.primary,
-    marginBottom: 8,
-  },
-  titleText: {
-    fontFamily: fontFamilies.bold,
-    fontSize: fontSizes.lg22,
-    color: colors.text,
-    textAlign: "center",
-    marginBottom: 12,
-  },
-  descText: {
-    fontFamily: fontFamilies.regular,
-    fontSize: fontSizes.sm14,
-    color: colors.textMuted,
-    textAlign: "center",
-    maxWidth: 300,
-  },
-});

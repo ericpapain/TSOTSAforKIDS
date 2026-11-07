@@ -70,3 +70,65 @@ jest.mock("@expo/vector-icons", () => {
   };
 });
 
+// Expo SQLite (in-memory simulator for unit tests)
+const mockDbRows = new Map();
+const mockCreateDatabase = () => ({
+  execAsync: jest.fn(async (_sql) => {
+    return;
+  }),
+  runAsync: jest.fn(async (sql, ...params) => {
+    const flatParams = params.flat();
+    const upper = sql.trim().toUpperCase();
+    if (upper.startsWith("INSERT")) {
+      const id = flatParams[0];
+      mockDbRows.set(id, flatParams);
+      return { lastInsertRowId: 1, changes: 1 };
+    }
+    if (upper.startsWith("DELETE")) {
+      if (flatParams.length > 0) {
+        flatParams.forEach((id) => mockDbRows.delete(id));
+      } else {
+        mockDbRows.clear();
+      }
+      return { changes: flatParams.length || 1 };
+    }
+    return { changes: 0 };
+  }),
+  getAllAsync: jest.fn(async (_sql, ..._params) => {
+    const rows = [];
+    for (const [id, cols] of mockDbRows.entries()) {
+      rows.push({
+        id,
+        person_id: cols[1] || "",
+        person_name: cols[2] || "Amina",
+        item_type: cols[3] || "product",
+        item_id: cols[4] || "prod-1",
+        product_name: cols[5] || "Plumpy'Nut",
+        quantity: cols[6] || "1",
+        unit: cols[7] || "sachet",
+        taken_at: cols[8] || new Date().toISOString(),
+        consumption: cols[9] || "all",
+        origin: cols[10] || "app",
+        schedule_time_id: cols[11] || null,
+        notes: cols[12] || null,
+        created_at: cols[13] || new Date().toISOString(),
+        status: cols[14] || "pending",
+      });
+    }
+    return rows;
+  }),
+  getFirstAsync: jest.fn(async (_sql, ..._params) => {
+    return { count: mockDbRows.size };
+  }),
+  closeAsync: jest.fn(async () => {}),
+});
+
+const mockDefaultDb = mockCreateDatabase();
+jest.mock("expo-sqlite", () => ({
+  openDatabaseAsync: jest.fn(async () => mockDefaultDb),
+  openDatabaseSync: jest.fn(() => mockDefaultDb),
+  __resetMockDb: () => mockDbRows.clear(),
+  __getMockRows: () => mockDbRows,
+}));
+
+
