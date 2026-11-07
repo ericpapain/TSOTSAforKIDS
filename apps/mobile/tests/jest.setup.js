@@ -48,11 +48,34 @@ jest.mock("expo-router", () => ({
 // Expo Notifications
 jest.mock("expo-notifications", () => ({
   setNotificationHandler: jest.fn(),
-  getPermissionsAsync: jest.fn(async () => ({ status: "granted" })),
-  requestPermissionsAsync: jest.fn(async () => ({ status: "granted" })),
+  getPermissionsAsync: jest.fn(async () => ({ granted: true, status: "granted" })),
+  requestPermissionsAsync: jest.fn(async () => ({ granted: true, status: "granted" })),
   getExpoPushTokenAsync: jest.fn(async () => ({
     data: "ExponentPushToken[unit-test-token]",
   })),
+  scheduleNotificationAsync: jest.fn(async () => "mock-scheduled-id"),
+  cancelScheduledNotificationAsync: jest.fn(async () => {}),
+  cancelAllScheduledNotificationsAsync: jest.fn(async () => {}),
+  getAllScheduledNotificationsAsync: jest.fn(async () => []),
+  setNotificationCategoryAsync: jest.fn(async () => {}),
+  setNotificationChannelAsync: jest.fn(async () => {}),
+  AndroidImportance: {
+    MAX: 5,
+    HIGH: 4,
+    DEFAULT: 3,
+    LOW: 2,
+    MIN: 1,
+    NONE: 0,
+  },
+  SchedulableTriggerInputTypes: {
+    CALENDAR: "calendar",
+    DAILY: "daily",
+    WEEKLY: "weekly",
+    MONTHLY: "monthly",
+    YEARLY: "yearly",
+    DATE: "date",
+    TIME_INTERVAL: "timeInterval",
+  },
 }));
 
 // Expo Vector Icons
@@ -69,4 +92,66 @@ jest.mock("@expo/vector-icons", () => {
     FontAwesome5: MockIcon,
   };
 });
+
+// Expo SQLite (in-memory simulator for unit tests)
+const mockDbRows = new Map();
+const mockCreateDatabase = () => ({
+  execAsync: jest.fn(async (_sql) => {
+    return;
+  }),
+  runAsync: jest.fn(async (sql, ...params) => {
+    const flatParams = params.flat();
+    const upper = sql.trim().toUpperCase();
+    if (upper.startsWith("INSERT")) {
+      const id = flatParams[0];
+      mockDbRows.set(id, flatParams);
+      return { lastInsertRowId: 1, changes: 1 };
+    }
+    if (upper.startsWith("DELETE")) {
+      if (flatParams.length > 0) {
+        flatParams.forEach((id) => mockDbRows.delete(id));
+      } else {
+        mockDbRows.clear();
+      }
+      return { changes: flatParams.length || 1 };
+    }
+    return { changes: 0 };
+  }),
+  getAllAsync: jest.fn(async (_sql, ..._params) => {
+    const rows = [];
+    for (const [id, cols] of mockDbRows.entries()) {
+      rows.push({
+        id,
+        person_id: cols[1] || "",
+        person_name: cols[2] || "Amina",
+        item_type: cols[3] || "product",
+        item_id: cols[4] || "prod-1",
+        product_name: cols[5] || "Plumpy'Nut",
+        quantity: cols[6] || "1",
+        unit: cols[7] || "sachet",
+        taken_at: cols[8] || new Date().toISOString(),
+        consumption: cols[9] || "all",
+        origin: cols[10] || "app",
+        schedule_time_id: cols[11] || null,
+        notes: cols[12] || null,
+        created_at: cols[13] || new Date().toISOString(),
+        status: cols[14] || "pending",
+      });
+    }
+    return rows;
+  }),
+  getFirstAsync: jest.fn(async (_sql, ..._params) => {
+    return { count: mockDbRows.size };
+  }),
+  closeAsync: jest.fn(async () => {}),
+});
+
+const mockDefaultDb = mockCreateDatabase();
+jest.mock("expo-sqlite", () => ({
+  openDatabaseAsync: jest.fn(async () => mockDefaultDb),
+  openDatabaseSync: jest.fn(() => mockDefaultDb),
+  __resetMockDb: () => mockDbRows.clear(),
+  __getMockRows: () => mockDbRows,
+}));
+
 
