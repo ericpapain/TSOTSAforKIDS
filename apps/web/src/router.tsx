@@ -3,7 +3,6 @@ import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom'
 import { ProtectedRoute } from './api/authContext';
 import { CatalogPage } from './pages/dev/CatalogPage';
 import { LoginPage } from './pages/LoginPage';
-import { PlaceholderPage } from './pages/PlaceholderPage';
 import {
   CaregiverLayout,
   DashboardPage,
@@ -28,6 +27,7 @@ import {
   AdminModulesPage,
   AdminNotificationsPage,
 } from './pages/admin';
+import { NutritionPage } from './pages/user/NutritionPage';
 
 export const routes = [
   { path: '/connexion', element: <LoginPage /> },
@@ -37,12 +37,7 @@ export const routes = [
     path: '/nutrition/produits/plumpy-nut',
     element: (
       <ProtectedRoute allowedRoles={['user', 'caregiver', 'admin']}>
-        <PlaceholderPage
-          screenId="W01"
-          title="Version web utilisateur"
-          space="user"
-          routePath="/nutrition/produits/plumpy-nut"
-        />
+        <NutritionPage />
       </ProtectedRoute>
     ),
   },
