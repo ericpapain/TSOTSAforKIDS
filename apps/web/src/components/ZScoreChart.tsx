@@ -6,6 +6,7 @@ export interface ZScoreChartProps {
   title?: string;
   width?: number;
   height?: number;
+  currentZScore?: number;
   testID?: string;
   className?: string;
 }
@@ -129,7 +130,7 @@ export function ZScoreChart({
         />
 
         {/* Y Axis labels */}
-        {[-3, -2, 0].map((lvl) => {
+        {[1, 0, -1, -2, -3, -4].map((lvl) => {
           const y = getY(lvl);
           return (
             <text
@@ -137,9 +138,9 @@ export function ZScoreChart({
               x={paddingLeft - 8}
               y={y + 4}
               textAnchor="end"
-              className="text-[11px] fill-text-subtle font-sans"
+              className="text-[13px] fill-text-muted font-sans"
             >
-              {lvl > 0 ? `+${lvl}` : lvl}
+              {lvl > 0 ? `+${lvl}` : lvl === 0 ? "0" : `−${Math.abs(lvl)}`}
             </text>
           );
         })}
@@ -161,6 +162,8 @@ export function ZScoreChart({
         {points.map((p, idx) => {
           const cx = getX(idx, points.length);
           const cy = getY(p.zScore);
+          const pointColor = p.color || "#534AB7";
+          const formattedVal = (p.zScore > 0 ? `+${p.zScore.toFixed(2)}` : p.zScore.toFixed(2)).replace(".", ",");
 
           return (
             <g key={`pt-${p.date}-${idx}`} data-testid={`zscore-point-${idx}`}>
@@ -169,7 +172,7 @@ export function ZScoreChart({
                 cx={cx}
                 cy={cy}
                 r={8}
-                fill="#534AB7"
+                fill={pointColor}
                 stroke="#FFFFFF"
                 strokeWidth={2}
                 className="transition-transform duration-100"
@@ -182,7 +185,7 @@ export function ZScoreChart({
                 textAnchor="middle"
                 className="text-[13px] font-bold fill-text font-sans"
               >
-                {p.zScore > 0 ? `+${p.zScore.toFixed(1)}` : p.zScore.toFixed(1)}
+                {formattedVal}
               </text>
 
               {/* Date / Label below */}

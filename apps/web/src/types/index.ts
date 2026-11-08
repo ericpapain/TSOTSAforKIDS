@@ -30,6 +30,7 @@ export interface ZScorePoint {
   date: string;
   zScore: number;
   label?: string;
+  color?: string;
 }
 
 export interface ColumnDef<T> {

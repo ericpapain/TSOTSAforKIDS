@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../api/authContext';
 import { Button } from '../components/Button';
 import { Card } from '../components/Card';
@@ -6,6 +7,8 @@ import { BrandLogo } from '../components/BrandLogo';
 import type { UserRole } from '../types';
 
 export const LoginPage: React.FC = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
   const { setSession } = useAuth();
   const [selectedRole, setSelectedRole] = useState<UserRole>('caregiver');
 
@@ -20,6 +23,17 @@ export const LoginPage: React.FC = () => {
       'token-session',
       'refresh-session'
     );
+
+    const from = (location.state as { from?: { pathname?: string } })?.from?.pathname;
+    if (from) {
+      navigate(from, { replace: true });
+    } else if (role === 'caregiver') {
+      navigate('/soignant', { replace: true });
+    } else if (role === 'admin') {
+      navigate('/', { replace: true });
+    } else {
+      navigate('/nutrition/produits/plumpy-nut', { replace: true });
+    }
   };
 
   return (
@@ -41,6 +55,7 @@ export const LoginPage: React.FC = () => {
                 variant={selectedRole === r ? (r === 'user' ? 'primary' : r) : 'solid'}
                 outline={selectedRole !== r}
                 size="sm"
+                testID={`role-btn-${r}`}
                 onClick={() => setSelectedRole(r)}
               >
                 {r === 'caregiver' ? 'Soignant' : r === 'admin' ? 'Admin' : 'Utilisateur'}
@@ -50,6 +65,7 @@ export const LoginPage: React.FC = () => {
 
           <Button
             variant={selectedRole === 'user' ? 'primary' : selectedRole}
+            testID="login-submit-btn"
             className="w-full"
             onClick={() => handleQuickLogin(selectedRole)}
           >

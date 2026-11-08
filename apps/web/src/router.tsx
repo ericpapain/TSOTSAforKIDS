@@ -4,6 +4,16 @@ import { ProtectedRoute } from './api/authContext';
 import { CatalogPage } from './pages/dev/CatalogPage';
 import { LoginPage } from './pages/LoginPage';
 import { PlaceholderPage } from './pages/PlaceholderPage';
+import {
+  CaregiverLayout,
+  DashboardPage,
+  FollowedPersonsPage,
+  PersonFilePage,
+  NewEvaluationPage,
+  IntakePlanPage,
+  NotificationsPage,
+  NotificationSettingsPage,
+} from './pages/caregiver';
 
 export const routes = [
   {
@@ -33,64 +43,53 @@ export const routes = [
     path: '/soignant',
     element: (
       <ProtectedRoute allowedRoles={['caregiver', 'admin']}>
-        <PlaceholderPage
-          screenId="W02"
-          title="Tableau de bord soignant"
-          space="caregiver"
-          routePath="/soignant"
-        />
+        <CaregiverLayout>
+          <DashboardPage />
+        </CaregiverLayout>
       </ProtectedRoute>
     ),
+  },
+  {
+    path: '/soignant/dashboard',
+    element: <Navigate to="/soignant" replace />,
   },
   {
     path: '/soignant/personnes',
     element: (
       <ProtectedRoute allowedRoles={['caregiver', 'admin']}>
-        <PlaceholderPage
-          screenId="W03"
-          title="Personnes suivies"
-          space="caregiver"
-          routePath="/soignant/personnes"
-        />
+        <CaregiverLayout>
+          <FollowedPersonsPage />
+        </CaregiverLayout>
       </ProtectedRoute>
     ),
   },
   {
-    path: '/soignant/personnes/A-014',
+    path: '/soignant/personnes/:personId',
     element: (
       <ProtectedRoute allowedRoles={['caregiver', 'admin']}>
-        <PlaceholderPage
-          screenId="W04"
-          title="Dossier + courbes (#A-014)"
-          space="caregiver"
-          routePath="/soignant/personnes/A-014"
-        />
+        <CaregiverLayout>
+          <PersonFilePage />
+        </CaregiverLayout>
       </ProtectedRoute>
     ),
   },
   {
-    path: '/soignant/personnes/A-014/evaluation',
+    path: '/soignant/personnes/:personId/evaluation',
     element: (
       <ProtectedRoute allowedRoles={['caregiver', 'admin']}>
-        <PlaceholderPage
-          screenId="W05"
-          title="Nouvelle évaluation (#A-014)"
-          space="caregiver"
-          routePath="/soignant/personnes/A-014/evaluation"
-        />
+        <CaregiverLayout>
+          <NewEvaluationPage />
+        </CaregiverLayout>
       </ProtectedRoute>
     ),
   },
   {
-    path: '/soignant/personnes/A-014/plan',
+    path: '/soignant/personnes/:personId/plan',
     element: (
       <ProtectedRoute allowedRoles={['caregiver', 'admin']}>
-        <PlaceholderPage
-          screenId="W07"
-          title="Plan de prises (#A-014)"
-          space="caregiver"
-          routePath="/soignant/personnes/A-014/plan"
-        />
+        <CaregiverLayout>
+          <IntakePlanPage />
+        </CaregiverLayout>
       </ProtectedRoute>
     ),
   },
@@ -98,25 +97,23 @@ export const routes = [
     path: '/soignant/notifications',
     element: (
       <ProtectedRoute allowedRoles={['caregiver', 'admin']}>
-        <PlaceholderPage
-          screenId="W08"
-          title="Notifications soignant"
-          space="caregiver"
-          routePath="/soignant/notifications"
-        />
+        <CaregiverLayout>
+          <NotificationsPage />
+        </CaregiverLayout>
       </ProtectedRoute>
     ),
+  },
+  {
+    path: '/soignant/parametres',
+    element: <Navigate to="/soignant/parametres/notifications" replace />,
   },
   {
     path: '/soignant/parametres/notifications',
     element: (
       <ProtectedRoute allowedRoles={['caregiver', 'admin']}>
-        <PlaceholderPage
-          screenId="W09"
-          title="Réglages des notifications soignant"
-          space="caregiver"
-          routePath="/soignant/parametres/notifications"
-        />
+        <CaregiverLayout>
+          <NotificationSettingsPage />
+        </CaregiverLayout>
       </ProtectedRoute>
     ),
   },

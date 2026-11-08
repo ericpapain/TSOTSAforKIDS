@@ -23,14 +23,14 @@ describe('ZScoreChart', () => {
     expect(screen.getByTestId('zscore-point-0')).toBeInTheDocument();
     expect(screen.getByTestId('zscore-point-1')).toBeInTheDocument();
     expect(screen.getByTestId('zscore-point-2')).toBeInTheDocument();
-    expect(screen.getByText('-2.5')).toBeInTheDocument();
-    expect(screen.getByText('-1.8')).toBeInTheDocument();
-    expect(screen.getByText('-0.9')).toBeInTheDocument();
+    expect(screen.getByText('-2,50')).toBeInTheDocument();
+    expect(screen.getByText('-1,80')).toBeInTheDocument();
+    expect(screen.getByText('-0,90')).toBeInTheDocument();
     expect(screen.getByTestId('zscore-curve')).toBeInTheDocument();
   });
 
   it('handles single point and positive z-score', () => {
     render(<ZScoreChart points={[{ date: 'J0', zScore: 1.2 }]} />);
-    expect(screen.getByText('+1.2')).toBeInTheDocument();
+    expect(screen.getByText('+1,20')).toBeInTheDocument();
   });
 });
