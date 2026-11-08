@@ -14,16 +14,24 @@ import {
   NotificationsPage,
   NotificationSettingsPage,
 } from './pages/caregiver';
+import {
+  AdminLayout,
+  AdminDashboardPage,
+  AdminVerifyPage,
+  AdminAccountsPage,
+  AdminFoodsPage,
+  AdminFoodNewPage,
+  AdminImportPage,
+  AdminProductsPage,
+  AdminPricesPage,
+  AdminOptimPage,
+  AdminModulesPage,
+  AdminNotificationsPage,
+} from './pages/admin';
 
 export const routes = [
-  {
-    path: '/connexion',
-    element: <LoginPage />,
-  },
-  {
-    path: '/dev/catalog',
-    element: <CatalogPage />,
-  },
+  { path: '/connexion', element: <LoginPage /> },
+  { path: '/dev/catalog', element: <CatalogPage /> },
   // W01 : Utilisateur web
   {
     path: '/nutrition/produits/plumpy-nut',
@@ -43,23 +51,16 @@ export const routes = [
     path: '/soignant',
     element: (
       <ProtectedRoute allowedRoles={['caregiver', 'admin']}>
-        <CaregiverLayout>
-          <DashboardPage />
-        </CaregiverLayout>
+        <CaregiverLayout><DashboardPage /></CaregiverLayout>
       </ProtectedRoute>
     ),
   },
-  {
-    path: '/soignant/dashboard',
-    element: <Navigate to="/soignant" replace />,
-  },
+  { path: '/soignant/dashboard', element: <Navigate to="/soignant" replace /> },
   {
     path: '/soignant/personnes',
     element: (
       <ProtectedRoute allowedRoles={['caregiver', 'admin']}>
-        <CaregiverLayout>
-          <FollowedPersonsPage />
-        </CaregiverLayout>
+        <CaregiverLayout><FollowedPersonsPage /></CaregiverLayout>
       </ProtectedRoute>
     ),
   },
@@ -67,9 +68,7 @@ export const routes = [
     path: '/soignant/personnes/:personId',
     element: (
       <ProtectedRoute allowedRoles={['caregiver', 'admin']}>
-        <CaregiverLayout>
-          <PersonFilePage />
-        </CaregiverLayout>
+        <CaregiverLayout><PersonFilePage /></CaregiverLayout>
       </ProtectedRoute>
     ),
   },
@@ -77,9 +76,7 @@ export const routes = [
     path: '/soignant/personnes/:personId/evaluation',
     element: (
       <ProtectedRoute allowedRoles={['caregiver', 'admin']}>
-        <CaregiverLayout>
-          <NewEvaluationPage />
-        </CaregiverLayout>
+        <CaregiverLayout><NewEvaluationPage /></CaregiverLayout>
       </ProtectedRoute>
     ),
   },
@@ -87,9 +84,7 @@ export const routes = [
     path: '/soignant/personnes/:personId/plan',
     element: (
       <ProtectedRoute allowedRoles={['caregiver', 'admin']}>
-        <CaregiverLayout>
-          <IntakePlanPage />
-        </CaregiverLayout>
+        <CaregiverLayout><IntakePlanPage /></CaregiverLayout>
       </ProtectedRoute>
     ),
   },
@@ -97,50 +92,34 @@ export const routes = [
     path: '/soignant/notifications',
     element: (
       <ProtectedRoute allowedRoles={['caregiver', 'admin']}>
-        <CaregiverLayout>
-          <NotificationsPage />
-        </CaregiverLayout>
+        <CaregiverLayout><NotificationsPage /></CaregiverLayout>
       </ProtectedRoute>
     ),
   },
-  {
-    path: '/soignant/parametres',
-    element: <Navigate to="/soignant/parametres/notifications" replace />,
-  },
+  { path: '/soignant/parametres', element: <Navigate to="/soignant/parametres/notifications" replace /> },
   {
     path: '/soignant/parametres/notifications',
     element: (
       <ProtectedRoute allowedRoles={['caregiver', 'admin']}>
-        <CaregiverLayout>
-          <NotificationSettingsPage />
-        </CaregiverLayout>
+        <CaregiverLayout><NotificationSettingsPage /></CaregiverLayout>
       </ProtectedRoute>
     ),
   },
-  // W10 - W20 : Admin
+  // W10 - W20 : Administration
   {
     path: '/',
     element: (
       <ProtectedRoute allowedRoles={['admin']}>
-        <PlaceholderPage
-          screenId="W10"
-          title="Vue d'ensemble administration"
-          space="admin"
-          routePath="/"
-        />
+        <AdminLayout><AdminDashboardPage /></AdminLayout>
       </ProtectedRoute>
     ),
   },
+  { path: '/admin', element: <Navigate to="/" replace /> },
   {
     path: '/verifications',
     element: (
       <ProtectedRoute allowedRoles={['admin']}>
-        <PlaceholderPage
-          screenId="W11"
-          title="Vérifications soignants"
-          space="admin"
-          routePath="/verifications"
-        />
+        <AdminLayout><AdminVerifyPage /></AdminLayout>
       </ProtectedRoute>
     ),
   },
@@ -148,12 +127,7 @@ export const routes = [
     path: '/comptes',
     element: (
       <ProtectedRoute allowedRoles={['admin']}>
-        <PlaceholderPage
-          screenId="W12"
-          title="Gestion des comptes"
-          space="admin"
-          routePath="/comptes"
-        />
+        <AdminLayout><AdminAccountsPage /></AdminLayout>
       </ProtectedRoute>
     ),
   },
@@ -161,12 +135,7 @@ export const routes = [
     path: '/base-aliments',
     element: (
       <ProtectedRoute allowedRoles={['admin']}>
-        <PlaceholderPage
-          screenId="W13"
-          title="Base aliments ORKG"
-          space="admin"
-          routePath="/base-aliments"
-        />
+        <AdminLayout><AdminFoodsPage /></AdminLayout>
       </ProtectedRoute>
     ),
   },
@@ -174,12 +143,7 @@ export const routes = [
     path: '/base-aliments/nouveau',
     element: (
       <ProtectedRoute allowedRoles={['admin']}>
-        <PlaceholderPage
-          screenId="W14"
-          title="Saisie d'un aliment"
-          space="admin"
-          routePath="/base-aliments/nouveau"
-        />
+        <AdminLayout><AdminFoodNewPage /></AdminLayout>
       </ProtectedRoute>
     ),
   },
@@ -187,12 +151,7 @@ export const routes = [
     path: '/base-aliments/import',
     element: (
       <ProtectedRoute allowedRoles={['admin']}>
-        <PlaceholderPage
-          screenId="W15"
-          title="Import d'un fichier d'aliments"
-          space="admin"
-          routePath="/base-aliments/import"
-        />
+        <AdminLayout><AdminImportPage /></AdminLayout>
       </ProtectedRoute>
     ),
   },
@@ -200,12 +159,7 @@ export const routes = [
     path: '/produits-reference',
     element: (
       <ProtectedRoute allowedRoles={['admin']}>
-        <PlaceholderPage
-          screenId="W16"
-          title="Produits de référence"
-          space="admin"
-          routePath="/produits-reference"
-        />
+        <AdminLayout><AdminProductsPage /></AdminLayout>
       </ProtectedRoute>
     ),
   },
@@ -213,12 +167,7 @@ export const routes = [
     path: '/prix',
     element: (
       <ProtectedRoute allowedRoles={['admin']}>
-        <PlaceholderPage
-          screenId="W17"
-          title="Prix par région"
-          space="admin"
-          routePath="/prix"
-        />
+        <AdminLayout><AdminPricesPage /></AdminLayout>
       </ProtectedRoute>
     ),
   },
@@ -226,12 +175,7 @@ export const routes = [
     path: '/optimisation',
     element: (
       <ProtectedRoute allowedRoles={['admin']}>
-        <PlaceholderPage
-          screenId="W18"
-          title="Optimisation et solveur"
-          space="admin"
-          routePath="/optimisation"
-        />
+        <AdminLayout><AdminOptimPage /></AdminLayout>
       </ProtectedRoute>
     ),
   },
@@ -239,12 +183,7 @@ export const routes = [
     path: '/modules',
     element: (
       <ProtectedRoute allowedRoles={['admin']}>
-        <PlaceholderPage
-          screenId="W19"
-          title="Gestion des modules"
-          space="admin"
-          routePath="/modules"
-        />
+        <AdminLayout><AdminModulesPage /></AdminLayout>
       </ProtectedRoute>
     ),
   },
@@ -252,19 +191,11 @@ export const routes = [
     path: '/notifications',
     element: (
       <ProtectedRoute allowedRoles={['admin']}>
-        <PlaceholderPage
-          screenId="W20"
-          title="Notifications plateforme"
-          space="admin"
-          routePath="/notifications"
-        />
+        <AdminLayout><AdminNotificationsPage /></AdminLayout>
       </ProtectedRoute>
     ),
   },
-  {
-    path: '*',
-    element: <Navigate to="/dev/catalog" replace />,
-  },
+  { path: '*', element: <Navigate to="/dev/catalog" replace /> },
 ];
 
 export const router = createBrowserRouter(routes);
@@ -274,4 +205,3 @@ export const AppRouter: React.FC = () => {
 };
 
 export default AppRouter;
-

@@ -17,6 +17,11 @@ import {
   FaChartLine,
   FaThLarge,
   FaUtensils,
+  FaUserCheck,
+  FaFlask,
+  FaMoneyBillWave,
+  FaCalculator,
+  FaToggleOn,
 } from "react-icons/fa";
 import type { NavItem, SpaceTheme } from "../types";
 
@@ -43,6 +48,7 @@ const themeActiveStyles: Record<string, { bg: string; text: string }> = {
 export const ICON_MAP: Record<string, React.JSX.Element> = {
   "tachometer-alt": <FaTachometerAlt size={23} />,
   dashboard: <FaTachometerAlt size={23} />,
+  "user-check": <FaUserCheck size={23} />,
   users: <FaUsers size={23} />,
   patients: <FaUsers size={23} />,
   "exclamation-triangle": <FaExclamationTriangle size={23} />,
@@ -57,6 +63,10 @@ export const ICON_MAP: Record<string, React.JSX.Element> = {
   accounts: <FaUserCog size={23} />,
   database: <FaDatabase size={23} />,
   foods: <FaDatabase size={23} />,
+  flask: <FaFlask size={23} />,
+  "money-bill-wave": <FaMoneyBillWave size={23} />,
+  calculator: <FaCalculator size={23} />,
+  "toggle-on": <FaToggleOn size={23} />,
   plus: <FaPlus size={23} />,
   "file-upload": <FaFileUpload size={23} />,
   "box-open": <FaBoxOpen size={23} />,

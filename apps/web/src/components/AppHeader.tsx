@@ -37,7 +37,7 @@ const themeStyles: Record<
   },
   admin: {
     bg: "bg-admin",
-    defaultTitle: "Espace administration",
+    defaultTitle: "Administration",
   },
 };
 
