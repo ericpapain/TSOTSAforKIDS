@@ -22,7 +22,14 @@ export function getInMemoryAccessToken(): string | null {
 }
 
 export function AuthProvider({ children }: { children: ReactNode }): React.JSX.Element {
-  const [session, setSessionState] = useState<UserSession | null>(null);
+  const [session, setSessionState] = useState<UserSession | null>(() => {
+    try {
+      const stored = typeof window !== "undefined" ? window.sessionStorage.getItem("tsotsa_session") : null;
+      return stored ? (JSON.parse(stored) as UserSession) : null;
+    } catch {
+      return null;
+    }
+  });
 
   const setSession = (
     newSession: UserSession | null,
@@ -31,6 +38,16 @@ export function AuthProvider({ children }: { children: ReactNode }): React.JSX.E
   ) => {
     inMemoryAccessToken = accessToken ?? null;
     inMemoryRefreshToken = refreshToken ?? null;
+
+    try {
+      if (newSession) {
+        window.sessionStorage.setItem("tsotsa_session", JSON.stringify(newSession));
+      } else {
+        window.sessionStorage.removeItem("tsotsa_session");
+      }
+    } catch {
+      // Ignore storage errors in restrictive environments
+    }
 
     const apiClient = getWebApiClient();
     if (accessToken) {

@@ -130,3 +130,4 @@ export const EQUIVALENT_LOCAL_FOODS: EquivalentLocalFood[] = [
     description: "Feuilles séchées à haute densité micronutritionnelle.",
   },
 ];
+

@@ -151,7 +151,7 @@ export const NutritionPage: React.FC = () => {
               </div>
 
               {/* Table of equivalents */}
-              <div className="overflow-x-auto rounded-md">
+              <div className="overflow-x-auto rounded-md" data-testid="ranked-foods-table">
                 <table className="w-full text-left text-[14px] border-collapse">
                   <thead>
                     <tr className="h-[39px] bg-[#0F7B5F] text-white font-bold">
@@ -215,3 +215,4 @@ export const NutritionPage: React.FC = () => {
 };
 
 export default NutritionPage;
+

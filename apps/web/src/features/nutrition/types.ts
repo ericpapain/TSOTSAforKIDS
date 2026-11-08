@@ -31,3 +31,4 @@ export interface EquivalentLocalFood {
 }
 
 export type RegionFilter = "all" | "west";
+

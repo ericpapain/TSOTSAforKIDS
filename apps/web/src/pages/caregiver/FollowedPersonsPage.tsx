@@ -149,6 +149,7 @@ export function FollowedPersonsPage(): React.JSX.Element {
       </div>
 
       <DataTable
+        testID="followed-persons-table"
         columns={columns}
         data={filteredData}
         keyExtractor={(row) => row.id}

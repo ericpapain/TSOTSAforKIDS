@@ -92,7 +92,7 @@ export function AdminFoodsPage(): React.JSX.Element {
       )}
 
       {/* Tableau des lots */}
-      <div className="overflow-x-auto border border-border rounded-[9px] bg-white">
+      <div className="overflow-x-auto border border-border rounded-[9px] bg-white" data-testid="foods-table">
         <table className="w-full text-left border-collapse" data-testid="batches-table">
           <thead>
             <tr className="bg-admin text-white text-14 font-bold h-[41px]">

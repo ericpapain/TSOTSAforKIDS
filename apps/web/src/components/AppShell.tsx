@@ -39,8 +39,8 @@ export const AppShell: React.FC<AppShellProps> = ({
           activePath={activeNavPath}
           onNavigate={onNavigate}
         />
-        <main className="flex-1 min-w-0 p-6 md:p-8 lg:p-10 ml-0 overflow-y-auto">
-          <div className="max-w-[1155px] mx-auto">
+        <main className="flex-1 min-w-0 px-[23px] py-[20px] overflow-y-auto">
+          <div className="max-w-[1155px]">
             {children}
           </div>
         </main>
