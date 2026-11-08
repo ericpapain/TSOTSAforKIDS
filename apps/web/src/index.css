@@ -1,0 +1,14 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    font-family: 'Carlito', sans-serif;
+    color: #17302A;
+    background-color: #EEF2F0;
+    line-height: 1.2;
+    -webkit-font-smoothing: antialiased;
+  }
+}
+

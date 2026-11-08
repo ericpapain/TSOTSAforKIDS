@@ -26,15 +26,13 @@ check-client:
 	pnpm --filter @tsotsa/api-client check
 
 check-web:
-	@$(PYTHON) -c "import os, sys; sys.exit(0) if not os.path.isfile('apps/web/package.json') else os.system('pnpm --filter web check')"
-	@echo apps/web : pas encore créé
+	pnpm --filter @tsotsa/web check
 
 check-mobile:
 	pnpm --filter @tsotsa/mobile check
 
 e2e-web:
-	@$(PYTHON) -c "import os, sys; sys.exit(0) if not os.path.isdir('apps/web/e2e') else os.system('pnpm --filter web test:e2e')"
-	@echo e2e-web : pas encore créé
+	@$(PYTHON) -c "import os, sys; sys.exit(0) if not os.path.isdir('apps/web/e2e') else sys.exit(os.system('pnpm --filter @tsotsa/web test:e2e'))"
 
 openapi:
 	$(PYTHON) scripts/export_openapi.py

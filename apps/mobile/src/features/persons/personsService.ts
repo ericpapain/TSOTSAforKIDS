@@ -14,15 +14,19 @@ import type {
 
 export function calculateAgeLabel(birthDateStr: string): string {
   try {
-    const parts = birthDateStr.includes("/")
-      ? birthDateStr.split("/").reverse().join("-")
-      : birthDateStr;
-    const birth = new Date(parts);
+    const rawParts = birthDateStr.includes("/")
+      ? birthDateStr.split("/").reverse()
+      : birthDateStr.split("-");
+    const [year, month, day] = rawParts.map(Number);
+    if (!year || !month || !day) return "";
+    const birth = new Date(year, month - 1, day);
     if (isNaN(birth.getTime())) return "";
 
     const now = new Date();
-    const diffMs = now.getTime() - birth.getTime();
-    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    const todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const birthMidnight = new Date(year, month - 1, day);
+    const diffMs = todayMidnight.getTime() - birthMidnight.getTime();
+    const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
     if (diffDays < 0) return "";
     if (diffDays < 30) return `${diffDays} jours`;
 
