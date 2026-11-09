@@ -1,0 +1,11 @@
+# Configuration Gitleaks TSOTSA Kids
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Autoriser les fichiers d'exemples de configuration sans secrets"
+paths = [
+    '''infra/\.env\..*\.example''',
+    '''\.env\.example''',
+]
+

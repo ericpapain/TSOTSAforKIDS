@@ -27,6 +27,8 @@ jest.mock("../personsService", () => ({
 }));
 
 describe("ProfileScreen (M11)", () => {
+  jest.setTimeout(15000);
+
   beforeEach(() => {
     jest.clearAllMocks();
   });

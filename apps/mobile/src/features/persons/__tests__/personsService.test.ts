@@ -31,32 +31,38 @@ describe("personsService", () => {
   });
 
   describe("calculateAgeLabel", () => {
+    const getIsoDaysAgo = (days: number) => {
+      const d = new Date();
+      d.setHours(12, 0, 0, 0);
+      d.setDate(d.getDate() - days);
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+    };
+
     it("returns correct label for infant under 1 month", () => {
-      const today = new Date();
-      const birth = new Date(today);
-      birth.setDate(today.getDate() - 15);
-      const iso = birth.toISOString().split("T")[0];
-      expect(calculateAgeLabel(iso)).toBe("15 jours");
+      expect(calculateAgeLabel(getIsoDaysAgo(15))).toBe("15 jours");
     });
 
     it("returns correct label for infant in months", () => {
       const today = new Date();
+      today.setHours(12, 0, 0, 0);
       const birth = new Date(today.getFullYear(), today.getMonth() - 6, today.getDate());
-      const iso = birth.toISOString().split("T")[0];
+      const iso = `${birth.getFullYear()}-${String(birth.getMonth() + 1).padStart(2, "0")}-${String(birth.getDate()).padStart(2, "0")}`;
       expect(calculateAgeLabel(iso)).toMatch(/6 mois/);
     });
 
     it("returns correct label for 1 year and months", () => {
       const today = new Date();
+      today.setHours(12, 0, 0, 0);
       const birth = new Date(today.getFullYear() - 1, today.getMonth() - 11, today.getDate());
-      const iso = birth.toISOString().split("T")[0];
+      const iso = `${birth.getFullYear()}-${String(birth.getMonth() + 1).padStart(2, "0")}-${String(birth.getDate()).padStart(2, "0")}`;
       expect(calculateAgeLabel(iso)).toBe("1 an 11 mois");
     });
 
     it("returns correct label for 2 years or older", () => {
       const today = new Date();
+      today.setHours(12, 0, 0, 0);
       const birth = new Date(today.getFullYear() - 3, today.getMonth(), today.getDate());
-      const iso = birth.toISOString().split("T")[0];
+      const iso = `${birth.getFullYear()}-${String(birth.getMonth() + 1).padStart(2, "0")}-${String(birth.getDate()).padStart(2, "0")}`;
       expect(calculateAgeLabel(iso)).toBe("3 ans");
     });
 
