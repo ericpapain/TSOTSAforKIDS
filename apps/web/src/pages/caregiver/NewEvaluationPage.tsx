@@ -56,12 +56,12 @@ export function NewEvaluationPage(): React.JSX.Element {
             className="cursor-pointer hover:underline"
             onClick={() => navigate(`/soignant/personnes/${personId}`)}
           >
-            Amina
+            Hamadou
           </span>{" "}
           › Nouvelle évaluation
         </nav>
         <h1 className="text-24 font-bold text-text">
-          Nouvelle évaluation clinique — Amina (#{personId})
+          Nouvelle évaluation clinique — Hamadou (#{personId})
         </h1>
         <p className="text-14 text-text-muted mt-1">Fille · Née le 12/12/2024</p>
       </div>

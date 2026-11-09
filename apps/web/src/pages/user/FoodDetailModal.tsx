@@ -4,9 +4,14 @@ import type { EquivalentLocalFood } from "../../features/nutrition/types";
 interface FoodDetailModalProps {
   food: EquivalentLocalFood | null;
   onClose: () => void;
+  onGiveFood?: (food: EquivalentLocalFood) => void;
 }
 
-export const FoodDetailModal: React.FC<FoodDetailModalProps> = ({ food, onClose }) => {
+export const FoodDetailModal: React.FC<FoodDetailModalProps> = ({
+  food,
+  onClose,
+  onGiveFood,
+}) => {
   if (!food) return null;
 
   return (
@@ -85,15 +90,29 @@ export const FoodDetailModal: React.FC<FoodDetailModalProps> = ({ food, onClose 
           <span>Nutriments communs : {food.commonNutrientsCount}</span>
         </div>
 
-        <div className="mt-6 flex justify-end">
+        <div className="mt-6 flex items-center justify-end gap-3">
           <button
             type="button"
             data-testid="modal-close-btn"
             onClick={onClose}
-            className="rounded-lg bg-primary px-4 py-2 text-sm font-bold text-white hover:bg-primary-hover"
+            className="rounded-lg border border-[#D5DEDA] bg-white px-4 py-2 text-sm font-bold text-[#17302A] hover:bg-[#F7F9F8]"
           >
             Fermer
           </button>
+          {onGiveFood && (
+            <button
+              type="button"
+              data-testid="modal-give-food-btn"
+              onClick={() => {
+                const target = food;
+                onClose();
+                onGiveFood(target);
+              }}
+              className="rounded-lg bg-[#0F7B5F] px-4 py-2 text-sm font-bold text-white hover:bg-[#0c634c] cursor-pointer"
+            >
+              Donner {food.name} à Hamadou
+            </button>
+          )}
         </div>
       </div>
     </div>

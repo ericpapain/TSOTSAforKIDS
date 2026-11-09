@@ -33,7 +33,7 @@ const sampleColumns: DataTableColumn<PatientPreview>[] = [
 ];
 
 const samplePatients: PatientPreview[] = [
-  { id: '#A-014', name: 'Amina N.', age: '24 mois', status: 'Suivi actif', lastVisit: '2026-04-12' },
+  { id: '#A-014', name: 'Hamadou N.', age: '24 mois', status: 'Suivi actif', lastVisit: '2026-04-12' },
   { id: '#A-015', name: 'Koffi B.', age: '18 mois', status: 'En attente', lastVisit: '2026-04-10' },
   { id: '#A-016', name: 'Fatou D.', age: '36 mois', status: 'Clôturé', lastVisit: '2026-03-28' },
 ];
@@ -54,7 +54,7 @@ export const CatalogPage: React.FC = () => {
     <div className="min-h-screen bg-canvas font-sans pb-16">
       <AppHeader
         space={currentSpace}
-        userName="Dr. Marc Eto'o"
+        userName="Prof. Félicité Ngeufack"
         unreadNotifications={3}
       />
 

@@ -1,6 +1,7 @@
 import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { AppShell } from "../../components/AppShell";
+import { useOptionalAuth } from "../../api/authContext";
 import type { NavItem } from "../../types";
 
 export const caregiverNavItems: NavItem[] = [
@@ -13,16 +14,22 @@ export const caregiverNavItems: NavItem[] = [
 export function CaregiverLayout({ children }: { children: React.ReactNode }): React.JSX.Element {
   const location = useLocation();
   const navigate = useNavigate();
+  const authContext = useOptionalAuth();
+  const authLogout = authContext?.logout;
 
   return (
     <AppShell
       space="care"
-      userName="Dr. Marc Eto'o"
+      userName="Prof. Félicité Ngeufack"
       unreadNotifications={2}
+      onNotificationClick={() => navigate("/soignant/notifications")}
       navItems={caregiverNavItems}
       activeNavPath={location.pathname}
       onNavigate={(path) => navigate(path)}
-      onLogout={() => navigate("/connexion")}
+      onLogout={() => {
+        authLogout?.();
+        navigate("/connexion");
+      }}
     >
       {children}
     </AppShell>

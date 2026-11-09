@@ -58,7 +58,7 @@ export function IntakePlanPage(): React.JSX.Element {
     <div className="flex flex-col gap-6" data-testid="intake-plan-page">
       {savedSuccess && (
         <Notice variant="success" title="Modifications enregistrées" testID="plan-saved-notice">
-          Le plan de prises d'Amina et les règles de rappel ont été mis à jour avec succès.
+          Le plan de prises d'Hamadou et les règles de rappel ont été mis à jour avec succès.
         </Notice>
       )}
 
@@ -77,12 +77,12 @@ export function IntakePlanPage(): React.JSX.Element {
               className="cursor-pointer hover:underline"
               onClick={() => navigate(`/soignant/personnes/${personId}`)}
             >
-              Amina
+              Hamadou
             </span>{" "}
             › Plan de prises
           </nav>
           <h1 className="text-24 font-bold text-text">
-            Plan de prises et rappels — Amina (#{personId})
+            Plan de prises et rappels — Hamadou (#{personId})
           </h1>
           <p className="text-14 text-text-muted mt-1">
             Prescription active · {rows.length} prises quotidiennes
@@ -205,7 +205,7 @@ export function IntakePlanPage(): React.JSX.Element {
       </Card>
 
       {/* Alert Rules Card */}
-      <Card title="Règles d'alerte soignant pour Amina">
+      <Card title="Règles d'alerte soignant pour Hamadou">
         <div className="flex flex-col gap-4 text-13">
           <div className="flex items-center justify-between py-2 border-b border-border">
             <div>

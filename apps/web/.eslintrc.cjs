@@ -8,10 +8,23 @@ module.exports = {
   ],
   ignorePatterns: ["dist", ".eslintrc.cjs", "coverage", "playwright-report"],
   parser: "@typescript-eslint/parser",
-  plugins: ["react"],
+  plugins: ["react", "i18next"],
   rules: {
     "@typescript-eslint/no-explicit-any": "warn",
     "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
   },
+  overrides: [
+    {
+      files: ["src/**/*.tsx"],
+      excludedFiles: ["src/**/__tests__/**", "src/**/*.test.tsx", "src/**/*.spec.tsx"],
+      rules: {
+        "i18next/no-literal-string": [
+          "warn",
+          {
+            markupOnly: true,
+          },
+        ],
+      },
+    },
+  ],
 };
-

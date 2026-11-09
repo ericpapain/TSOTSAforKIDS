@@ -1,6 +1,7 @@
 import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { AppShell } from "../../components/AppShell";
+import { useOptionalAuth } from "../../api/authContext";
 import type { NavItem } from "../../types";
 import { useAdminStore } from "../../features/admin/useAdminStore";
 
@@ -20,6 +21,8 @@ export function AdminLayout({ children }: { children: React.ReactNode }): React.
   const location = useLocation();
   const navigate = useNavigate();
   const { caregivers, userProducts, currentUser } = useAdminStore();
+  const authContext = useOptionalAuth();
+  const authLogout = authContext?.logout;
 
   const pendingCount = caregivers.length + userProducts.length;
   const itemsWithBadges: NavItem[] = adminNavItems.map((item) => {
@@ -36,7 +39,10 @@ export function AdminLayout({ children }: { children: React.ReactNode }): React.
       navItems={itemsWithBadges}
       activeNavPath={location.pathname === "/admin" ? "/" : location.pathname}
       onNavigate={(path) => navigate(path)}
-      onLogout={() => navigate("/connexion")}
+      onLogout={() => {
+        authLogout?.();
+        navigate("/connexion");
+      }}
     >
       {children}
     </AppShell>

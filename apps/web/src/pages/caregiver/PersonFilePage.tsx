@@ -51,10 +51,10 @@ export function PersonFilePage(): React.JSX.Element {
             >
               Personnes suivies
             </span>{" "}
-            › Amina
+            › Hamadou
           </nav>
           <div className="flex items-center gap-3">
-            <h1 className="text-24 font-bold text-text">Amina (#{personId})</h1>
+            <h1 className="text-24 font-bold text-text">Hamadou (#{personId})</h1>
             <span className="text-14 text-text-muted">Fille · 23 mois</span>
             <span className="px-2.5 py-0.5 rounded text-12 font-bold bg-amber-50 text-amber-800 border border-amber-200">
               MAM
@@ -118,7 +118,7 @@ export function PersonFilePage(): React.JSX.Element {
               </div>
               <div>
                 <dt className="text-text-muted text-12">Prénom</dt>
-                <dd className="font-bold text-text">Amina</dd>
+                <dd className="font-bold text-text">Hamadou</dd>
               </div>
               <div>
                 <dt className="text-text-muted text-12">Date de naissance</dt>

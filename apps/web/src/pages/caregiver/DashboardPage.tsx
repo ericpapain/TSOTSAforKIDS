@@ -55,7 +55,7 @@ export function DashboardPage(): React.JSX.Element {
         <KpiCard
           title="Évaluations du jour"
           value="1"
-          subtitle="Amina (#A-014) à 10h00"
+          subtitle="Hamadou (#A-014) à 10h00"
           space="care"
           testID="kpi-evaluations-today"
         />

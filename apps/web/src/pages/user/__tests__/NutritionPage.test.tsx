@@ -16,7 +16,7 @@ describe("NutritionPage (W01)", () => {
     renderNutritionPage();
 
     expect(screen.getByText(/Espace utilisateur \(web\)/i)).toBeInTheDocument();
-    expect(screen.getByText(/Compte démo · Amina/i)).toBeInTheDocument();
+    expect(screen.getByText(/Compte démo · Hamadou/i)).toBeInTheDocument();
 
     expect(screen.getByTestId("product-card")).toBeInTheDocument();
     expect(screen.getByTestId("equivalents-card")).toBeInTheDocument();
@@ -60,14 +60,20 @@ describe("NutritionPage (W01)", () => {
     expect(rows.length).toBe(8);
   });
 
-  it("filtre les aliments locaux selon la région Ouest", () => {
+  it("filtre les aliments locaux selon la région choisie parmi les 10 régions du Cameroun", () => {
     renderNutritionPage();
 
     const filterBtn = screen.getByTestId("region-filter-btn");
     expect(filterBtn).toHaveTextContent("Toutes régions ▾");
 
-    // Click filter to switch to Region Ouest
+    // Open dropdown and select Region Ouest
     fireEvent.click(filterBtn);
+    expect(screen.getByTestId("region-dropdown-menu")).toBeInTheDocument();
+    expect(screen.getByTestId("region-option-adamaoua")).toBeInTheDocument();
+    expect(screen.getByTestId("region-option-centre")).toBeInTheDocument();
+    expect(screen.getByTestId("region-option-far-north")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByTestId("region-option-west"));
     expect(filterBtn).toHaveTextContent("Région Ouest ▾");
 
     // Sésame and Lait entier en poudre are NOT available in Ouest (marked —)
@@ -81,8 +87,9 @@ describe("NutritionPage (W01)", () => {
     expect(screen.getByText("Niébé")).toBeInTheDocument();
     expect(screen.getByText("Feuilles de moringa")).toBeInTheDocument();
 
-    // Click again to toggle back
+    // Open dropdown and switch back to Toutes régions
     fireEvent.click(filterBtn);
+    fireEvent.click(screen.getByTestId("region-option-all"));
     expect(filterBtn).toHaveTextContent("Toutes régions ▾");
     expect(screen.getByText("Sésame")).toBeInTheDocument();
   });
@@ -122,5 +129,60 @@ describe("NutritionPage (W01)", () => {
       vi.runAllTimers();
     });
     vi.useRealTimers();
+  });
+
+  it("ouvre le menu déroulant des produits et permet de changer de produit", () => {
+    renderNutritionPage();
+
+    const selector = screen.getByTestId("product-selector");
+    expect(selector).toHaveTextContent("Plumpy'Nut");
+    expect(screen.queryByTestId("product-dropdown-menu")).not.toBeInTheDocument();
+
+    // Open dropdown
+    fireEvent.click(selector);
+    expect(screen.getByTestId("product-dropdown-menu")).toBeInTheDocument();
+    expect(screen.getByTestId("product-option-plumpy-sup")).toBeInTheDocument();
+    expect(screen.getByTestId("product-option-f-75")).toBeInTheDocument();
+    expect(screen.getByTestId("product-option-f-100")).toBeInTheDocument();
+    expect(screen.getByTestId("product-option-farine-infantile-enrichie")).toBeInTheDocument();
+
+    // Select F-75
+    fireEvent.click(screen.getByTestId("product-option-f-75"));
+    expect(screen.queryByTestId("product-dropdown-menu")).not.toBeInTheDocument();
+    expect(selector).toHaveTextContent("F-75");
+    expect(screen.getByText("75 kcal")).toBeInTheDocument();
+  });
+
+  it("affiche le bouton Déconnexion dans l'en-tête et permet de se déconnecter", () => {
+    renderNutritionPage();
+
+    const logoutBtn = screen.getByTestId("header-logout-btn");
+    expect(logoutBtn).toBeInTheDocument();
+    expect(logoutBtn).toHaveTextContent("Déconnexion");
+    fireEvent.click(logoutBtn);
+  });
+
+  it("ouvre la modale Confirmer la prise (Donner à Hamadou) et enregistre la prise", () => {
+    renderNutritionPage();
+
+    const giveBtn = screen.getByTestId("give-product-btn");
+    expect(giveBtn).toHaveTextContent("Donner à Hamadou");
+    fireEvent.click(giveBtn);
+
+    expect(screen.getByTestId("confirm-intake-modal")).toBeInTheDocument();
+    expect(screen.getByText("Confirmer la prise")).toBeInTheDocument();
+
+    // Increment quantity
+    fireEvent.click(screen.getByTestId("qty-plus-btn"));
+    expect(screen.getByTestId("qty-display")).toHaveTextContent("2 sachets");
+
+    // Submit confirmation
+    fireEvent.click(screen.getByTestId("confirm-intake-submit-btn"));
+    expect(screen.getByTestId("intake-recorded-view")).toBeInTheDocument();
+    expect(screen.getByText("Prise enregistrée")).toBeInTheDocument();
+
+    // Close modal
+    fireEvent.click(screen.getByTestId("return-to-person-btn"));
+    expect(screen.queryByTestId("confirm-intake-modal")).not.toBeInTheDocument();
   });
 });

@@ -90,6 +90,10 @@ export function AuthProvider({ children }: { children: ReactNode }): React.JSX.E
   );
 }
 
+export function useOptionalAuth(): AuthContextType | undefined {
+  return useContext(AuthContext);
+}
+
 export function useAuth(): AuthContextType {
   const ctx = useContext(AuthContext);
   if (!ctx) {

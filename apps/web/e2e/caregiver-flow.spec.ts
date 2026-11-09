@@ -17,13 +17,13 @@ test.describe("Parcours Soignant TSOTSA Kids", () => {
     await expect(page.getByText("Tableau de bord — Espace soignant")).toBeVisible();
     await expect(page.getByTestId("kpi-active-alerts")).toBeVisible();
 
-    // 2. Clic sur l'alerte Amina pour ouvrir son dossier (W04)
+    // 2. Clic sur l'alerte Hamadou pour ouvrir son dossier (W04)
     const openFileBtn = page.getByTestId("open-file-btn-A-014");
     await expect(openFileBtn).toBeVisible();
     await openFileBtn.click();
     await expect(page).toHaveURL(/\/soignant\/personnes\/A-014/);
     await expect(page.getByTestId("person-file-page")).toBeVisible();
-    await expect(page.getByText("Amina (#A-014)")).toBeVisible();
+    await expect(page.getByText("Hamadou (#A-014)")).toBeVisible();
 
     // 3. Clic sur "Nouvelle évaluation" (W05)
     const newEvalBtn = page.getByTestId("new-evaluation-btn");
@@ -63,9 +63,9 @@ test.describe("Parcours Soignant TSOTSA Kids", () => {
     await expect(openFromNotifBtn).toBeVisible();
     await openFromNotifBtn.click();
 
-    // 3. Vérification de l'arrivée sur le dossier d'Amina (W04)
+    // 3. Vérification de l'arrivée sur le dossier d'Hamadou (W04)
     await expect(page).toHaveURL(/\/soignant\/personnes\/A-014/);
     await expect(page.getByTestId("person-file-page")).toBeVisible();
-    await expect(page.getByText("Amina (#A-014)")).toBeVisible();
+    await expect(page.getByText("Hamadou (#A-014)")).toBeVisible();
   });
 });

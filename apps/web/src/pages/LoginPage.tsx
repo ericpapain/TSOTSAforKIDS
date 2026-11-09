@@ -16,7 +16,7 @@ export const LoginPage: React.FC = () => {
     setSession(
       {
         id: 'usr-1',
-        name: role === 'caregiver' ? 'Dr. Marc Eto\'o' : role === 'admin' ? 'Admin TSOTSA' : 'Parent Amina',
+        name: role === 'caregiver' ? 'Prof. Félicité Ngeufack' : role === 'admin' ? 'Admin TSOTSA' : 'Parent Hamadou',
         role,
         isVerifiedCaregiver: role === 'caregiver',
       },

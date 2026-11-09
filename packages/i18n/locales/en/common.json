@@ -1,0 +1,33 @@
+{
+  "header": {
+    "space": {
+      "user": "User portal (web)",
+      "caregiver": "Caregiver portal",
+      "admin": "Administration"
+    },
+    "defaultUserName": "Demo account · Hamadou",
+    "notificationsUnread_one": "Notifications ({{count}} unread)",
+    "notificationsUnread_other": "Notifications ({{count}} unread)",
+    "close": "Close ✕",
+    "logout": "Log out"
+  },
+  "language": {
+    "switcherAria": "Select language",
+    "switchToFr": "Switch interface to French",
+    "switchToEn": "Switch interface to English",
+    "fr": "FR",
+    "en": "EN",
+    "separator": "|",
+    "frenchName": "French",
+    "englishName": "English"
+  },
+  "actions": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "close": "Close",
+    "confirm": "Confirm",
+    "back": "Back",
+    "search": "Search"
+  }
+}
+

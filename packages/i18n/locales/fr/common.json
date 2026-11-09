@@ -1,0 +1,33 @@
+{
+  "header": {
+    "space": {
+      "user": "Espace utilisateur (web)",
+      "caregiver": "Espace soignant",
+      "admin": "Administration"
+    },
+    "defaultUserName": "Compte démo · Hamadou",
+    "notificationsUnread_one": "Notifications ({{count}} non lue)",
+    "notificationsUnread_other": "Notifications ({{count}} non lues)",
+    "close": "Fermer ✕",
+    "logout": "Déconnexion"
+  },
+  "language": {
+    "switcherAria": "Choisir la langue",
+    "switchToFr": "Passer l'interface en français",
+    "switchToEn": "Passer l'interface en anglais",
+    "fr": "FR",
+    "en": "EN",
+    "separator": "|",
+    "frenchName": "Français",
+    "englishName": "Anglais"
+  },
+  "actions": {
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "close": "Fermer",
+    "confirm": "Confirmer",
+    "back": "Retour",
+    "search": "Rechercher"
+  }
+}
+
