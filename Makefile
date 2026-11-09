@@ -42,4 +42,4 @@ up:
 	docker compose up -d
 
 smoke:
-	@echo "Test smoke sur l'URL: $(URL)"
+	$(PYTHON) scripts/smoke_test.py $(URL)

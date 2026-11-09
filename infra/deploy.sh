@@ -21,9 +21,9 @@ echo "== 4. Redémarrage des services"
 docker compose -f docker-compose.prod.yml up -d --remove-orphans
 
 echo "== 5. Vérification de santé"
-for i in $(seq 1 30); do
+for attempt in $(seq 1 30); do
   if curl -fsS http://127.0.0.1:8000/health >/dev/null; then
-    echo "$SHA" > .deployed_sha; echo "Déploiement réussi : ${SHA:0:7}"; exit 0
+    echo "$SHA" > .deployed_sha; echo "Déploiement réussi à la tentative ${attempt} : ${SHA:0:7}"; exit 0
   fi
   sleep 2
 done

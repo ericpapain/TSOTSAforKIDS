@@ -18,9 +18,8 @@ __pycache__
 .mypy_cache
 .ruff_cache
 
-# Frontends & non-API apps (not needed in API container build)
+# Frontends & non-API apps
 apps/mobile
-apps/web
 
 # Documentation & large data exports
 docs
