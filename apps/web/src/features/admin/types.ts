@@ -47,12 +47,19 @@ export interface FoodBatch {
   statusLabel: string;
 }
 
+export type ImportRowCheckCode =
+  | "VALID"
+  | "ERR_OUT_OF_BOUNDS_100G"
+  | "ERR_OUT_OF_BOUNDS_900KCAL"
+  | "WARN_MISSING_UNIT";
+
 export interface NutrientCheckItem {
   aliment: string;
   nutriment: string;
   valeur: string;
   unite: string;
   status: "valid" | "error" | "warning";
+  code?: ImportRowCheckCode;
   message: string;
 }
 

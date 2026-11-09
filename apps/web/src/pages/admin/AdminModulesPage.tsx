@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { FaAppleAlt, FaHeartbeat, FaTint } from "react-icons/fa";
 import { Button } from "../../components/Button";
@@ -7,8 +8,13 @@ import { Toggle } from "../../components/Toggle";
 import { useAdminStore } from "../../features/admin/useAdminStore";
 
 export function AdminModulesPage(): React.JSX.Element {
+  const { t, i18n } = useTranslation("admin");
   const navigate = useNavigate();
   const { modules, toggleModule } = useAdminStore();
+
+  useEffect(() => {
+    document.title = t("modules.pageTitle");
+  }, [t, i18n.language]);
 
   const getModuleIcon = (id: string, active: boolean): React.JSX.Element => {
     const color = active ? "text-primary" : "text-text-subtle";
@@ -22,11 +28,14 @@ export function AdminModulesPage(): React.JSX.Element {
       data-testid="admin-modules-page"
       className="p-[29px] max-w-[1200px] flex flex-col gap-6"
     >
-      <h1 className="text-29 font-bold text-text">Modules</h1>
+      <h1 className="text-29 font-bold text-text">{t("modules.title")}</h1>
 
       <div className="flex flex-col gap-4">
         {modules.map((m) => {
-          const subtitle = m.active ? m.activeSubtitle : m.inactiveSubtitle;
+          const name = t(`modules.items.${m.id}.name` as never);
+          const subtitle = m.active
+            ? t(`modules.items.${m.id}.activeSub` as never)
+            : t(`modules.items.${m.id}.inactiveSub` as never);
           return (
             <Card
               key={m.id}
@@ -38,7 +47,7 @@ export function AdminModulesPage(): React.JSX.Element {
                   {getModuleIcon(m.id, m.active)}
                 </div>
                 <div className="flex flex-col gap-1">
-                  <h2 className="text-22 font-bold text-text">{m.name}</h2>
+                  <h2 className="text-22 font-bold text-text">{name}</h2>
                   <p
                     data-testid={`module-subtitle-${m.id}`}
                     className="text-16 text-text-muted"
@@ -67,7 +76,7 @@ export function AdminModulesPage(): React.JSX.Element {
           onClick={() => navigate("/nutrition/produits/plumpy-nut")}
           className="h-[57px] text-17 font-bold px-8"
         >
-          Voir l'effet côté utilisateur
+          {t("modules.seeUserEffectBtn")}
         </Button>
       </div>
     </div>
@@ -75,4 +84,5 @@ export function AdminModulesPage(): React.JSX.Element {
 }
 
 export default AdminModulesPage;
+
 

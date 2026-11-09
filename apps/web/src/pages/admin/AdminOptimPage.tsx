@@ -1,12 +1,18 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "../../components/Button";
 import { Card } from "../../components/Card";
 import { initialOptimizationTargets } from "../../features/admin/adminData";
 import type { OptimizationTarget } from "../../features/admin/types";
 
 export function AdminOptimPage(): React.JSX.Element {
+  const { t, i18n } = useTranslation("admin");
   const [activeTab, setActiveTab] = useState<string>("cibles");
   const [targets] = useState<OptimizationTarget[]>(initialOptimizationTargets);
+
+  useEffect(() => {
+    document.title = t("optim.pageTitle");
+  }, [t, i18n.language]);
 
   return (
     <div
@@ -15,22 +21,22 @@ export function AdminOptimPage(): React.JSX.Element {
     >
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <h1 className="text-29 font-bold text-text">
-          Optimisation des rations · préparation
+          {t("optim.title")}
         </h1>
         <span
           data-testid="badge-engine-status"
           className="px-5 py-2 bg-warning-50 text-warning font-bold text-14 rounded-full self-start sm:self-auto"
         >
-          Moteur : phase 2 (non activé)
+          {t("optim.engineBadge")}
         </span>
       </div>
 
       {/* Onglets */}
       <div className="flex flex-wrap gap-3">
         {[
-          { id: "cibles", label: "Cibles nutritionnelles" },
-          { id: "limites", label: "Limites par aliment" },
-          { id: "parametres", label: "Paramètres" },
+          { id: "cibles", label: t("optim.tabs.cibles") },
+          { id: "limites", label: t("optim.tabs.limites") },
+          { id: "parametres", label: t("optim.tabs.parametres") },
         ].map((tab) => {
           const isActive = activeTab === tab.id;
           return (
@@ -58,31 +64,47 @@ export function AdminOptimPage(): React.JSX.Element {
             <table className="w-full text-left border-collapse" data-testid="targets-table">
               <thead>
                 <tr className="bg-admin text-white text-14 font-bold h-[41px]">
-                  <th className="px-3 py-2 w-[171px]">Population</th>
-                  <th className="px-3 py-2 w-[131px]">Phase</th>
-                  <th className="px-3 py-2 w-[114px]">Nutriment</th>
-                  <th className="px-3 py-2 w-[86px]">Min</th>
-                  <th className="px-3 py-2 w-[86px]">Max</th>
-                  <th className="px-3 py-2 w-[108px]">Unité</th>
-                  <th className="px-3 py-2 w-[125px]">Source</th>
+                  <th className="px-3 py-2 w-[171px]">{t("optim.columns.population")}</th>
+                  <th className="px-3 py-2 w-[131px]">{t("optim.columns.phase")}</th>
+                  <th className="px-3 py-2 w-[114px]">{t("optim.columns.nutrient")}</th>
+                  <th className="px-3 py-2 w-[86px]">{t("optim.columns.min")}</th>
+                  <th className="px-3 py-2 w-[86px]">{t("optim.columns.max")}</th>
+                  <th className="px-3 py-2 w-[108px]">{t("optim.columns.unit")}</th>
+                  <th className="px-3 py-2 w-[125px]">{t("optim.columns.source")}</th>
                 </tr>
               </thead>
               <tbody>
-                {targets.map((t, index) => (
+                {targets.map((item, index) => (
                   <tr
-                    key={t.id}
-                    data-testid={`target-row-${t.id}`}
+                    key={item.id}
+                    data-testid={`target-row-${item.id}`}
                     className={`h-[51px] text-14 border-t border-border ${
                       index % 2 === 0 ? "bg-surface-2" : "bg-white"
                     }`}
                   >
-                    <td className="px-3 py-2 font-normal text-text">{t.population}</td>
-                    <td className="px-3 py-2 font-normal text-text">{t.phase}</td>
-                    <td className="px-3 py-2 font-normal text-text">{t.nutrient}</td>
-                    <td className="px-3 py-2 font-normal text-text-muted">{t.min}</td>
-                    <td className="px-3 py-2 font-normal text-text-muted">{t.max}</td>
-                    <td className="px-3 py-2 font-normal text-text">{t.unit}</td>
-                    <td className="px-3 py-2 font-normal text-text">{t.source}</td>
+                    <td className="px-3 py-2 font-normal text-text">
+                      {item.population === "6–59 mois, MAS"
+                        ? t("optim.data.popSam")
+                        : t("optim.data.popMam")}
+                    </td>
+                    <td className="px-3 py-2 font-normal text-text">
+                      {item.phase === "Réhabilitation"
+                        ? t("optim.data.phaseRehab")
+                        : t("optim.data.phaseSupplement")}
+                    </td>
+                    <td className="px-3 py-2 font-normal text-text">
+                      {t(`foodNew.nutrientNames.${item.nutrient}` as never)}
+                    </td>
+                    <td className="px-3 py-2 font-normal text-text-muted">
+                      {item.min === "à saisir" ? t("prices.toEnter") : item.min}
+                    </td>
+                    <td className="px-3 py-2 font-normal text-text-muted">
+                      {item.max === "à saisir" ? t("prices.toEnter") : item.max}
+                    </td>
+                    <td className="px-3 py-2 font-normal text-text">{item.unit}</td>
+                    <td className="px-3 py-2 font-normal text-text">
+                      {item.source === "Protocole" ? t("optim.data.sourceProtocol") : item.source}
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -90,8 +112,7 @@ export function AdminOptimPage(): React.JSX.Element {
           </div>
 
           <p className="text-14 italic text-text-muted">
-            Les cibles viennent du protocole national, validé par la référente
-            médicale. Aucune valeur par défaut.
+            {t("optim.footnote")}
           </p>
 
           <div>
@@ -101,7 +122,7 @@ export function AdminOptimPage(): React.JSX.Element {
               className="!bg-toggle-off !cursor-not-allowed !text-white h-[51px]"
               testID="btn-test-formulation"
             >
-              Tester une formulation
+              {t("optim.testFormulationBtn")}
             </Button>
           </div>
         </div>
@@ -109,15 +130,12 @@ export function AdminOptimPage(): React.JSX.Element {
         {/* Colonne droite : Ce que le moteur calculera */}
         <div className="lg:col-span-4">
           <Card testID="solver-explanation-card" className="p-6 bg-admin-50 border-0 flex flex-col gap-4">
-            <h2 className="text-17 font-bold text-text">Ce que le moteur calculera</h2>
+            <h2 className="text-17 font-bold text-text">{t("optim.solverCardTitle")}</h2>
             <ul className="list-disc pl-5 text-14 text-text space-y-3 leading-relaxed">
-              <li>
-                La combinaison d'aliments locaux la moins chère qui atteint les
-                cibles
-              </li>
-              <li>Les quantités en grammes par repas</li>
-              <li>Avec les seuls aliments disponibles dans la région</li>
-              <li>Toujours validée par un soignant</li>
+              <li>{t("optim.solverBullets.b1")}</li>
+              <li>{t("optim.solverBullets.b2")}</li>
+              <li>{t("optim.solverBullets.b3")}</li>
+              <li>{t("optim.solverBullets.b4")}</li>
             </ul>
           </Card>
         </div>
@@ -127,4 +145,5 @@ export function AdminOptimPage(): React.JSX.Element {
 }
 
 export default AdminOptimPage;
+
 

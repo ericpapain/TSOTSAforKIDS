@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../../components/Button";
 import { Notice } from "../../components/Notice";
@@ -7,8 +8,14 @@ import { useAdminStore } from "../../features/admin/useAdminStore";
 import { FoodCompositionCard, type NutrientRow } from "./FoodCompositionCard";
 
 export function AdminFoodNewPage(): React.JSX.Element {
+  const { t, i18n } = useTranslation("admin");
+  const { t: tErrors } = useTranslation("errors");
   const navigate = useNavigate();
   const { addManualFoodBatch } = useAdminStore();
+
+  useEffect(() => {
+    document.title = t("foodNew.pageTitle");
+  }, [t, i18n.language]);
 
   const [nom, setNom] = useState<string>("Arachide");
   const [nomLocal, setNomLocal] = useState<string>("");
@@ -17,7 +24,7 @@ export function AdminFoodNewPage(): React.JSX.Element {
   const [regions, setRegions] = useState<string[]>(["Ouest", "Centre"]);
   const [orkgId, setOrkgId] = useState<string>("R12458");
   const [articleRef, setArticleRef] = useState<string>("DOI: 10.1016/j.foodchem.2023.01");
-  const [errors, setErrors] = useState<string[]>([]);
+  const [errorCodes, setErrorCodes] = useState<string[]>([]);
 
   const [nutriments, setNutriments] = useState<NutrientRow[]>([
     { id: "1", nom: "Énergie", valeur: 567, unite: "kcal" },
@@ -62,11 +69,11 @@ export function AdminFoodNewPage(): React.JSX.Element {
     });
 
     if (!isDraft && !result.isValid) {
-      setErrors(result.errors);
+      setErrorCodes(result.errorCodes);
       return;
     }
 
-    addManualFoodBatch(nom, orkgId || articleRef || "Source déclarée");
+    addManualFoodBatch(nom, orkgId || articleRef || "ORKG");
     navigate("/base-aliments");
   };
 
@@ -75,13 +82,13 @@ export function AdminFoodNewPage(): React.JSX.Element {
       data-testid="admin-food-new-page"
       className="p-[29px] max-w-[1400px] flex flex-col gap-6"
     >
-      <h1 className="text-29 font-bold text-text">Nouvel aliment · saisie manuelle</h1>
+      <h1 className="text-29 font-bold text-text">{t("foodNew.title")}</h1>
 
-      {errors.length > 0 && (
+      {errorCodes.length > 0 && (
         <Notice variant="warning" testID="food-new-errors">
           <ul className="list-disc pl-5">
-            {errors.map((err, i) => (
-              <li key={i}>{err}</li>
+            {errorCodes.map((code, i) => (
+              <li key={i}>{tErrors(`foodValidation.${code}` as never)}</li>
             ))}
           </ul>
         </Notice>
@@ -92,7 +99,7 @@ export function AdminFoodNewPage(): React.JSX.Element {
         <div className="lg:col-span-7 flex flex-col gap-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="flex flex-col gap-1.5">
-              <label className="text-14 font-bold text-text-muted">Nom</label>
+              <label className="text-14 font-bold text-text-muted">{t("foodNew.nameLabel")}</label>
               <input
                 type="text"
                 data-testid="input-food-name"
@@ -102,13 +109,13 @@ export function AdminFoodNewPage(): React.JSX.Element {
               />
             </div>
             <div className="flex flex-col gap-1.5">
-              <label className="text-14 font-bold text-text-muted">Nom local</label>
+              <label className="text-14 font-bold text-text-muted">{t("foodNew.localNameLabel")}</label>
               <input
                 type="text"
                 data-testid="input-food-local-name"
                 value={nomLocal}
                 onChange={(e) => setNomLocal(e.target.value)}
-                placeholder="[nom local]"
+                placeholder={t("foodNew.localNamePlaceholder")}
                 className="h-[43px] px-3.5 bg-surface-2 border border-border rounded-[6px] text-16 text-text"
               />
             </div>
@@ -116,29 +123,29 @@ export function AdminFoodNewPage(): React.JSX.Element {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="flex flex-col gap-1.5">
-              <label className="text-14 font-bold text-text-muted">Catégorie</label>
+              <label className="text-14 font-bold text-text-muted">{t("foodNew.categoryLabel")}</label>
               <select
                 data-testid="select-category"
                 value={categorie}
                 onChange={(e) => setCategorie(e.target.value)}
                 className="h-[43px] px-3.5 bg-surface-2 border border-border rounded-[6px] text-16 text-text"
               >
-                <option value="Oléagineux">Oléagineux ▾</option>
-                <option value="Légumineuses">Légumineuses ▾</option>
-                <option value="Céréales">Céréales ▾</option>
+                <option value="Oléagineux">{t("foodNew.categories.Oléagineux")}</option>
+                <option value="Légumineuses">{t("foodNew.categories.Légumineuses")}</option>
+                <option value="Céréales">{t("foodNew.categories.Céréales")}</option>
               </select>
             </div>
             <div className="flex flex-col gap-1.5">
-              <label className="text-14 font-bold text-text-muted">État</label>
+              <label className="text-14 font-bold text-text-muted">{t("foodNew.stateLabel")}</label>
               <select
                 data-testid="select-state"
                 value={etat}
                 onChange={(e) => setEtat(e.target.value)}
                 className="h-[43px] px-3.5 bg-surface-2 border border-border rounded-[6px] text-16 text-text"
               >
-                <option value="Graine crue">Graine crue ▾</option>
-                <option value="Cuit">Cuit ▾</option>
-                <option value="Farine">Farine ▾</option>
+                <option value="Graine crue">{t("foodNew.states.Graine crue")}</option>
+                <option value="Cuit">{t("foodNew.states.Cuit")}</option>
+                <option value="Farine">{t("foodNew.states.Farine")}</option>
               </select>
             </div>
           </div>
@@ -146,7 +153,7 @@ export function AdminFoodNewPage(): React.JSX.Element {
           {/* Régions disponibles */}
           <div className="flex flex-col gap-2">
             <span className="text-14 font-bold text-text-muted">
-              Régions où il est disponible
+              {t("foodNew.regionsLabel")}
             </span>
             <div className="flex flex-wrap items-center gap-2">
               {regions.map((reg) => (
@@ -157,7 +164,8 @@ export function AdminFoodNewPage(): React.JSX.Element {
                   onClick={() => removeRegion(reg)}
                   className="px-4 py-1.5 bg-admin-50 text-admin rounded-full text-14 font-bold flex items-center gap-1.5"
                 >
-                  {reg} ✕
+                  {/* eslint-disable-next-line i18next/no-literal-string -- Multiplication symbol */}
+                  {t(`foodNew.regionNames.${reg}` as never)} ✕
                 </button>
               ))}
               <button
@@ -166,7 +174,7 @@ export function AdminFoodNewPage(): React.JSX.Element {
                 onClick={addRegion}
                 className="px-4 py-1.5 bg-white border border-border text-text-muted rounded-full text-14 font-bold hover:bg-surface-2"
               >
-                + Région
+                {t("foodNew.addRegionBtn")}
               </button>
             </div>
           </div>
@@ -174,26 +182,26 @@ export function AdminFoodNewPage(): React.JSX.Element {
           {/* Source ORKG et Article */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="flex flex-col gap-1.5">
-              <label className="text-14 font-bold text-text-muted">Comparaison ORKG</label>
+              <label className="text-14 font-bold text-text-muted">{t("foodNew.orkgLabel")}</label>
               <input
                 type="text"
                 data-testid="input-orkg-id"
                 value={orkgId}
                 onChange={(e) => setOrkgId(e.target.value)}
-                placeholder="R[identifiant]"
+                placeholder={t("foodNew.orkgPlaceholder")}
                 className="h-[43px] px-3.5 bg-surface-2 border border-border rounded-[6px] text-16 text-text"
               />
             </div>
             <div className="flex flex-col gap-1.5">
               <label className="text-14 font-bold text-text-muted">
-                Article (référence ou DOI)
+                {t("foodNew.articleLabel")}
               </label>
               <input
                 type="text"
                 data-testid="input-article-ref"
                 value={articleRef}
                 onChange={(e) => setArticleRef(e.target.value)}
-                placeholder="[référence]"
+                placeholder={t("foodNew.articlePlaceholder")}
                 className="h-[43px] px-3.5 bg-surface-2 border border-border rounded-[6px] text-16 text-text"
               />
             </div>
@@ -202,10 +210,10 @@ export function AdminFoodNewPage(): React.JSX.Element {
           {/* Limites optimisation */}
           <div className="p-4 bg-surface-2 border border-border rounded-[7px] flex flex-col gap-1">
             <span className="text-16 font-bold text-text">
-              Limites pour l'optimisation (facultatif)
+              {t("foodNew.optimLimitsTitle")}
             </span>
             <p className="text-14 text-text-muted">
-              Portion minimale et maximale par repas (g) : à définir avec l'équipe médicale
+              {t("foodNew.optimLimitsDesc")}
             </p>
           </div>
 
@@ -217,7 +225,7 @@ export function AdminFoodNewPage(): React.JSX.Element {
               testID="btn-draft-food"
               onClick={() => handleSubmit(true)}
             >
-              Enregistrer en brouillon
+              {t("foodNew.saveDraftBtn")}
             </Button>
             <Button
               variant="primary"
@@ -225,7 +233,7 @@ export function AdminFoodNewPage(): React.JSX.Element {
               testID="btn-submit-food"
               onClick={() => handleSubmit(false)}
             >
-              Soumettre à validation
+              {t("foodNew.submitValidationBtn")}
             </Button>
           </div>
         </div>

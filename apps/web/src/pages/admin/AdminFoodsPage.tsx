@@ -1,31 +1,85 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import "../../i18n/setup";
 import { Button } from "../../components/Button";
 import { Card } from "../../components/Card";
 import { Notice } from "../../components/Notice";
 import { useAdminStore } from "../../features/admin/useAdminStore";
+import type { FoodBatch } from "../../features/admin/types";
 
 export function AdminFoodsPage(): React.JSX.Element {
   const navigate = useNavigate();
+  const { t } = useTranslation("admin");
+  const { t: tErrors } = useTranslation("errors");
   const { batches, validateBatch, currentUser, setCurrentUser } = useAdminStore();
   const [feedback, setFeedback] = useState<{ type: "success" | "error"; message: string } | null>(null);
 
+  useEffect(() => {
+    document.title = t("foods.pageTitle");
+  }, [t]);
+
   const nutrientMappings = [
-    { source: "Protein, proteins, protéines", target: "protéines (g)" },
-    { source: "Fat, lipids, matières grasses", target: "lipides (g)" },
-    { source: "Iron, Fe", target: "fer (mg)" },
-    { source: "Calcium, Ca", target: "calcium (mg)" },
-    { source: "Energy, énergie (kJ ou kcal)", target: "énergie (kcal)" },
+    { source: "Protein, proteins, protéines", target: t("foods.dictionaryTargets.proteins") },
+    { source: "Fat, lipids, matières grasses", target: t("foods.dictionaryTargets.lipids") },
+    { source: "Iron, Fe", target: t("foods.dictionaryTargets.iron") },
+    { source: "Calcium, Ca", target: t("foods.dictionaryTargets.calcium") },
+    { source: "Energy, énergie (kJ ou kcal)", target: t("foods.dictionaryTargets.energy") },
   ];
+
+  const displayCurrentUser =
+    currentUser === "Équipe TSOTSA" ? t("nav.shortTeamName") : currentUser;
 
   const handleValidateBatchClick = (batchId: string): void => {
     const result = validateBatch(batchId, currentUser);
     if (!result.success) {
-      setFeedback({ type: "error", message: result.error || "Validation refusée." });
+      const msg = result.errorCode
+        ? tErrors(`import.batch.${result.errorCode}`)
+        : tErrors("import.batch.ERR_GENERIC");
+      setFeedback({ type: "error", message: msg });
     } else {
-      setFeedback({ type: "success", message: `Lot ${batchId} validé avec succès par ${currentUser} et publié !` });
+      setFeedback({
+        type: "success",
+        message: t("foods.batchPublishedFeedback", {
+          batchId,
+          reviewer: displayCurrentUser,
+        }),
+      });
     }
   };
+
+  const getLocalizedBatch = (batch: FoodBatch) => ({
+    lotNumber:
+      batch.id === "lot-1"
+        ? t("foods.data.lot1Num")
+        : batch.id === "lot-2"
+        ? t("foods.data.lot2Num")
+        : batch.lotNumber,
+    source:
+      batch.id === "lot-1"
+        ? t("foods.data.lot1Source")
+        : batch.id === "lot-2"
+        ? t("foods.data.lot2Source")
+        : batch.source,
+    submittedBy:
+      batch.submittedBy === "Équipe TSOTSA"
+        ? t("nav.shortTeamName")
+        : batch.submittedBy,
+    statusLabel:
+      batch.status === "published"
+        ? t("foods.data.statusPublished")
+        : batch.status === "pending_review"
+        ? t("foods.data.statusPendingReview")
+        : t("foods.data.statusDraft"),
+  });
+
+  const controlsList = [
+    t("foods.controlsList.recognizedNutrients"),
+    t("foods.controlsList.harmonizedUnits"),
+    t("foods.controlsList.outOfBounds"),
+    t("foods.controlsList.duplicates"),
+    t("foods.controlsList.sourceProvided"),
+  ];
 
   return (
     <div
@@ -33,7 +87,7 @@ export function AdminFoodsPage(): React.JSX.Element {
       className="p-[29px] max-w-[1400px] flex flex-col gap-6"
     >
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <h1 className="text-29 font-bold text-text">Base aliments (extraite d'ORKG)</h1>
+        <h1 className="text-29 font-bold text-text">{t("foods.title")}</h1>
         <div className="flex items-center gap-3">
           <Button
             variant="primary"
@@ -41,14 +95,14 @@ export function AdminFoodsPage(): React.JSX.Element {
             onClick={() => navigate("/base-aliments/import")}
             testID="btn-import-file"
           >
-            Importer un fichier
+            {t("foods.importFileBtn")}
           </Button>
           <Button
             variant="outline"
             onClick={() => navigate("/base-aliments/nouveau")}
             testID="btn-manual-food"
           >
-            Saisie manuelle
+            {t("foods.manualEntryBtn")}
           </Button>
         </div>
       </div>
@@ -56,7 +110,8 @@ export function AdminFoodsPage(): React.JSX.Element {
       {/* Switcher de compte pour simuler la 2e relecture */}
       <div className="bg-surface-2 p-3 rounded-[6px] border border-border flex items-center justify-between text-14">
         <span className="text-text-muted">
-          Compte connecté pour la relecture : <strong className="text-text">{currentUser}</strong>
+          {`${t("foods.reviewerLabel")} `}
+          <strong className="text-text">{displayCurrentUser}</strong>
         </span>
         <div className="flex gap-2">
           <button
@@ -67,7 +122,7 @@ export function AdminFoodsPage(): React.JSX.Element {
               currentUser === "Fidel" ? "bg-admin text-white" : "bg-white text-text border"
             }`}
           >
-            Connecté : Fidel (auteur)
+            {t("foods.switchFidelBtn")}
           </button>
           <button
             type="button"
@@ -77,7 +132,7 @@ export function AdminFoodsPage(): React.JSX.Element {
               currentUser === "Équipe TSOTSA" ? "bg-admin text-white" : "bg-white text-text border"
             }`}
           >
-            Connecté : Équipe TSOTSA (2ᵉ lecteur)
+            {t("foods.switchTeamBtn")}
           </button>
         </div>
       </div>
@@ -96,53 +151,56 @@ export function AdminFoodsPage(): React.JSX.Element {
         <table className="w-full text-left border-collapse" data-testid="batches-table">
           <thead>
             <tr className="bg-admin text-white text-14 font-bold h-[41px]">
-              <th className="px-4 py-2 w-[91px]">Lot</th>
-              <th className="px-4 py-2 w-[445px]">Source</th>
-              <th className="px-4 py-2 w-[160px]">Saisi par</th>
-              <th className="px-4 py-2 w-[114px]">Lignes</th>
-              <th className="px-4 py-2 w-[325px]">Statut</th>
+              <th className="px-4 py-2 w-[91px]">{t("foods.columns.lot")}</th>
+              <th className="px-4 py-2 w-[445px]">{t("foods.columns.source")}</th>
+              <th className="px-4 py-2 w-[160px]">{t("foods.columns.submittedBy")}</th>
+              <th className="px-4 py-2 w-[114px]">{t("foods.columns.lines")}</th>
+              <th className="px-4 py-2 w-[325px]">{t("foods.columns.status")}</th>
             </tr>
           </thead>
           <tbody>
-            {batches.map((batch, index) => (
-              <tr
-                key={batch.id}
-                data-testid={`batch-row-${batch.id}`}
-                className={`h-[51px] text-16 border-t border-border ${
-                  index % 2 === 0 ? "bg-surface-2" : "bg-white"
-                }`}
-              >
-                <td className="px-4 py-2 font-bold text-text">{batch.lotNumber}</td>
-                <td className="px-4 py-2 text-text-muted">{batch.source}</td>
-                <td className="px-4 py-2 text-text">{batch.submittedBy}</td>
-                <td className="px-4 py-2 text-text-muted">{batch.lineCount}</td>
-                <td className="px-4 py-2">
-                  <div className="flex items-center gap-3">
-                    <span
-                      className={`font-bold ${
-                        batch.status === "published"
-                          ? "text-primary"
-                          : batch.status === "pending_review"
-                          ? "text-warning"
-                          : "text-text-muted"
-                      }`}
-                    >
-                      {batch.statusLabel}
-                    </span>
-                    {batch.status === "pending_review" && (
-                      <button
-                        type="button"
-                        data-testid={`btn-validate-batch-${batch.id}`}
-                        onClick={() => handleValidateBatchClick(batch.id)}
-                        className="px-3 py-1 bg-primary text-white rounded text-12 font-bold hover:bg-emerald-700"
+            {batches.map((batch, index) => {
+              const bLoc = getLocalizedBatch(batch);
+              return (
+                <tr
+                  key={batch.id}
+                  data-testid={`batch-row-${batch.id}`}
+                  className={`h-[51px] text-16 border-t border-border ${
+                    index % 2 === 0 ? "bg-surface-2" : "bg-white"
+                  }`}
+                >
+                  <td className="px-4 py-2 font-bold text-text">{bLoc.lotNumber}</td>
+                  <td className="px-4 py-2 text-text-muted">{bLoc.source}</td>
+                  <td className="px-4 py-2 text-text">{bLoc.submittedBy}</td>
+                  <td className="px-4 py-2 text-text-muted">{batch.lineCount}</td>
+                  <td className="px-4 py-2">
+                    <div className="flex items-center gap-3">
+                      <span
+                        className={`font-bold ${
+                          batch.status === "published"
+                            ? "text-primary"
+                            : batch.status === "pending_review"
+                            ? "text-warning"
+                            : "text-text-muted"
+                        }`}
                       >
-                        Valider la 2ᵉ relecture
-                      </button>
-                    )}
-                  </div>
-                </td>
-              </tr>
-            ))}
+                        {bLoc.statusLabel}
+                      </span>
+                      {batch.status === "pending_review" && (
+                        <button
+                          type="button"
+                          data-testid={`btn-validate-batch-${batch.id}`}
+                          onClick={() => handleValidateBatchClick(batch.id)}
+                          className="px-3 py-1 bg-primary text-white rounded text-12 font-bold hover:bg-emerald-700"
+                        >
+                          {t("foods.validateSecondReviewBtn")}
+                        </button>
+                      )}
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
@@ -150,25 +208,19 @@ export function AdminFoodsPage(): React.JSX.Element {
       {/* Cartes inférieures */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card testID="controls-card" className="p-6">
-          <h2 className="text-21 font-bold text-text mb-4">Contrôles avant validation</h2>
+          <h2 className="text-21 font-bold text-text mb-4">{t("foods.controlsCardTitle")}</h2>
           <div className="flex flex-col gap-3">
-            {[
-              "Nutriments reconnus",
-              "Unités harmonisées (pour 100 g)",
-              "Valeurs hors limites",
-              "Doublons",
-              "Source renseignée (ORKG + article)",
-            ].map((item) => (
+            {controlsList.map((item) => (
               <div key={item} className="flex justify-between items-center py-1">
                 <span className="text-16 text-text">{item}</span>
-                <span className="text-17 font-bold text-text">—</span>
+                <span className="text-17 font-bold text-text">{`—`}</span>
               </div>
             ))}
           </div>
         </Card>
 
         <Card testID="dictionary-card" className="p-6">
-          <h2 className="text-21 font-bold text-text mb-4">Dictionnaire des nutriments</h2>
+          <h2 className="text-21 font-bold text-text mb-4">{t("foods.dictionaryCardTitle")}</h2>
           <div className="flex flex-col gap-3">
             {nutrientMappings.map((mapping) => (
               <div key={mapping.source} className="flex items-center justify-between py-1">

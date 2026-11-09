@@ -1,14 +1,20 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
+import "../../i18n/setup";
 import { Button } from "../../components/Button";
 import { Card } from "../../components/Card";
 import { Toggle } from "../../components/Toggle";
 import { Notice } from "../../components/Notice";
 import { useAdminStore } from "../../features/admin/useAdminStore";
-import type { UserRole } from "../../features/admin/types";
+import type { UserRole, AccountItem } from "../../features/admin/types";
+
+type FilterTabKey = "Tous" | "Utilisateurs" | "Soignants" | "Administrateurs";
 
 export function AdminAccountsPage(): React.JSX.Element {
+  const { t } = useTranslation("admin");
+  const { t: tErrors } = useTranslation("errors");
   const { accounts, addAccount } = useAdminStore();
-  const [activeFilter, setActiveFilter] = useState<string>("Tous");
+  const [activeFilter, setActiveFilter] = useState<FilterTabKey>("Tous");
   const [selectedRole, setSelectedRole] = useState<UserRole>("caregiver");
   const [contactInput, setContactInput] = useState<string>("");
   const [facility, setFacility] = useState<string>("CMA de démo");
@@ -16,7 +22,11 @@ export function AdminAccountsPage(): React.JSX.Element {
   const [sendInvitation, setSendInvitation] = useState<boolean>(true);
   const [feedback, setFeedback] = useState<string | null>(null);
 
-  const filterTabs = ["Tous", "Utilisateurs", "Soignants", "Administrateurs"];
+  useEffect(() => {
+    document.title = t("accounts.pageTitle");
+  }, [t]);
+
+  const filterTabs: FilterTabKey[] = ["Tous", "Utilisateurs", "Soignants", "Administrateurs"];
 
   const filteredAccounts = accounts.filter((acc) => {
     if (activeFilter === "Utilisateurs") return acc.role === "user";
@@ -25,11 +35,7 @@ export function AdminAccountsPage(): React.JSX.Element {
     return true;
   });
 
-  const getRoleLabel = (role: UserRole): string => {
-    if (role === "admin") return "Admin";
-    if (role === "caregiver") return "Soignant";
-    return "Utilisateur";
-  };
+  const getRoleLabel = (role: UserRole): string => t(`accounts.roles.${role}`);
 
   const getStatusColor = (status: string): string => {
     if (status === "active") return "text-primary font-bold";
@@ -37,31 +43,40 @@ export function AdminAccountsPage(): React.JSX.Element {
     return "text-care font-bold";
   };
 
+  const getLocalizedAccountName = (acc: AccountItem): string => {
+    if (acc.name === "Compte parent (démo)") return t("accounts.data.demoParent");
+    if (acc.name === "Équipe TSOTSA") return t("nav.shortTeamName");
+    return acc.name;
+  };
+
+  const getLocalizedFacility = (fac?: string): string => {
+    if (!fac) return "—";
+    if (fac === "CMA de démo") return t("accounts.data.demoFacility");
+    if (fac === "Hôpital de district de Dschang") return t("accounts.data.dschangHospital");
+    return fac;
+  };
+
   const handleCreateAccount = (e: React.FormEvent): void => {
     e.preventDefault();
     if (!contactInput.trim()) {
-      setFeedback("Veuillez renseigner un numéro de téléphone ou un e-mail.");
+      setFeedback(tErrors("accounts.ERR_CONTACT_REQUIRED"));
       return;
     }
     const isEmail = contactInput.includes("@");
-    const name = isEmail ? contactInput : `Utilisateur (${contactInput})`;
+    const name = isEmail ? contactInput : t("accounts.data.userPhonePrefix", { contact: contactInput });
     const status = verifiedByDefault ? "active" : "pending_verification";
-    const statusLabel = sendInvitation
-      ? "Invité"
-      : verifiedByDefault
-      ? "Actif"
-      : "À vérifier";
+    const finalStatus = sendInvitation ? "invited" : status;
 
     addAccount({
       name,
       authProvider: isEmail ? "E-mail" : "Téléphone",
       role: selectedRole,
       facility: selectedRole === "caregiver" ? facility : undefined,
-      status: sendInvitation ? "invited" : status,
-      statusLabel,
+      status: finalStatus,
+      statusLabel: t(`accounts.statuses.${finalStatus}`),
     });
 
-    setFeedback(`Compte ${name} créé et invitation préparée.`);
+    setFeedback(t("accounts.createdFeedback", { name }));
     setContactInput("");
   };
 
@@ -73,7 +88,7 @@ export function AdminAccountsPage(): React.JSX.Element {
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
         {/* Colonne gauche : liste des comptes */}
         <div className="xl:col-span-8 flex flex-col gap-5">
-          <h1 className="text-29 font-bold text-text">Comptes</h1>
+          <h1 className="text-29 font-bold text-text">{t("accounts.title")}</h1>
 
           {/* Filtres par pastille */}
           <div className="flex flex-wrap items-center gap-3">
@@ -91,7 +106,7 @@ export function AdminAccountsPage(): React.JSX.Element {
                       : "bg-neutral-100 text-text hover:bg-neutral-200"
                   }`}
                 >
-                  {tab}
+                  {t(`accounts.filters.${tab}`)}
                 </button>
               );
             })}
@@ -102,11 +117,11 @@ export function AdminAccountsPage(): React.JSX.Element {
             <table className="w-full text-left border-collapse" data-testid="accounts-table">
               <thead>
                 <tr className="bg-admin text-white text-14 font-bold h-[41px]">
-                  <th className="px-4 py-2 w-[200px]">Compte</th>
-                  <th className="px-4 py-2 w-[114px]">Connexion</th>
-                  <th className="px-4 py-2 w-[114px]">Rôle</th>
-                  <th className="px-4 py-2 w-[137px]">Établissement</th>
-                  <th className="px-4 py-2 w-[114px]">Statut</th>
+                  <th className="px-4 py-2 w-[200px]">{t("accounts.columns.account")}</th>
+                  <th className="px-4 py-2 w-[114px]">{t("accounts.columns.provider")}</th>
+                  <th className="px-4 py-2 w-[114px]">{t("accounts.columns.role")}</th>
+                  <th className="px-4 py-2 w-[137px]">{t("accounts.columns.facility")}</th>
+                  <th className="px-4 py-2 w-[114px]">{t("accounts.columns.status")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -118,14 +133,16 @@ export function AdminAccountsPage(): React.JSX.Element {
                       index % 2 === 0 ? "bg-surface-2" : "bg-white"
                     }`}
                   >
-                    <td className="px-4 py-3 font-bold text-text">{acc.name}</td>
-                    <td className="px-4 py-3 text-text-muted">{acc.authProvider}</td>
+                    <td className="px-4 py-3 font-bold text-text">{getLocalizedAccountName(acc)}</td>
+                    <td className="px-4 py-3 text-text-muted">
+                      {t(`accounts.providers.${acc.authProvider}`)}
+                    </td>
                     <td className="px-4 py-3 text-text">{getRoleLabel(acc.role)}</td>
                     <td className="px-4 py-3 text-text-muted">
-                      {acc.facility || "—"}
+                      {getLocalizedFacility(acc.facility)}
                     </td>
                     <td className={`px-4 py-3 ${getStatusColor(acc.status)}`}>
-                      {acc.statusLabel}
+                      {t(`accounts.statuses.${acc.status}`)}
                     </td>
                   </tr>
                 ))}
@@ -134,7 +151,7 @@ export function AdminAccountsPage(): React.JSX.Element {
           </div>
 
           <p className="text-14 italic text-text-muted">
-            Personnes suivies rattachées à un compte : visibles dans le détail du compte.
+            {t("accounts.footnote")}
           </p>
         </div>
 
@@ -144,7 +161,7 @@ export function AdminAccountsPage(): React.JSX.Element {
             testID="create-account-card"
             className="p-6 bg-admin-50 border-0 flex flex-col gap-5"
           >
-            <h2 className="text-22 font-bold text-text">Créer un compte</h2>
+            <h2 className="text-22 font-bold text-text">{t("accounts.createCardTitle")}</h2>
 
             {feedback && (
               <Notice variant="success" testID="account-feedback">
@@ -157,12 +174,6 @@ export function AdminAccountsPage(): React.JSX.Element {
               <div className="grid grid-cols-3 gap-2">
                 {(["user", "caregiver", "admin"] as UserRole[]).map((role) => {
                   const isSelected = selectedRole === role;
-                  const label =
-                    role === "user"
-                      ? "Utilisateur"
-                      : role === "caregiver"
-                      ? "Soignant"
-                      : "Admin";
                   return (
                     <button
                       key={role}
@@ -175,7 +186,7 @@ export function AdminAccountsPage(): React.JSX.Element {
                           : "bg-white text-text border-border font-normal hover:bg-surface-2"
                       }`}
                     >
-                      {label}
+                      {getRoleLabel(role)}
                     </button>
                   );
                 })}
@@ -184,7 +195,7 @@ export function AdminAccountsPage(): React.JSX.Element {
               {/* Champ contact */}
               <div className="flex flex-col gap-1.5">
                 <label className="text-14 font-bold text-text-muted">
-                  Téléphone ou adresse e-mail (Google ou autre)
+                  {t("accounts.contactLabel")}
                 </label>
                 <input
                   type="text"
@@ -200,7 +211,7 @@ export function AdminAccountsPage(): React.JSX.Element {
               {selectedRole === "caregiver" && (
                 <div className="flex flex-col gap-1.5">
                   <label className="text-14 font-bold text-text-muted">
-                    Établissement
+                    {t("accounts.facilityLabel")}
                   </label>
                   <select
                     data-testid="select-facility"
@@ -208,9 +219,9 @@ export function AdminAccountsPage(): React.JSX.Element {
                     onChange={(e) => setFacility(e.target.value)}
                     className="h-[43px] px-3.5 bg-surface-2 border border-border rounded-[6px] text-16 text-text focus:outline-none focus:border-admin"
                   >
-                    <option value="CMA de démo">CMA de démo</option>
+                    <option value="CMA de démo">{t("accounts.data.demoFacility")}</option>
                     <option value="Hôpital de district de Dschang">
-                      Hôpital de district de Dschang
+                      {t("accounts.data.dschangHospital")}
                     </option>
                   </select>
                 </div>
@@ -219,7 +230,7 @@ export function AdminAccountsPage(): React.JSX.Element {
               {/* Toggle soignant vérifié */}
               {selectedRole === "caregiver" && (
                 <div className="flex items-center justify-between py-1">
-                  <span className="text-16 text-text">Soignant vérifié d'office</span>
+                  <span className="text-16 text-text">{t("accounts.verifiedByDefaultLabel")}</span>
                   <Toggle
                     checked={verifiedByDefault}
                     onChange={setVerifiedByDefault}
@@ -231,7 +242,7 @@ export function AdminAccountsPage(): React.JSX.Element {
               {/* Toggle invitation */}
               <div className="flex items-center justify-between py-1">
                 <span className="text-16 text-text">
-                  Envoyer une invitation (SMS ou e-mail)
+                  {t("accounts.sendInvitationLabel")}
                 </span>
                 <Toggle
                   checked={sendInvitation}
@@ -247,14 +258,12 @@ export function AdminAccountsPage(): React.JSX.Element {
                 className="!bg-admin hover:!bg-slate-800 h-[57px] text-19 font-bold w-full"
                 testID="btn-create-account"
               >
-                Créer et inviter
+                {t("accounts.createBtn")}
               </Button>
             </form>
 
             <p className="text-14 text-text-muted">
-              La personne choisit elle-même sa connexion (Google, téléphone ou
-              e-mail) en ouvrant l'invitation. Action tracée dans le journal
-              d'audit.
+              {t("accounts.createNotice")}
             </p>
           </Card>
         </div>

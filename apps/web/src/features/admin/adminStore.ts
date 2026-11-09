@@ -128,12 +128,19 @@ export const adminStore = {
   validateBatch: (
     batchId: string,
     reviewer: string
-  ): { success: boolean; error?: string } => {
+  ): {
+    success: boolean;
+    error?: string;
+    errorCode?: "ERR_SELF_VALIDATION" | "ERR_BATCH_NOT_FOUND";
+  } => {
     const batch = state.batches.find((b) => b.id === batchId);
-    if (!batch) return { success: false, error: "Lot introuvable" };
+    if (!batch) {
+      return { success: false, error: "Lot introuvable", errorCode: "ERR_BATCH_NOT_FOUND" };
+    }
     if (batch.submittedBy.trim().toLowerCase() === reviewer.trim().toLowerCase()) {
       return {
         success: false,
+        errorCode: "ERR_SELF_VALIDATION",
         error: "Interdiction de valider son propre lot : une 2ᵉ relecture par une autre personne est requise.",
       };
     }

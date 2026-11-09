@@ -1,2 +1,23 @@
-{}
-
+{
+  "import": {
+    "rowChecks": {
+      "VALID": "✓ valid",
+      "ERR_OUT_OF_BOUNDS_100G": "✕ out of bounds (max 100 g)",
+      "ERR_OUT_OF_BOUNDS_900KCAL": "✕ out of bounds (max 900 kcal)",
+      "WARN_MISSING_UNIT": "⚠ missing unit"
+    },
+    "batch": {
+      "ERR_SELF_VALIDATION": "Cannot approve your own batch: a two-step approval by a second reviewer is required.",
+      "ERR_BATCH_NOT_FOUND": "Batch not found",
+      "ERR_GENERIC": "Approval rejected."
+    }
+  },
+  "foodValidation": {
+    "ERR_NAME_REQUIRED": "Food name is required.",
+    "ERR_SOURCE_REQUIRED": "A source (ORKG comparison or article reference) is required.",
+    "ERR_NUTRIENT_REQUIRED": "At least one nutrient must be provided."
+  },
+  "accounts": {
+    "ERR_CONTACT_REQUIRED": "Please enter a phone number or an email address."
+  }
+}

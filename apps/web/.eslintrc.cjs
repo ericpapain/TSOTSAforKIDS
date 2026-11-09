@@ -19,7 +19,7 @@ module.exports = {
       excludedFiles: ["src/**/__tests__/**", "src/**/*.test.tsx", "src/**/*.spec.tsx"],
       rules: {
         "i18next/no-literal-string": [
-          "warn",
+          "error",
           {
             markupOnly: true,
           },

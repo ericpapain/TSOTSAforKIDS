@@ -1,2 +1,23 @@
-{}
-
+{
+  "import": {
+    "rowChecks": {
+      "VALID": "✓ valide",
+      "ERR_OUT_OF_BOUNDS_100G": "✕ hors limites (max 100 g)",
+      "ERR_OUT_OF_BOUNDS_900KCAL": "✕ hors limites (max 900 kcal)",
+      "WARN_MISSING_UNIT": "⚠ unité manquante"
+    },
+    "batch": {
+      "ERR_SELF_VALIDATION": "Interdiction de valider son propre lot : une 2ᵉ relecture par une autre personne est requise.",
+      "ERR_BATCH_NOT_FOUND": "Lot introuvable",
+      "ERR_GENERIC": "Validation refusée."
+    }
+  },
+  "foodValidation": {
+    "ERR_NAME_REQUIRED": "Le nom de l'aliment est obligatoire.",
+    "ERR_SOURCE_REQUIRED": "Une source (comparaison ORKG ou référence d'article) est obligatoire.",
+    "ERR_NUTRIENT_REQUIRED": "Au moins un nutriment doit être renseigné."
+  },
+  "accounts": {
+    "ERR_CONTACT_REQUIRED": "Veuillez renseigner un numéro de téléphone ou un e-mail."
+  }
+}
