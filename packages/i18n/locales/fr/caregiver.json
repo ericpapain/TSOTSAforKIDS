@@ -1,2 +1,187 @@
-{}
-
+{
+  "nav": {
+    "dashboard": "Tableau de bord",
+    "persons": "Personnes suivies",
+    "notifications": "Notifications",
+    "settings": "Réglages"
+  },
+  "dashboard": {
+    "pageTitle": "Tableau de bord — Espace soignant | TSOTSA Kids",
+    "title": "Tableau de bord — Espace soignant",
+    "subtitle": "CMA de Kousséri · {{count}} personnes suivies actives",
+    "kpi": {
+      "followedPersonsTitle": "Personnes suivies",
+      "followedPersonsSubtitle": "Total sous protocole",
+      "activeAlertsTitle": "Alertes actives",
+      "activeAlertsSubtitle": "1 haute, 1 moyenne, 1 basse",
+      "evaluationsTodayTitle": "Évaluations du jour",
+      "evaluationsTodaySubtitle": "Hamadou (#A-014) à 10h00",
+      "adherenceTitle": "Observance moyenne",
+      "adherenceSubtitle": "+{{delta}} % sur 7 jours"
+    },
+    "alertsCard": {
+      "title": "Alertes à traiter ({{count}})",
+      "sortByLabel": "Trier par :",
+      "sortByAria": "Trier les alertes par",
+      "sortPriority": "Priorité (haute d'abord)",
+      "sortDate": "Date (récente d'abord)",
+      "priorityHigh": "Priorité Haute",
+      "priorityMedium": "Priorité Moyenne",
+      "priorityLow": "Priorité Basse",
+      "openRecordBtn": "Ouvrir le dossier ›"
+    },
+    "scheduledCard": {
+      "title": "Évaluations programmées",
+      "viewAllPersonsBtn": "Voir toutes les personnes suivies ›",
+      "se1Time": "Aujourd'hui 10h00",
+      "se1Title": "Évaluation hebdomadaire MAM",
+      "se2Time": "Demain 14h30",
+      "se2Title": "Suivi bi-mensuel MAM",
+      "se3Time": "14 nov 09h00",
+      "se3Title": "Contrôle MAS + œdèmes"
+    }
+  },
+  "persons": {
+    "pageTitle": "Personnes suivies — Espace soignant | TSOTSA Kids",
+    "title": "Personnes suivies ({{count}})",
+    "subtitle": "Registre actif des enfants suivis pour malnutrition",
+    "newAdmissionBtn": "+ Nouvelle admission",
+    "searchPlaceholder": "Rechercher par identifiant ou prénom...",
+    "statusFilterAria": "Filtrer par statut",
+    "statusAll": "Statut : Tous ▾",
+    "regionFilter": "Région ▾",
+    "facilityFilter": "Établissement ▾",
+    "ageFilter": "Âge ▾",
+    "columns": {
+      "code": "Identifiant",
+      "name": "Prénom",
+      "ageGender": "Âge / Sexe",
+      "facility": "Région / Établissement",
+      "status": "Statut nutritionnel",
+      "lastEvaluation": "Dernière évaluation",
+      "actions": "Actions"
+    },
+    "muacShort": "PB {{pb}} mm · z = {{z}}",
+    "recordBtn": "Dossier ›",
+    "ageMonths": "{{months}} mois",
+    "regions": {
+      "farNorth": "Extrême-Nord",
+      "north": "Nord"
+    },
+    "facilities": {
+      "kousseri": "CMA de Kousséri",
+      "maroua": "Hôpital Régional de Maroua",
+      "garoua": "Hôpital Régional de Garoua"
+    }
+  },
+  "record": {
+    "pageTitle": "Dossier {{name}} (#{{id}}) — Espace soignant | TSOTSA Kids",
+    "girlAge": "Fille · {{months}} mois",
+    "backToDashboardBtn": "Retour au tableau de bord",
+    "finishDemoBtn": "Terminer la démo ›",
+    "modifyPlanBtn": "Modifier le plan de prises",
+    "newAssessmentBtn": "Nouvelle évaluation",
+    "identityCardTitle": "Identité & Dossier",
+    "fields": {
+      "id": "Identifiant",
+      "firstName": "Prénom",
+      "birthDate": "Date de naissance",
+      "sex": "Sexe",
+      "sexFemale": "Féminin",
+      "region": "Région",
+      "facility": "Établissement",
+      "adherence7d": "Observance 7 jours"
+    },
+    "activeAlertsCardTitle": "Alertes en cours",
+    "chartCardTitle": "Courbe poids-pour-taille (OMS 2006)",
+    "chartTabWfl": "Poids-pour-taille",
+    "chartTabMuac": "PB",
+    "historyCardTitle": "Historique des évaluations",
+    "historyColumns": {
+      "date": "Date",
+      "weight": "Poids",
+      "height": "Taille",
+      "muac": "PB",
+      "zScore": "Z-score",
+      "edema": "Œdèmes"
+    },
+    "edemaNone": "Non",
+    "intakePlanCardTitle": "Plan de prises actuel",
+    "manageBtn": "Gérer ›",
+    "viewFullPlanBtn": "Voir tout le plan ›",
+    "meals": {
+      "intake-1": "Bouillie enrichie (farine infantile fortifiée + lait)",
+      "intake-2": "Collation fruits (banane douce écrasée)",
+      "intake-3": "Plat familial adapté (purée patate douce + poisson séché)",
+      "intake-4": "Bouillie enrichie",
+      "intake-5": "Bouillie enrichie ou purée"
+    }
+  },
+  "assessment": {
+    "pageTitle": "Nouvelle évaluation — {{name}} (#{{id}}) | TSOTSA Kids",
+    "breadcrumbNew": "Nouvelle évaluation",
+    "title": "Nouvelle évaluation clinique — {{name}} (#{{id}})",
+    "subtitle": "Fille · Née le {{birthDate}}",
+    "formCardTitle": "Mesures anthropométriques du jour",
+    "dateLabel": "Date de l'évaluation",
+    "weightLabel": "Poids (kg)",
+    "lengthLabel": "Longueur / taille (cm)",
+    "positionLabel": "Position de mesure",
+    "positionLying": "Couchée (< 2 ans)",
+    "positionStanding": "Debout (≥ 2 ans)",
+    "muacLabel": "Périmètre brachial (PB en mm)",
+    "edemaLabel": "Œdèmes bilatéraux prenant le godet",
+    "edemaNone": "Non",
+    "edemaPlus1": "+ (Pieds)",
+    "edemaPlus2": "++ (Pieds et jambes)",
+    "edemaPlus3": "+++ (Généralisés)",
+    "observationsLabel": "Observations cliniques",
+    "defaultObservations": "Bonne tolérance de la bouillie enrichie. Mère attentive et présente.",
+    "cancelBtn": "Annuler",
+    "submitBtn": "Enregistrer l'évaluation",
+    "calcCardTitle": "Calculs automatiques (tables OMS)",
+    "calcCardSubtitle": "Résultats instantanés à la saisie",
+    "calculatedAge": "Âge calculé",
+    "ageFormat": "{{years}} an {{months}} mois ({{days}} jours)",
+    "weightForLength": "Poids-pour-taille",
+    "muacResultLabel": "Périmètre brachial",
+    "edemaResultLabel": "Œdèmes",
+    "dailyGainLabel": "Gain journalier"
+  },
+  "plan": {
+    "pageTitle": "Plan de prises — {{name}} (#{{id}}) | TSOTSA Kids",
+    "breadcrumb": "Plan de prises",
+    "title": "Plan de prises et rappels — {{name}} (#{{id}})",
+    "subtitle": "Prescription active · {{count}} prises quotidiennes",
+    "addHourBtn": "+ Ajouter une heure",
+    "savedTitle": "Modifications enregistrées",
+    "savedMessage": "Le plan de prises d'{{name}} et les règles de rappel ont été mis à jour avec succès.",
+    "addCardTitle": "Ajouter une prise quotidienne",
+    "timeInputLabel": "Heure (HH:MM)",
+    "timePlaceholder": "21h30",
+    "mealInputLabel": "Aliment / Prise prescrite",
+    "mealPlaceholder": "Bouillie enrichie ou collation",
+    "portionInputLabel": "Portion",
+    "portionPlaceholder": "150 ml",
+    "cancelBtn": "Annuler",
+    "saveSlotBtn": "Ajouter au plan",
+    "tableCardTitle": "Horaires et rations prescrits",
+    "columns": {
+      "time": "Heure",
+      "meal": "Prise / Aliment prescrit",
+      "portion": "Portion",
+      "reminders": "Rappels actifs",
+      "actions": "Actions"
+    },
+    "deleteBtn": "Supprimer",
+    "rulesCardTitle": "Règles d'alerte soignant pour {{name}}",
+    "rule3RemindersTitle": "Alerter en cas de prise non confirmée après 3 rappels",
+    "rule3RemindersDesc": "Notification push et ajout en priorité haute au tableau de bord.",
+    "ruleRealtimeTitle": "Notifier les prises confirmées en temps réel",
+    "ruleRealtimeDesc": "Recevoir une notification in-app dès que la mère valide la prise.",
+    "ruleStagnationTitle": "Alerte de stagnation si aucun gain sur 14 jours",
+    "ruleStagnationDesc": "Déclenche une proposition d'adaptation de la ration et du protocole.",
+    "backToRecordBtn": "Retour au dossier",
+    "saveChangesBtn": "Enregistrer les modifications"
+  }
+}

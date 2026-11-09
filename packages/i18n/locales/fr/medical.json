@@ -1,2 +1,53 @@
-{}
-
+{
+  "productNotices": {
+    "plumpyNut": "Équivalence nutritionnelle indicative. Ne remplace pas un traitement prescrit.",
+    "plumpySup": "Supplément nutritionnel prêt à l'emploi. Ne remplace pas un suivi médical.",
+    "f75": "Lait thérapeutique de stabilisation, donné à l'hôpital sous surveillance médicale.",
+    "f100": "Lait thérapeutique de réhabilitation, administré sous contrôle médical.",
+    "customPending": "Produit privé en attente de vérification par l'équipe TSOTSA."
+  },
+  "zScore": {
+    "normal": "dans la norme (≥ −2)",
+    "moderate": "modérée (−3 à −2)",
+    "severe": "sévère (< −3)"
+  },
+  "muac": {
+    "normal": "normal (≥ 125 mm)",
+    "moderate": "modérée (115 à 125 mm)",
+    "severe": "sévère (< 115 mm)"
+  },
+  "edema": {
+    "none": "non",
+    "present": "présents ({{grade}})"
+  },
+  "dailyGain": {
+    "targetReached": "{{gain}} g/kg/j → repère atteint (≥ 5)",
+    "targetNotReached": "{{gain}} g/kg/j → repère non atteint (< 5)"
+  },
+  "classification": {
+    "normal": "État nutritionnel normal",
+    "sam": "Classement proposé : malnutrition aiguë sévère (MAS)",
+    "mam": "Classement proposé : malnutrition aiguë modérée (PB < 125 mm)",
+    "recommendationNote": "À confirmer par le soignant, selon le protocole national."
+  },
+  "status": {
+    "mam": "MAM",
+    "sam": "MAS",
+    "postSam": "Suivi post-MAS"
+  },
+  "alerts": {
+    "missedIntakeEveningTitle": "Prise sautée hier soir (19h00)",
+    "missedIntakeYesterdayTitle": "Prise sautée hier (19h00)",
+    "missedIntakeReason": "Prise sautée hier soir (19h00) · 3e rappel sans confirmation",
+    "missedIntakeMotherDetail": "3e rappel sans confirmation de la mère.",
+    "missedIntakeNotifMessage": "Bouillie enrichie de 19h00 non confirmée par la mère après 3 rappels.",
+    "weightStagnationTitle": "Alerte stagnation pondérale",
+    "weightStagnationReason": "Stagnation pondérale (+0,1 kg en 14j)",
+    "weightStagnationNotifMessage": "Poids inchangé depuis 14 jours (+100 g). Seuil d'alerte dépassé.",
+    "eval30DaysReason": "Évaluation des 30 jours à programmer"
+  },
+  "assessmentSaved": {
+    "title": "Évaluation enregistrée",
+    "message": "Évaluation du {{date}} enregistrée. Gain : {{gain}} g/kg/j. Poids-pour-taille normal ; PB encore < 125 mm : poursuivre."
+  }
+}

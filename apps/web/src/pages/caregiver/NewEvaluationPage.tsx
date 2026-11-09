@@ -1,11 +1,20 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { formatDate, formatNumber, type SupportedLocale } from "@tsotsa/i18n";
+import "../../i18n/setup";
 import { Card, Button } from "../../components";
 import { calculateClinicalEvaluation } from "../../features/caregiver/evaluationCalculator";
 
 export function NewEvaluationPage(): React.JSX.Element {
   const { personId = "A-014" } = useParams();
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation("caregiver");
+  const locale: SupportedLocale = i18n.language === "en" ? "en" : "fr";
+
+  useEffect(() => {
+    document.title = t("assessment.pageTitle", { name: "Hamadou", id: personId });
+  }, [t, personId]);
 
   const [evalDate, setEvalDate] = useState("12/11/2026");
   const [weightKg, setWeightKg] = useState("8,5");
@@ -13,9 +22,20 @@ export function NewEvaluationPage(): React.JSX.Element {
   const [position, setPosition] = useState<"Couchée" | "Debout">("Couchée");
   const [pbMm, setPbMm] = useState("122");
   const [edema, setEdema] = useState<"Non" | "+" | "++" | "+++">("Non");
-  const [observations, setObservations] = useState(
-    "Bonne tolérance de la bouillie enrichie. Mère attentive et présente."
-  );
+  const [observations, setObservations] = useState(() => t("assessment.defaultObservations"));
+
+  useEffect(() => {
+    setObservations((prev) => {
+      const frDefault =
+        "Bonne tolérance de la bouillie enrichie. Mère attentive et présente.";
+      const enDefault =
+        "Good tolerance of enriched porridge. Attentive and present mother.";
+      if (prev === frDefault || prev === enDefault) {
+        return t("assessment.defaultObservations");
+      }
+      return prev;
+    });
+  }, [t]);
 
   const numWeight = parseFloat(weightKg.replace(",", "."));
   const numLength = parseFloat(lengthCm.replace(",", "."));
@@ -32,12 +52,12 @@ export function NewEvaluationPage(): React.JSX.Element {
       edema,
       lastWeightKg: 7.9,
       lastEvalDate: "29/10/2026",
+      locale,
     });
-  }, [evalDate, numWeight, numLength, position, numPb, edema]);
+  }, [evalDate, numWeight, numLength, position, numPb, edema, locale]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // In our front flow, save and redirect with updated query flag
     navigate(`/soignant/personnes/${personId}?updated=true`);
   };
 
@@ -49,31 +69,35 @@ export function NewEvaluationPage(): React.JSX.Element {
             className="cursor-pointer hover:underline"
             onClick={() => navigate("/soignant/personnes")}
           >
-            Personnes suivies
+            {t("nav.persons")}
           </span>{" "}
-          ›{" "}
+          {"› "}
           <span
             className="cursor-pointer hover:underline"
             onClick={() => navigate(`/soignant/personnes/${personId}`)}
           >
-            Hamadou
+            {`Hamadou`}
           </span>{" "}
-          › Nouvelle évaluation
+          {`› ${t("assessment.breadcrumbNew")}`}
         </nav>
         <h1 className="text-24 font-bold text-text">
-          Nouvelle évaluation clinique — Hamadou (#{personId})
+          {t("assessment.title", { name: "Hamadou", id: personId })}
         </h1>
-        <p className="text-14 text-text-muted mt-1">Fille · Née le 12/12/2024</p>
+        <p className="text-14 text-text-muted mt-1">
+          {t("assessment.subtitle", {
+            birthDate: formatDate(new Date(Date.UTC(2024, 11, 12, 12, 0, 0)), locale),
+          })}
+        </p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Form column */}
         <div className="lg:col-span-7">
-          <Card title="Mesures anthropométriques du jour">
+          <Card title={t("assessment.formCardTitle")}>
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
               <div>
                 <label htmlFor="eval-date-input" className="block text-13 font-bold text-text mb-1">
-                  Date de l'évaluation
+                  {t("assessment.dateLabel")}
                 </label>
                 <input
                   id="eval-date-input"
@@ -88,7 +112,7 @@ export function NewEvaluationPage(): React.JSX.Element {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label htmlFor="weight-input" className="block text-13 font-bold text-text mb-1">
-                    Poids (kg)
+                    {t("assessment.weightLabel")}
                   </label>
                   <input
                     id="weight-input"
@@ -102,7 +126,7 @@ export function NewEvaluationPage(): React.JSX.Element {
                 </div>
                 <div>
                   <label htmlFor="length-input" className="block text-13 font-bold text-text mb-1">
-                    Longueur / taille (cm)
+                    {t("assessment.lengthLabel")}
                   </label>
                   <input
                     id="length-input"
@@ -119,7 +143,7 @@ export function NewEvaluationPage(): React.JSX.Element {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label htmlFor="position-select" className="block text-13 font-bold text-text mb-1">
-                    Position de mesure
+                    {t("assessment.positionLabel")}
                   </label>
                   <select
                     id="position-select"
@@ -127,13 +151,13 @@ export function NewEvaluationPage(): React.JSX.Element {
                     onChange={(e) => setPosition(e.target.value as "Couchée" | "Debout")}
                     className="w-full rounded-input border border-border bg-white px-3 py-2 text-14 text-text"
                   >
-                    <option value="Couchée">Couchée (&lt; 2 ans)</option>
-                    <option value="Debout">Debout (≥ 2 ans)</option>
+                    <option value="Couchée">{t("assessment.positionLying")}</option>
+                    <option value="Debout">{t("assessment.positionStanding")}</option>
                   </select>
                 </div>
                 <div>
                   <label htmlFor="pb-input" className="block text-13 font-bold text-text mb-1">
-                    Périmètre brachial (PB en mm)
+                    {t("assessment.muacLabel")}
                   </label>
                   <input
                     id="pb-input"
@@ -149,7 +173,7 @@ export function NewEvaluationPage(): React.JSX.Element {
 
               <div>
                 <label htmlFor="edema-select" className="block text-13 font-bold text-text mb-1">
-                  Œdèmes bilatéraux prenant le godet
+                  {t("assessment.edemaLabel")}
                 </label>
                 <select
                   id="edema-select"
@@ -157,16 +181,16 @@ export function NewEvaluationPage(): React.JSX.Element {
                   onChange={(e) => setEdema(e.target.value as "Non" | "+" | "++" | "+++")}
                   className="w-full rounded-input border border-border bg-white px-3 py-2 text-14 text-text"
                 >
-                  <option value="Non">Non</option>
-                  <option value="+">+ (Pieds)</option>
-                  <option value="++">++ (Pieds et jambes)</option>
-                  <option value="+++">+++ (Généralisés)</option>
+                  <option value="Non">{t("assessment.edemaNone")}</option>
+                  <option value="+">{t("assessment.edemaPlus1")}</option>
+                  <option value="++">{t("assessment.edemaPlus2")}</option>
+                  <option value="+++">{t("assessment.edemaPlus3")}</option>
                 </select>
               </div>
 
               <div>
                 <label htmlFor="obs-textarea" className="block text-13 font-bold text-text mb-1">
-                  Observations cliniques
+                  {t("assessment.observationsLabel")}
                 </label>
                 <textarea
                   id="obs-textarea"
@@ -184,7 +208,7 @@ export function NewEvaluationPage(): React.JSX.Element {
                   size="md"
                   onClick={() => navigate(`/soignant/personnes/${personId}`)}
                 >
-                  Annuler
+                  {t("assessment.cancelBtn")}
                 </Button>
                 <Button
                   type="submit"
@@ -193,7 +217,7 @@ export function NewEvaluationPage(): React.JSX.Element {
                   size="md"
                   data-testid="submit-evaluation-btn"
                 >
-                  Enregistrer l'évaluation
+                  {t("assessment.submitBtn")}
                 </Button>
               </div>
             </form>
@@ -203,33 +227,33 @@ export function NewEvaluationPage(): React.JSX.Element {
         {/* Real-time calculation column */}
         <div className="lg:col-span-5 flex flex-col gap-4">
           <Card
-            title="Calculs automatiques (tables OMS)"
-            subtitle="Résultats instantanés à la saisie"
+            title={t("assessment.calcCardTitle")}
+            subtitle={t("assessment.calcCardSubtitle")}
           >
             <div className="flex flex-col gap-3 text-13" data-testid="clinical-calc-results">
               <div className="flex justify-between py-1.5 border-b border-border">
-                <span className="text-text-muted">Âge calculé</span>
+                <span className="text-text-muted">{t("assessment.calculatedAge")}</span>
                 <span className="font-bold text-text">{clinicalResult.ageLabel}</span>
               </div>
               <div className="flex justify-between py-1.5 border-b border-border">
-                <span className="text-text-muted">Poids-pour-taille</span>
+                <span className="text-text-muted">{t("assessment.weightForLength")}</span>
                 <span className="font-bold text-care">
-                  z = {clinicalResult.zScore.toString().replace(".", ",")} → {clinicalResult.zScoreInterpretation}
+                  {`z = ${formatNumber(clinicalResult.zScore, locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} → ${clinicalResult.zScoreInterpretation}`}
                 </span>
               </div>
               <div className="flex justify-between py-1.5 border-b border-border">
-                <span className="text-text-muted">Périmètre brachial</span>
+                <span className="text-text-muted">{t("assessment.muacResultLabel")}</span>
                 <span className="font-bold text-text">
-                  {numPb || 122} mm → {clinicalResult.pbInterpretation}
+                  {`${formatNumber(numPb || 122, locale)} mm → ${clinicalResult.pbInterpretation}`}
                 </span>
               </div>
               <div className="flex justify-between py-1.5 border-b border-border">
-                <span className="text-text-muted">Œdèmes</span>
+                <span className="text-text-muted">{t("assessment.edemaResultLabel")}</span>
                 <span className="font-bold text-text">{clinicalResult.edemaInterpretation}</span>
               </div>
               {clinicalResult.dailyGainLabel && (
                 <div className="flex justify-between py-1.5 border-b border-border">
-                  <span className="text-text-muted">Gain journalier</span>
+                  <span className="text-text-muted">{t("assessment.dailyGainLabel")}</span>
                   <span className="font-bold text-care">{clinicalResult.dailyGainLabel}</span>
                 </div>
               )}

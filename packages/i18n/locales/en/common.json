@@ -27,7 +27,10 @@
     "close": "Close",
     "confirm": "Confirm",
     "back": "Back",
-    "search": "Search"
+    "search": "Search",
+    "delete": "Delete"
+  },
+  "table": {
+    "emptyMessage": "No data available"
   }
 }
-

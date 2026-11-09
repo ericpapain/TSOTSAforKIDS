@@ -56,11 +56,20 @@ export function AppHeader({
   onLogout,
   testID = "app-header",
 }: AppHeaderProps): React.JSX.Element {
-  const { t } = useTranslation("common");
+  const { t, i18n } = useTranslation("common");
+  const { t: tNotif } = useTranslation("notifications");
+  const { t: tMedical } = useTranslation("medical");
   const currentSpace = spaceTheme ?? space;
   const config = themeStyles[currentSpace] || themeStyles.primary;
   const title = spaceTitle ?? t(config.titleKey);
-  const displayUserName = userName ?? t("header.defaultUserName");
+  const defaultName =
+    i18n.language === "fr" || i18n.language === "en"
+      ? t("header.defaultUserName")
+      : "Compte démo · Hamadou";
+  const displayUserName =
+    userName === "Compte démo · Hamadou" || userName === undefined
+      ? defaultName
+      : userName;
   const isCaregiver = currentSpace === "care" || currentSpace === "caregiver";
   const count = unreadNotifications ?? notificationCount ?? 0;
   const [isNotifOpen, setIsNotifOpen] = useState(false);
@@ -71,6 +80,24 @@ export function AppHeader({
   };
 
   const notificationsLabel = t("header.notificationsUnread", { count });
+
+  const getNotifTitle = (id: string, fallback: string): string => {
+    if (id === "notif-1") return tMedical("alerts.missedIntakeEveningTitle");
+    if (id === "notif-2") return tMedical("alerts.weightStagnationTitle");
+    if (id === "notif-3") return tNotif("caregiverPage.items.notif-3.title");
+    if (id === "notif-4") return tNotif("caregiverPage.items.notif-4.title");
+    if (id === "notif-5") return tNotif("caregiverPage.items.notif-5.title");
+    return fallback;
+  };
+
+  const getNotifMessage = (id: string, fallback: string): string => {
+    if (id === "notif-1") return tMedical("alerts.missedIntakeNotifMessage");
+    if (id === "notif-2") return tMedical("alerts.weightStagnationNotifMessage");
+    if (id === "notif-3") return tNotif("caregiverPage.items.notif-3.message");
+    if (id === "notif-4") return tNotif("caregiverPage.items.notif-4.message");
+    if (id === "notif-5") return tNotif("caregiverPage.items.notif-5.message");
+    return fallback;
+  };
 
   return (
     <header
@@ -142,7 +169,7 @@ export function AppHeader({
                     >
                       <div className="flex items-center justify-between gap-2">
                         <span className="text-[13px] font-bold text-[#17302A]">
-                          {notif.title}
+                          {getNotifTitle(notif.id, notif.title)}
                         </span>
                         {!notif.isRead && (
                           <span className="w-2 h-2 rounded-full bg-[#F08A24] shrink-0" />
@@ -152,7 +179,7 @@ export function AppHeader({
                         {`${notif.personName} (${notif.personCode})`}
                       </div>
                       <p className="text-[12px] text-[#5B6B66] mt-0.5 line-clamp-2">
-                        {notif.message}
+                        {getNotifMessage(notif.id, notif.message)}
                       </p>
                       <span className="text-[11px] text-[#5B6B66] mt-1 block">
                         {notif.timestamp}

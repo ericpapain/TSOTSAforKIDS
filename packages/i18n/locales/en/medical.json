@@ -1,2 +1,53 @@
-{}
-
+{
+  "productNotices": {
+    "plumpyNut": "Indicative nutritional equivalence. Does not replace a prescribed treatment.",
+    "plumpySup": "Ready-to-use nutritional supplement. Does not replace medical follow-up.",
+    "f75": "Stabilization therapeutic milk, administered in hospital under medical supervision.",
+    "f100": "Rehabilitation therapeutic milk, administered under medical supervision.",
+    "customPending": "Private product pending verification by the TSOTSA team."
+  },
+  "zScore": {
+    "normal": "within normal range (≥ −2)",
+    "moderate": "moderate (−3 to −2)",
+    "severe": "severe (< −3)"
+  },
+  "muac": {
+    "normal": "normal (≥ 125 mm)",
+    "moderate": "moderate (115 to 125 mm)",
+    "severe": "severe (< 115 mm)"
+  },
+  "edema": {
+    "none": "none",
+    "present": "present ({{grade}})"
+  },
+  "dailyGain": {
+    "targetReached": "{{gain}} g/kg/d → target reached (≥ 5)",
+    "targetNotReached": "{{gain}} g/kg/d → target not reached (< 5)"
+  },
+  "classification": {
+    "normal": "Normal nutritional status",
+    "sam": "Proposed classification: severe acute malnutrition (SAM)",
+    "mam": "Proposed classification: moderate acute malnutrition (MUAC < 125 mm)",
+    "recommendationNote": "To be confirmed by the caregiver, according to the national protocol."
+  },
+  "status": {
+    "mam": "MAM",
+    "sam": "SAM",
+    "postSam": "Post-SAM follow-up"
+  },
+  "alerts": {
+    "missedIntakeEveningTitle": "Missed intake yesterday evening (7:00 PM)",
+    "missedIntakeYesterdayTitle": "Missed intake yesterday (7:00 PM)",
+    "missedIntakeReason": "Missed intake yesterday evening (7:00 PM) · 3rd reminder without confirmation",
+    "missedIntakeMotherDetail": "3rd reminder without confirmation from the mother.",
+    "missedIntakeNotifMessage": "7:00 PM enriched porridge intake not confirmed by the mother after 3 reminders.",
+    "weightStagnationTitle": "Weight stagnation alert",
+    "weightStagnationReason": "Weight stagnation (+0.1 kg in 14d)",
+    "weightStagnationNotifMessage": "Weight unchanged for 14 days (+100 g). Alert threshold exceeded.",
+    "eval30DaysReason": "30-day assessment to schedule"
+  },
+  "assessmentSaved": {
+    "title": "Assessment saved",
+    "message": "Assessment of {{date}} saved. Weight gain: {{gain}} g/kg/d. Normal weight-for-length; MUAC still < 125 mm: continue follow-up."
+  }
+}

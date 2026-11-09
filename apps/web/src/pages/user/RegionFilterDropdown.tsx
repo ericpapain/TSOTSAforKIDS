@@ -1,4 +1,6 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
+import "../../i18n/setup";
 import { CAMEROON_REGIONS } from "../../features/nutrition/nutritionData";
 import type { RegionFilter } from "../../features/nutrition/types";
 
@@ -15,8 +17,11 @@ export const RegionFilterDropdown: React.FC<RegionFilterDropdownProps> = ({
   onToggle,
   onSelect,
 }) => {
+  const { t } = useTranslation("nutrition");
   const activeOption =
     CAMEROON_REGIONS.find((r) => r.code === regionFilter) ?? CAMEROON_REGIONS[0];
+
+  const getRegionLabel = (code: RegionFilter): string => t(`regions.${code}.label`);
 
   return (
     <div className="relative inline-block">
@@ -28,7 +33,7 @@ export const RegionFilterDropdown: React.FC<RegionFilterDropdownProps> = ({
         onClick={onToggle}
         className="inline-flex items-center rounded-full bg-[#F1F3F2] px-4 py-1.5 text-[13px] font-bold text-[#17302A] hover:bg-[#E5ECE9] transition-colors cursor-pointer"
       >
-        {activeOption.label} {isOpen ? "▴" : "▾"}
+        {`${getRegionLabel(activeOption.code)} ${isOpen ? "▴" : "▾"}`}
       </button>
 
       {isOpen && (
@@ -53,8 +58,8 @@ export const RegionFilterDropdown: React.FC<RegionFilterDropdownProps> = ({
                     : "bg-white font-normal text-[#17302A]"
                 }`}
               >
-                <span>{reg.label}</span>
-                {isSelected && <span className="font-bold">✓</span>}
+                <span>{getRegionLabel(reg.code)}</span>
+                {isSelected && <span className="font-bold">{"✓"}</span>}
               </button>
             );
           })}
@@ -63,4 +68,3 @@ export const RegionFilterDropdown: React.FC<RegionFilterDropdownProps> = ({
     </div>
   );
 };
-

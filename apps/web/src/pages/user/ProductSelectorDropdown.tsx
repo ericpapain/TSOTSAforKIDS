@@ -1,4 +1,6 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
+import "../../i18n/setup";
 import type { ReferenceProduct } from "../../features/nutrition/types";
 
 export interface ProductSelectorDropdownProps {
@@ -18,6 +20,8 @@ export const ProductSelectorDropdown: React.FC<ProductSelectorDropdownProps> = (
   refProducts,
   customProducts,
 }) => {
+  const { t } = useTranslation("nutrition");
+
   return (
     <div className="relative">
       <button
@@ -29,7 +33,7 @@ export const ProductSelectorDropdown: React.FC<ProductSelectorDropdownProps> = (
         className="h-[51px] w-full rounded-[7px] border border-[#0F7B5F] bg-white px-4 flex items-center justify-between cursor-pointer hover:bg-[#F7F9F8] transition-colors text-left"
       >
         <span className="text-[21px] font-bold text-[#17302A]">
-          {selectedProduct.name} &nbsp;{isOpen ? "▴" : "▾"}
+          {`${selectedProduct.name} \u00a0${isOpen ? "▴" : "▾"}`}
         </span>
       </button>
 
@@ -40,7 +44,7 @@ export const ProductSelectorDropdown: React.FC<ProductSelectorDropdownProps> = (
           className="absolute left-0 right-0 top-[56px] z-30 rounded-[9px] border border-[#D5DEDA] bg-white shadow-lg overflow-hidden"
         >
           <div className="px-4 py-2 bg-[#F7F9F8] text-[12px] font-bold uppercase tracking-wider text-[#5B6B66]">
-            Produits de référence
+            {t("productCard.referenceSection")}
           </div>
           <div className="divide-y divide-[#E5ECE9]">
             {refProducts.map((prod) => {
@@ -58,18 +62,10 @@ export const ProductSelectorDropdown: React.FC<ProductSelectorDropdownProps> = (
                   }`}
                 >
                   <div>
-                    <div className="text-[16px] font-bold text-[#17302A]">
-                      {prod.name}
-                    </div>
-                    {prod.usage && (
-                      <div className="text-[13px] text-[#5B6B66]">
-                        {prod.usage}
-                      </div>
-                    )}
+                    <div className="text-[16px] font-bold text-[#17302A]">{prod.name}</div>
+                    {prod.usage && <div className="text-[13px] text-[#5B6B66]">{prod.usage}</div>}
                   </div>
-                  {isSelected && (
-                    <span className="text-[#0F7B5F] font-bold text-[16px]">✓</span>
-                  )}
+                  {isSelected && <span className="text-[#0F7B5F] font-bold text-[16px]">{"✓"}</span>}
                 </button>
               );
             })}
@@ -78,7 +74,7 @@ export const ProductSelectorDropdown: React.FC<ProductSelectorDropdownProps> = (
           {customProducts.length > 0 && (
             <>
               <div className="px-4 py-2 bg-[#F7F9F8] border-t border-[#E5ECE9] text-[12px] font-bold uppercase tracking-wider text-[#5B6B66]">
-                Mes produits
+                {t("productCard.customSection")}
               </div>
               <div className="divide-y divide-[#E5ECE9]">
                 {customProducts.map((prod) => {
@@ -96,14 +92,8 @@ export const ProductSelectorDropdown: React.FC<ProductSelectorDropdownProps> = (
                       }`}
                     >
                       <div>
-                        <div className="text-[16px] font-bold text-[#17302A]">
-                          {prod.name}
-                        </div>
-                        {prod.usage && (
-                          <div className="text-[13px] text-[#5B6B66]">
-                            {prod.usage}
-                          </div>
-                        )}
+                        <div className="text-[16px] font-bold text-[#17302A]">{prod.name}</div>
+                        {prod.usage && <div className="text-[13px] text-[#5B6B66]">{prod.usage}</div>}
                       </div>
                       {prod.statusBadge && (
                         <span className="rounded-full bg-[#FFF4D6] px-2.5 py-0.5 text-[12px] font-bold text-[#B7791F]">
@@ -121,4 +111,3 @@ export const ProductSelectorDropdown: React.FC<ProductSelectorDropdownProps> = (
     </div>
   );
 };
-

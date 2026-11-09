@@ -27,7 +27,10 @@
     "close": "Fermer",
     "confirm": "Confirmer",
     "back": "Retour",
-    "search": "Rechercher"
+    "search": "Rechercher",
+    "delete": "Supprimer"
+  },
+  "table": {
+    "emptyMessage": "Aucune donnée disponible"
   }
 }
-

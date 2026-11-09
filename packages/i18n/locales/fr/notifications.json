@@ -1,2 +1,62 @@
-{}
-
+{
+  "caregiverPage": {
+    "pageTitle": "Notifications soignant | TSOTSA Kids",
+    "title": "Notifications soignant",
+    "subtitle": "Centre d'alertes cliniques et de suivi des prises",
+    "markAllReadBtn": "Tout marquer comme lu",
+    "settingsBtn": "Paramètres ›",
+    "filters": {
+      "all": "Toutes ({{count}})",
+      "alerts": "Alertes ({{count}})",
+      "intakes": "Prises ({{count}})",
+      "reminders": "Rappels ({{count}})"
+    },
+    "openRecordBtn": "Ouvrir le dossier ›",
+    "items": {
+      "notif-3": {
+        "title": "Prise validée par le parent",
+        "message": "Bouillie enrichie 150 ml enregistrée à 12h35 (prévue 12h30)."
+      },
+      "notif-4": {
+        "title": "Rappel évaluation clinique",
+        "message": "Visite de contrôle bimensuelle prévue demain 12/11."
+      },
+      "notif-5": {
+        "title": "Rappel fin de protocole",
+        "message": "Fin du protocole MAM dans 7 jours. Bilan de sortie à préparer."
+      }
+    }
+  },
+  "settingsPage": {
+    "pageTitle": "Réglages des notifications soignant | TSOTSA Kids",
+    "breadcrumbNotifications": "Notifications",
+    "breadcrumbSettings": "Réglages",
+    "title": "Réglages des notifications soignant",
+    "subtitle": "Canaux de réception et règles d'alerte pour les personnes suivies",
+    "saveBtn": "Enregistrer les préférences",
+    "savedTitle": "Préférences enregistrées",
+    "savedMessage": "Vos préférences de notifications ont été enregistrées avec succès.",
+    "channelsCardTitle": "Canaux de notification par type d'événement",
+    "columns": {
+      "eventType": "Type d'événement",
+      "inApp": "In-App / Web",
+      "email": "E-mail",
+      "sms": "SMS"
+    },
+    "events": {
+      "missed-intake": "Prise sautée (3 rappels sans confirmation)",
+      "stagnation": "Stagnation pondérale (14 jours sans gain)",
+      "due-eval": "Évaluation périodique échue",
+      "confirmed-intake": "Prise confirmée par le parent"
+    },
+    "quietHoursCardTitle": "Plage des heures calmes",
+    "quietHoursToggleTitle": "Activer les heures calmes (21h00 – 07h00)",
+    "quietHoursToggleDesc": "Aucun SMS ou e-mail ne sera envoyé la nuit, les alertes restent visibles dans l'application.",
+    "perPersonCardTitle": "Préférences individuelles par personne suivie",
+    "frequencies": {
+      "immediate": "Immédiat",
+      "dailySummary": "Résumé quotidien",
+      "never": "Jamais"
+    }
+  }
+}
