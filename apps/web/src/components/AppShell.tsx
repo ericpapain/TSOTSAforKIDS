@@ -41,6 +41,7 @@ export const AppShell: React.FC<AppShellProps> = ({
           items={navItems}
           activePath={activeNavPath}
           onNavigate={onNavigate}
+          className="sticky top-[63px] h-[calc(100vh-63px)] overflow-y-auto"
         />
         <main className="flex-1 min-w-0 px-[23px] py-[20px] overflow-y-auto">
           <div className="max-w-[1155px]">

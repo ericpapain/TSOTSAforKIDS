@@ -102,7 +102,7 @@ export function AppHeader({
   return (
     <header
       data-testid={testID}
-      className={`w-full h-[63px] ${config.bg} flex items-center justify-between px-[29px] select-none text-white z-30 shrink-0`}
+      className={`sticky top-0 z-50 w-full h-[63px] ${config.bg} flex items-center justify-between px-[29px] select-none text-white shrink-0 shadow-sm`}
     >
       {/* Left: BrandLogo dark + Space Title */}
       <div className="flex items-center space-x-3">
