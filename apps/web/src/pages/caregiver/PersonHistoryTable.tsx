@@ -60,3 +60,4 @@ export const PersonHistoryTable: React.FC<PersonHistoryTableProps> = ({
     </div>
   );
 };
+

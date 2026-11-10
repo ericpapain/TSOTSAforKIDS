@@ -136,4 +136,22 @@ describe("Super Caregiver & Doctor Assignment Features", () => {
     expect(newChild.doctorReports).toBeDefined();
     expect(newChild.doctorReports?.length).toBeGreaterThan(0);
   });
+
+  it("affiche le guide des repères cliniques et normes OMS avec tableau MAM, MAS, Normal", () => {
+    render(
+      <BrowserRouter>
+        <FollowedPersonsPage />
+      </BrowserRouter>
+    );
+
+    const guide = screen.getByTestId("clinical-status-guide");
+    expect(guide).toBeInTheDocument();
+    expect(
+      screen.getAllByText(/Repères cliniques & Normes OMS des statuts nutritionnels/i).length
+    ).toBeGreaterThan(0);
+    expect(screen.getByText(/MAS — Sévère/i)).toBeInTheDocument();
+    expect(screen.getByText(/MAM — Modérée/i)).toBeInTheDocument();
+    expect(screen.getByText(/Normal — Satisfaisant/i)).toBeInTheDocument();
+    expect(screen.getByText(/Lexique des paramètres/i)).toBeInTheDocument();
+  });
 });

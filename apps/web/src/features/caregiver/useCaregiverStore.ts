@@ -24,3 +24,4 @@ export function useCaregiverStore(): CaregiverState & {
     reset: caregiverStore.reset,
   };
 }
+

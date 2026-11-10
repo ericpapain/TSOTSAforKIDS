@@ -9,6 +9,7 @@ import type { FollowedPerson } from "../../features/caregiver/types";
 import { useCaregiverStore } from "../../features/caregiver/useCaregiverStore";
 import { ReassignDoctorModal } from "./ReassignDoctorModal";
 import { SuperCaregiverBar } from "./SuperCaregiverBar";
+import { ClinicalStatusGuide } from "./ClinicalStatusGuide";
 
 export function FollowedPersonsPage(): React.JSX.Element {
   const { t, i18n } = useTranslation("caregiver");
@@ -256,6 +257,8 @@ export function FollowedPersonsPage(): React.JSX.Element {
         space="care"
         onRowClick={(row) => navigate(`/soignant/personnes/${row.id}`)}
       />
+
+      <ClinicalStatusGuide />
 
       <ReassignDoctorModal
         person={selectedPersonForReassign}

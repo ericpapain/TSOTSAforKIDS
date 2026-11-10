@@ -8,3 +8,4 @@ export { NotificationsPage } from "./NotificationsPage";
 export { NotificationSettingsPage } from "./NotificationSettingsPage";
 export { ReassignDoctorModal } from "./ReassignDoctorModal";
 export { SuperCaregiverBar } from "./SuperCaregiverBar";
+export { ClinicalStatusGuide } from "./ClinicalStatusGuide";
