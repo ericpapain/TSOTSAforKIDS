@@ -1,5 +1,6 @@
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -21,6 +22,7 @@ import { fontFamilies, fontSizes } from "../../src/theme/typography";
 
 export default function ComponentCatalogScreen(): React.JSX.Element {
   const router = useRouter();
+  const { t } = useTranslation(["common", "mobile"]);
   const [toggleState, setToggleState] = useState(true);
   const [activeTab, setActiveTab] = useState<BottomNavTab>("modules");
   const [fieldValue, setFieldValue] = useState("");
@@ -30,7 +32,7 @@ export default function ComponentCatalogScreen(): React.JSX.Element {
       <SafeAreaView style={styles.container}>
         <View style={styles.devOnly}>
           <Text style={styles.devOnlyText}>
-            Le catalogue de composants est accessible uniquement en développement.
+            {t("mobile:catalog.devOnly", "Le catalogue de composants est accessible uniquement en développement.")}
           </Text>
         </View>
       </SafeAreaView>
@@ -40,7 +42,7 @@ export default function ComponentCatalogScreen(): React.JSX.Element {
   return (
     <SafeAreaView style={styles.container} edges={["top", "bottom"]}>
       <AppBar
-        title="Catalogue Composants"
+        title={t("mobile:catalog.title", "Catalogue Composants")}
         onBack={() => router.replace("/u-welcome")}
         rightIcon="palette"
         onRightPress={() => {}}
@@ -50,11 +52,11 @@ export default function ComponentCatalogScreen(): React.JSX.Element {
         {/* Section 1: Logo */}
         <Text style={styles.sectionTitle}>1. BrandLogo</Text>
         <Card style={styles.sectionCard}>
-          <Text style={styles.subTitle}>Variante claire (fond blanc)</Text>
+          <Text style={styles.subTitle}>Light</Text>
           <View style={styles.logoLightWrapper}>
             <BrandLogo size={44} variant="light" />
           </View>
-          <Text style={styles.subTitle}>Variante foncée (fond primaire)</Text>
+          <Text style={styles.subTitle}>Dark</Text>
           <View style={styles.logoDarkWrapper}>
             <BrandLogo size={44} variant="dark" />
           </View>
@@ -63,39 +65,39 @@ export default function ComponentCatalogScreen(): React.JSX.Element {
         {/* Section 2: Buttons */}
         <Text style={styles.sectionTitle}>2. Buttons</Text>
         <Card style={styles.sectionCard}>
-          <Button title="Bouton Plein (Primaire)" onPress={() => {}} />
+          <Button title="Primary" onPress={() => {}} />
           <View style={styles.spacer} />
-          <Button title="Bouton Contour" variant="outline" onPress={() => {}} />
+          <Button title="Outline" variant="outline" onPress={() => {}} />
           <View style={styles.spacer} />
-          <Button title="Soignant (Care)" color={colors.care} onPress={() => {}} />
+          <Button title="Care" color={colors.care} onPress={() => {}} />
           <View style={styles.spacer} />
           <Button title="Danger" color={colors.danger} onPress={() => {}} />
           <View style={styles.spacer} />
-          <Button title="Désactivé" disabled onPress={() => {}} />
+          <Button title="Disabled" disabled onPress={() => {}} />
         </Card>
 
         {/* Section 3: Chips */}
-        <Text style={styles.sectionTitle}>3. Chips (Pastilles)</Text>
+        <Text style={styles.sectionTitle}>3. Chips</Text>
         <Card style={[styles.sectionCard, styles.rowWrap]}>
           <Chip label="Optimal" backgroundColor={colors.primary50} textColor={colors.primary} />
-          <Chip label="Nouveau" backgroundColor={colors.accent50} textColor={colors.accent} />
+          <Chip label="New" backgroundColor={colors.accent50} textColor={colors.accent} />
           <Chip label="Urgent" backgroundColor={colors.danger50} textColor={colors.danger} />
-          <Chip label="Attention" backgroundColor={colors.warning50} textColor={colors.warning900} />
+          <Chip label="Warning" backgroundColor={colors.warning50} textColor={colors.warning900} />
         </Card>
 
         {/* Section 4: List Items */}
         <Text style={styles.sectionTitle}>4. ListItems</Text>
         <Card style={styles.sectionCard}>
           <ListItem
-            title="Farine de maïs enrichie"
-            subtitle="Riche en zinc et protéines · 100g"
+            title="Arachide / Peanut"
+            subtitle="Zinc · 100g"
             icon="leaf"
             onPress={() => {}}
           />
           <View style={styles.spacer} />
           <ListItem
             title="Samuel (#A-014)"
-            subtitle="Dernière prise il y a 2h"
+            subtitle="2h"
             icon="user"
             badge={<Chip label="MAS" backgroundColor={colors.danger50} textColor={colors.danger} />}
             onPress={() => {}}
@@ -103,18 +105,18 @@ export default function ComponentCatalogScreen(): React.JSX.Element {
         </Card>
 
         {/* Section 5: Field */}
-        <Text style={styles.sectionTitle}>5. Field (Saisie)</Text>
+        <Text style={styles.sectionTitle}>5. Field</Text>
         <Card style={styles.sectionCard}>
           <Field
-            label="Prénom de l'enfant"
-            placeholder="Ex : Amina"
+            label="Child name"
+            placeholder="Amina"
             value={fieldValue}
             onChangeText={setFieldValue}
           />
           <Field
-            label="Numéro de téléphone"
+            label="Phone"
             placeholder="+237 6..."
-            error="Format international E.164 requis"
+            error="E.164"
           />
         </Card>
 
@@ -122,11 +124,11 @@ export default function ComponentCatalogScreen(): React.JSX.Element {
         <Text style={styles.sectionTitle}>6. Toggle & Notice</Text>
         <Card style={styles.sectionCard}>
           <View style={styles.toggleRow}>
-            <Text style={styles.label}>Rappels automatiques</Text>
+            <Text style={styles.label}>{t("mobile:settings.reminderSwitches", "Rappels")}</Text>
             <Toggle value={toggleState} onValueChange={setToggleState} />
           </View>
           <View style={styles.spacer} />
-          <Notice message="Attention : les prises non confirmées déclenchent une alerte après 48h." />
+          <Notice message={t("mobile:empty.advice", "Conseil")} />
         </Card>
 
         {/* Section 7: BottomNav Preview */}
