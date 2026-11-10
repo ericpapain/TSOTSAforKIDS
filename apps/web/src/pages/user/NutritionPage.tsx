@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { formatNumber, normalizeLocale, DEFAULT_LOCALE } from "@tsotsa/i18n";
+import { normalizeLocale, DEFAULT_LOCALE } from "@tsotsa/i18n";
 import "../../i18n/setup";
 import { AppHeader } from "../../components/AppHeader";
 import { useOptionalAuth } from "../../api/authContext";
@@ -10,7 +10,11 @@ import type { ReferenceProduct, EquivalentLocalFood, RegionFilter } from "../../
 import { FoodDetailModal } from "./FoodDetailModal";
 import { ProductSelectorDropdown } from "./ProductSelectorDropdown";
 import { RegionFilterDropdown } from "./RegionFilterDropdown";
+import { EquivalentsTable } from "./EquivalentsTable";
 import { ConfirmIntakeModal } from "./ConfirmIntakeModal";
+import { UserNavTabs } from "./UserNavTabs";
+import { AddChildModal } from "./AddChildModal";
+import { useUserStore } from "../../features/user/useUserStore";
 
 export const NutritionPage: React.FC = () => {
   const { t, i18n } = useTranslation("nutrition");
@@ -25,6 +29,9 @@ export const NutritionPage: React.FC = () => {
   const [selectedFoodId, setSelectedFoodId] = useState<string | null>(null);
   const [giveModalItem, setGiveModalItem] = useState<{ name: string; unit: string } | null>(null);
   const [mobileMessage, setMobileMessage] = useState<string | null>(null);
+  const [isAddChildOpen, setIsAddChildOpen] = useState(false);
+
+  const { activeChild, customProducts: userCustomProducts, addIntake } = useUserStore();
 
   useEffect(() => {
     document.title = t("pageTitle");
@@ -36,7 +43,26 @@ export const NutritionPage: React.FC = () => {
     [allProducts, selectedProductId]
   );
   const refProducts = useMemo(() => allProducts.filter((p) => p.category !== "custom"), [allProducts]);
-  const customProducts = useMemo(() => allProducts.filter((p) => p.category === "custom"), [allProducts]);
+  const customProducts = useMemo(() => {
+    const defaultCustom = allProducts.filter((p) => p.category === "custom");
+    const userCustom: ReferenceProduct[] = userCustomProducts.map((p) => ({
+      id: p.id,
+      name: p.name,
+      category: "custom" as const,
+      specification: p.specification,
+      nutrients: [
+        { name: "Énergie", value: `${p.nutrients.energyKcal} kcal`, isKey: true },
+        { name: "Protéines", value: `${p.nutrients.proteinG} g`, isKey: true },
+        { name: "Lipides", value: `${p.nutrients.lipidsG} g`, isKey: true },
+        { name: "Fer", value: `${p.nutrients.ironMg} mg`, isKey: true },
+        { name: "Zinc", value: `${p.nutrients.zincMg} mg`, isKey: true },
+        { name: "Calcium", value: `${p.nutrients.calciumMg} mg`, isKey: true },
+      ],
+      costInfo: "—",
+      notice: "Recette personnalisée enregistrée par la famille.",
+    }));
+    return [...defaultCustom, ...userCustom];
+  }, [allProducts, userCustomProducts]);
   const allFoods = useMemo(() => getLocalizedEquivalentFoods(t, locale), [t, locale]);
   const selectedFood = useMemo(
     () => (selectedFoodId ? allFoods.find((f) => f.id === selectedFoodId) ?? null : null),
@@ -95,6 +121,7 @@ export const NutritionPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-[#F1F3F2] font-sans">
       <AppHeader space="user" onLogout={handleLogout} />
+      <UserNavTabs onOpenAddChild={() => setIsAddChildOpen(true)} />
 
       <main className="mx-auto max-w-[1440px] px-7 py-6">
         {mobileMessage && (
@@ -201,57 +228,13 @@ export const NutritionPage: React.FC = () => {
                 />
               </div>
 
-              <div className="overflow-x-auto rounded-md" data-testid="ranked-foods-table">
-                <table className="w-full text-left text-[14px] border-collapse">
-                  <thead>
-                    <tr className="h-[39px] bg-[#0F7B5F] text-white font-bold">
-                      <th className="px-3 w-[40px]">{t("table.rank")}</th>
-                      <th className="px-3">{t("table.localFood")}</th>
-                      <th className="px-2 w-[70px]">{t("table.common")}</th>
-                      <th className="px-2 w-[90px]">{t("table.extra")}</th>
-                      <th className="px-2 w-[85px]">{t("table.proteins")}</th>
-                      <th className="px-2 w-[85px]">{t("table.lipids")}</th>
-                      <th className="px-2 w-[75px]">{t("table.iron")}</th>
-                      <th className="px-3 w-[120px]">{activeRegionColumnHeader}</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {displayedFoods.map((food, idx) => (
-                      <tr
-                        key={food.id}
-                        data-testid={`food-row-${food.id}`}
-                        onClick={() => setSelectedFoodId(food.id)}
-                        className={`h-[50px] cursor-pointer transition-colors hover:bg-[#EDF5F2] ${
-                          idx % 2 === 0 ? "bg-[#F7F9F8]" : "bg-white"
-                        }`}
-                      >
-                        <td className="px-3 text-[#17302A] text-[16px]">
-                          {formatNumber(food.rank, locale)}
-                        </td>
-                        <td className="px-3 font-bold text-[16px]">
-                          <span
-                            className={
-                              food.id === "arachide"
-                                ? "text-[#0F7B5F] underline"
-                                : "text-[#17302A]"
-                            }
-                          >
-                            {food.name}
-                          </span>
-                        </td>
-                        <td className="px-2 text-[#17302A] text-[16px]">{food.commonNutrientsCount}</td>
-                        <td className="px-2 text-[#17302A] text-[16px]">{food.extraNutrient}</td>
-                        <td className="px-2 text-[#17302A] text-[16px]">{food.proteins}</td>
-                        <td className="px-2 text-[#17302A] text-[16px]">{food.lipids}</td>
-                        <td className="px-2 text-[#17302A] text-[16px]">{food.iron}</td>
-                        <td className="px-3 text-[#17302A] text-[16px]">
-                          {isFoodAvailableInCurrentColumn(food) ? "✓" : "—"}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+              <EquivalentsTable
+                displayedFoods={displayedFoods}
+                activeRegionColumnHeader={activeRegionColumnHeader}
+                locale={locale}
+                onSelectFood={(id) => setSelectedFoodId(id)}
+                isFoodAvailableInCurrentColumn={isFoodAvailableInCurrentColumn}
+              />
             </div>
 
             <div className="mt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -284,11 +267,31 @@ export const NutritionPage: React.FC = () => {
 
       <ConfirmIntakeModal
         isOpen={!!giveModalItem}
-        personName="Hamadou"
+        personName={activeChild?.firstName || "Hamadou"}
         itemName={giveModalItem?.name ?? selectedProduct.name}
         defaultUnit={giveModalItem?.unit ?? "sachet"}
         onClose={() => setGiveModalItem(null)}
         onViewCaregiverSide={handleViewCaregiverSide}
+        onConfirmIntake={(details) => {
+          if (activeChild) {
+            addIntake({
+              childId: activeChild.id,
+              childName: activeChild.firstName,
+              foodName: details.foodName,
+              quantity: details.quantity,
+              unit: details.unit,
+              time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+              date: "Aujourd'hui",
+              consumption: details.consumption,
+              status: "given",
+            });
+          }
+        }}
+      />
+
+      <AddChildModal
+        isOpen={isAddChildOpen}
+        onClose={() => setIsAddChildOpen(false)}
       />
     </div>
   );

@@ -28,16 +28,54 @@ import {
   AdminNotificationsPage,
 } from './pages/admin';
 import { NutritionPage } from './pages/user/NutritionPage';
+import { FamilyPersonsPage } from './pages/user/FamilyPersonsPage';
+import { IntakeHistoryPage } from './pages/user/IntakeHistoryPage';
+import { CustomProductPage } from './pages/user/CustomProductPage';
+import { UserSettingsPage } from './pages/user/UserSettingsPage';
 
 export const routes = [
   { path: '/connexion', element: <LoginPage /> },
   { path: '/dev/catalog', element: <CatalogPage /> },
-  // W01 : Utilisateur web
+  // W01 & Espace Utilisateur (Web & Mobile)
+  { path: '/nutrition', element: <Navigate to="/nutrition/produits/plumpy-nut" replace /> },
   {
     path: '/nutrition/produits/plumpy-nut',
     element: (
       <ProtectedRoute allowedRoles={['user', 'caregiver', 'admin']}>
         <NutritionPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/famille',
+    element: (
+      <ProtectedRoute allowedRoles={['user', 'caregiver', 'admin']}>
+        <FamilyPersonsPage />
+      </ProtectedRoute>
+    ),
+  },
+  { path: '/personnes', element: <Navigate to="/famille" replace /> },
+  {
+    path: '/historique',
+    element: (
+      <ProtectedRoute allowedRoles={['user', 'caregiver', 'admin']}>
+        <IntakeHistoryPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/mes-produits/nouveau',
+    element: (
+      <ProtectedRoute allowedRoles={['user', 'caregiver', 'admin']}>
+        <CustomProductPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/parametres',
+    element: (
+      <ProtectedRoute allowedRoles={['user', 'caregiver', 'admin']}>
+        <UserSettingsPage />
       </ProtectedRoute>
     ),
   },

@@ -115,3 +115,4 @@ L'audit a confirmé le respect intégral des conventions fixées dans [`packages
    - Les identifiants techniques des colonnes attendues par le parseur backend (ex: `nom`, `categorie`, `energie_kcal_100g`) demeurent stables pour assurer la compatibilité ascendante avec les exports de données ORKG. Les infobulles, aides à la saisie et messages d'erreurs ligne par ligne sont en revanche intégralement bilingues.
 5. **Langues nationales camerounaises** :
    - Les langues locales (Ewondo, Duala, Fulfulde...) ne sont pas encore intégrées à cette étape et feront l'objet d'extensions spécifiques lors des déploiements régionaux sur le terrain.
+

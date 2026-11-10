@@ -11,6 +11,12 @@ export interface ConfirmIntakeModalProps {
   defaultUnit?: string;
   onClose: () => void;
   onViewCaregiverSide?: () => void;
+  onConfirmIntake?: (details: {
+    foodName: string;
+    quantity: number;
+    unit: string;
+    consumption: "all" | "half" | "refused";
+  }) => void;
 }
 
 type ConsumptionLevelKey = "all" | "half" | "refused";
@@ -25,6 +31,7 @@ export const ConfirmIntakeModal: React.FC<ConfirmIntakeModalProps> = ({
   defaultUnit = "sachet",
   onClose,
   onViewCaregiverSide,
+  onConfirmIntake,
 }) => {
   const { t, i18n } = useTranslation("nutrition");
   const locale = normalizeLocale(i18n.resolvedLanguage ?? i18n.language) ?? DEFAULT_LOCALE;
@@ -186,7 +193,15 @@ export const ConfirmIntakeModal: React.FC<ConfirmIntakeModalProps> = ({
               <button
                 type="button"
                 data-testid="confirm-intake-submit-btn"
-                onClick={() => setIsConfirmed(true)}
+                onClick={() => {
+                  setIsConfirmed(true);
+                  onConfirmIntake?.({
+                    foodName: itemName,
+                    quantity,
+                    unit: defaultUnit,
+                    consumption,
+                  });
+                }}
                 className="w-full h-[56px] rounded-[11px] bg-[#0F7B5F] hover:bg-[#0c634c] text-white text-[20px] font-bold transition-colors cursor-pointer mt-2"
               >
                 {t("confirmIntakeModal.submitBtn")}

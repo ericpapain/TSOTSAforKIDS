@@ -104,3 +104,4 @@ test.describe("Étape I-6 : Captures d'écran en anglais W01–W20", () => {
     }
   });
 });
+
