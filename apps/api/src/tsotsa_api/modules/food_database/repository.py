@@ -30,6 +30,7 @@ class FoodDatabaseRepository:
                 selectinload(Food.category),
                 selectinload(Food.food_group),
                 selectinload(Food.names),
+                selectinload(Food.translations),
                 selectinload(Food.regions).selectinload(FoodRegion.region),
                 selectinload(Food.nutrient_values).selectinload(FoodNutrientValue.source),
             )
@@ -57,7 +58,11 @@ class FoodDatabaseRepository:
         limit: int = 20,
         only_published: bool = True,
     ) -> list[Food]:
-        stmt = select(Food).options(selectinload(Food.category)).where(Food.is_current.is_(True))
+        stmt = (
+            select(Food)
+            .options(selectinload(Food.category), selectinload(Food.translations))
+            .where(Food.is_current.is_(True))
+        )
         if only_published:
             stmt = stmt.where(Food.status == "published")
         if category_code:

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import re
-from typing import Annotated
+from typing import Annotated, Literal
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
 
@@ -134,9 +134,17 @@ class UserProfileResponse(BaseModel):
     id: str
     display_name: str
     language: str
+    preferred_locale: Literal["fr", "en"] = "fr"
     status: str
     roles: list[str] = Field(default_factory=list)
     is_verified_caregiver: bool = False
+
+
+class UserProfileUpdateRequest(BaseModel):
+    """Payload to update the current authenticated user's profile."""
+
+    preferred_locale: Literal["fr", "en"] | None = None
+    display_name: Annotated[str | None, Field(min_length=1, max_length=150)] = None
 
 
 class TokenResponse(BaseModel):

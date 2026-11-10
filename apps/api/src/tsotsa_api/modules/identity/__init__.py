@@ -12,6 +12,7 @@ from tsotsa_api.modules.identity.dependencies import (
     require_verified_caregiver,
 )
 from tsotsa_api.modules.identity.repository import IdentityRepository
+from tsotsa_api.modules.identity.router import profile_router
 from tsotsa_api.modules.identity.router import router as auth_router
 from tsotsa_api.modules.identity.service import IdentityService
 
@@ -23,6 +24,7 @@ __all__ = [
     "get_current_user",
     "get_optional_user",
     "is_user_admin",
+    "profile_router",
     "require_role",
     "require_verified_caregiver",
 ]

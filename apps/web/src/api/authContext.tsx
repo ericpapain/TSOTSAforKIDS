@@ -3,6 +3,9 @@ import { Navigate, useLocation } from "react-router-dom";
 import type { UserRole, UserSession } from "../types";
 import { getWebApiClient } from "./client";
 
+import { changeAppLanguage } from "../i18n/setup";
+import { normalizeLocale } from "@tsotsa/i18n";
+
 interface AuthContextType {
   session: UserSession | null;
   role: UserRole | null;
@@ -57,6 +60,13 @@ export function AuthProvider({ children }: { children: ReactNode }): React.JSX.E
       });
     } else {
       apiClient.clearTokens();
+    }
+
+    if (newSession?.preferred_locale) {
+      const norm = normalizeLocale(newSession.preferred_locale);
+      if (norm) {
+        void changeAppLanguage(norm, { syncProfile: false });
+      }
     }
 
     setSessionState(newSession);

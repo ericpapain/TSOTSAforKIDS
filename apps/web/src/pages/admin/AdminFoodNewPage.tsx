@@ -18,6 +18,7 @@ export function AdminFoodNewPage(): React.JSX.Element {
   }, [t, i18n.language]);
 
   const [nom, setNom] = useState<string>("Arachide");
+  const [nomEn, setNomEn] = useState<string>("");
   const [nomLocal, setNomLocal] = useState<string>("");
   const [categorie, setCategorie] = useState<string>("Oléagineux");
   const [etat, setEtat] = useState<string>("Graine crue");
@@ -97,7 +98,7 @@ export function AdminFoodNewPage(): React.JSX.Element {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Formulaire gauche */}
         <div className="lg:col-span-7 flex flex-col gap-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="flex flex-col gap-1.5">
               <label className="text-14 font-bold text-text-muted">{t("foodNew.nameLabel")}</label>
               <input
@@ -105,6 +106,17 @@ export function AdminFoodNewPage(): React.JSX.Element {
                 data-testid="input-food-name"
                 value={nom}
                 onChange={(e) => setNom(e.target.value)}
+                className="h-[43px] px-3.5 bg-surface-2 border border-border rounded-[6px] text-16 text-text"
+              />
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <label className="text-14 font-bold text-text-muted">{t("foodNew.nameEnLabel")}</label>
+              <input
+                type="text"
+                data-testid="input-food-name-en"
+                value={nomEn}
+                onChange={(e) => setNomEn(e.target.value)}
+                placeholder={t("foodNew.nameEnPlaceholder")}
                 className="h-[43px] px-3.5 bg-surface-2 border border-border rounded-[6px] text-16 text-text"
               />
             </div>

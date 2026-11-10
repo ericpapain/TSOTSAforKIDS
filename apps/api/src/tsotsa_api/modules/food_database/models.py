@@ -14,6 +14,7 @@ from sqlalchemy import (
     Integer,
     Numeric,
     String,
+    UniqueConstraint,
 )
 from sqlalchemy.dialects.mysql import JSON
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -97,12 +98,33 @@ class Food(Base):
     names: Mapped[list[FoodName]] = relationship(
         "FoodName", cascade="all, delete-orphan", back_populates="food"
     )
+    translations: Mapped[list[FoodTranslation]] = relationship(
+        "FoodTranslation", cascade="all, delete-orphan", back_populates="food"
+    )
     regions: Mapped[list[FoodRegion]] = relationship(
         "FoodRegion", cascade="all, delete-orphan", back_populates="food"
     )
     nutrient_values: Mapped[list[FoodNutrientValue]] = relationship(
         "FoodNutrientValue", cascade="all, delete-orphan", back_populates="food"
     )
+
+
+class FoodTranslation(Base):
+    """Optional translated name for a food item (e.g. English translation)."""
+
+    __tablename__ = "food_translations"
+    __table_args__ = (
+        UniqueConstraint("food_id", "locale", name="uq_food_translations_food_locale"),
+    )
+
+    id: Mapped[str] = mapped_column(BinaryUUID, primary_key=True, default=generate_uuid7)
+    food_id: Mapped[str] = mapped_column(
+        BinaryUUID, ForeignKey("foods.id", ondelete="CASCADE"), index=True, nullable=False
+    )
+    locale: Mapped[str] = mapped_column(String(10), nullable=False)
+    name: Mapped[str] = mapped_column(String(200), nullable=False)
+
+    food: Mapped[Food] = relationship("Food", back_populates="translations")
 
 
 class FoodName(Base):

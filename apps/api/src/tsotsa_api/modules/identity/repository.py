@@ -42,11 +42,41 @@ class IdentityRepository(TokenRepository):
         self,
         display_name: str,
         language: str = "fr",
+        preferred_locale: str | None = None,
         status: str = "active",
     ) -> User:
         """Create a new user entity."""
-        user = User(display_name=display_name, language=language, status=status)
+        loc = (
+            preferred_locale
+            if preferred_locale in ("fr", "en")
+            else (language if language in ("fr", "en") else "fr")
+        )
+        user = User(
+            display_name=display_name,
+            language=loc,
+            preferred_locale=loc,
+            status=status,
+        )
         self.session.add(user)
+        await self.session.flush()
+        return user
+
+    async def update_user_profile(
+        self,
+        user_id: str,
+        preferred_locale: str | None = None,
+        display_name: str | None = None,
+    ) -> User | None:
+        """Update user preferred_locale and/or display_name."""
+        user = await self.get_user_by_id(user_id)
+        if not user:
+            return None
+        if preferred_locale is not None:
+            user.preferred_locale = preferred_locale
+            user.language = preferred_locale
+        if display_name is not None:
+            user.display_name = display_name.strip()
+        user.updated_at = datetime.now(UTC)
         await self.session.flush()
         return user
 

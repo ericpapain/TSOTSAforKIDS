@@ -27,6 +27,39 @@ STANDARD_UNITS = [
     ("%", "ratio", "Pourcentage"),
 ]
 
+CANONICAL_NUTRIENT_NAMES_EN: dict[str, str] = {
+    "energy": "Energy",
+    "protein": "Proteins",
+    "fat": "Lipids",
+    "carbohydrates": "Carbohydrates",
+    "fiber": "Fiber",
+    "water": "Water",
+    "zinc": "Zinc",
+    "magnesium": "Magnesium",
+    "copper": "Copper",
+    "iron": "Iron",
+    "calcium": "Calcium",
+    "sodium": "Sodium",
+    "potassium": "Potassium",
+    "phosphorus": "Phosphorus",
+    "iodine": "Iodine",
+    "selenium": "Selenium",
+    "vitamin_a": "Vitamin A",
+    "vitamin_d": "Vitamin D",
+    "vitamin_e": "Vitamin E",
+    "vitamin_k": "Vitamin K",
+    "vitamin_c": "Vitamin C",
+    "vitamin_b1": "Vitamin B1",
+    "vitamin_b2": "Vitamin B2",
+    "vitamin_b3": "Vitamin B3",
+    "vitamin_b5": "Vitamin B5",
+    "vitamin_b6": "Vitamin B6",
+    "vitamin_b8": "Vitamin B8",
+    "vitamin_b9": "Vitamin B9",
+    "vitamin_b12": "Vitamin B12",
+    "phytate": "Phytate",
+}
+
 
 class NutrientService:
     """Service providing nutrient identification, unit conversions, and validation."""
@@ -54,9 +87,14 @@ class NutrientService:
                 p_max = (
                     Decimal(row["plausible_max_100g"]) if row.get("plausible_max_100g") else None
                 )
+                code_val = row["code"].strip()
+                name_en_val = row.get("nom_anglais", "").strip() or CANONICAL_NUTRIENT_NAMES_EN.get(
+                    code_val
+                )
                 nutrient = await self.repo.save_nutrient(
-                    code=row["code"].strip(),
+                    code=code_val,
                     name_fr=row["nom_canonique"].strip(),
+                    name_en=name_en_val,
                     category=row["categorie"].strip(),
                     reference_unit_id=ref_unit.id,
                     plausible_min=p_min,

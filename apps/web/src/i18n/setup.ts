@@ -192,7 +192,7 @@ export async function initI18n(options?: ResolveLocaleOptions): Promise<typeof i
 
 export async function changeAppLanguage(
   locale: SupportedLocale,
-  options?: { persist?: boolean }
+  options?: { persist?: boolean; syncProfile?: boolean }
 ): Promise<SupportedLocale> {
   const target = normalizeLocale(locale) ?? DEFAULT_LOCALE;
   if (options?.persist !== false) {
@@ -200,7 +200,42 @@ export async function changeAppLanguage(
   }
   await i18n.changeLanguage(target);
   syncHtmlLang(target);
+
+  if (options?.syncProfile !== false && typeof window !== "undefined") {
+    try {
+      const stored = window.sessionStorage.getItem("tsotsa_session");
+      if (stored) {
+        const session = JSON.parse(stored) as { preferred_locale?: string };
+        session.preferred_locale = target;
+        window.sessionStorage.setItem("tsotsa_session", JSON.stringify(session));
+      }
+      const rawProfile = window.localStorage.getItem(PROFILE_STORAGE_KEY);
+      if (rawProfile) {
+        const profile = JSON.parse(rawProfile) as { preferred_locale?: string };
+        profile.preferred_locale = target;
+        window.localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(profile));
+      }
+    } catch {
+      // Ignore storage errors
+    }
+  }
+
   return target;
+}
+
+export function translateApiError(
+  code: string | null | undefined,
+  params?: Record<string, unknown>
+): string {
+  if (!code) {
+    return (i18n.t as unknown as (k: string, opt?: unknown) => string)("generic", { ns: "errors" });
+  }
+  const cleanCode = code.startsWith("errors.") ? code.slice(7) : code;
+  const key = `errors:${cleanCode}`;
+  if (i18n.exists(key)) {
+    return (i18n.t as unknown as (k: string, opt?: unknown) => string)(key, { ...params });
+  }
+  return (i18n.t as unknown as (k: string, opt?: unknown) => string)("generic", { ns: "errors" });
 }
 
 void initI18n();

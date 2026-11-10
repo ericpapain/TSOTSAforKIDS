@@ -9,7 +9,9 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from tsotsa_api.core.errors import NotFoundError
+from tsotsa_api.i18n import render_template
 from tsotsa_api.modules.audit.service import AuditService
+from tsotsa_api.modules.identity.models import User
 from tsotsa_api.modules.notifications.repository import NotificationsRepository
 from tsotsa_api.modules.notifications.schemas import (
     DeviceTokenCreate,
@@ -86,6 +88,13 @@ class NotificationsService:
             if not care.primary_caregiver_id:
                 continue
             cg_id = care.primary_caregiver_id
+            cg_loc = (
+                await self.session.execute(select(User.preferred_locale).where(User.id == cg_id))
+            ).scalar_one_or_none()
+            locale = cg_loc if cg_loc in ("fr", "en") else "fr"
+            tpl = render_template(
+                "notifications", "reminders_disabled", locale=locale, first_name=p_name
+            )
             ts = int(datetime.now(UTC).timestamp())
             dedupe = f"reminders_cut:{cg_id}:{person_id}:{ts}"
             await self.repo.queue_notification(
@@ -94,11 +103,15 @@ class NotificationsService:
                 schedule_id=None,
                 type_str="clinical_alert",
                 channel="push",
-                title="Alerte : rappels désactivés",
-                body=f"Le représentant légal de {p_name} a désactivé les rappels de prises.",
+                title=tpl["title"],
+                body=tpl["body"],
                 scheduled_for=datetime.now(UTC),
                 dedupe_key=dedupe,
-                payload={"person_id": person_id, "alert_rule": "reminders_disabled"},
+                payload={
+                    "person_id": person_id,
+                    "alert_rule": "reminders_disabled",
+                    "locale": locale,
+                },
             )
 
     # --- Device Tokens ---
@@ -170,6 +183,21 @@ class NotificationsService:
             if not enabled:
                 continue
 
+            cg_loc = (
+                await self.session.execute(
+                    select(User.preferred_locale).where(User.id == care.primary_caregiver_id)
+                )
+            ).scalar_one_or_none()
+            locale = cg_loc if cg_loc in ("fr", "en") else "fr"
+            tpl = render_template(
+                "notifications",
+                "intake_confirmed",
+                locale=locale,
+                product_name=product_name,
+                quantity=quantity,
+                unit=unit,
+                first_name=p_name,
+            )
             now = datetime.now(UTC)
             dedupe = f"confirmed:{care.primary_caregiver_id}:{person_id}:{int(now.timestamp())}"
             await self.repo.queue_notification(
@@ -178,11 +206,11 @@ class NotificationsService:
                 schedule_id=None,
                 type_str="intake_confirmed",
                 channel="push",
-                title="Prise confirmée",
-                body=f"Prise de {product_name} ({quantity} {unit}) confirmée pour {p_name}.",
+                title=tpl["title"],
+                body=tpl["body"],
                 scheduled_for=now,
                 dedupe_key=dedupe,
-                payload={"person_id": person_id},
+                payload={"person_id": person_id, "locale": locale},
             )
 
     # --- Administration ---

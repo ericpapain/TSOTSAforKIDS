@@ -24,6 +24,7 @@ export interface UserSession {
   role: UserRole;
   orgName?: string;
   isVerifiedCaregiver?: boolean;
+  preferred_locale?: "fr" | "en";
 }
 
 export interface ZScorePoint {

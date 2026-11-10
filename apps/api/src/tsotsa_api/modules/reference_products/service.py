@@ -50,6 +50,9 @@ class ReferenceProductService:
         product = Product(
             type="reference",
             name=payload.name.strip(),
+            name_en=payload.name_en.strip()
+            if payload.name_en and payload.name_en.strip()
+            else None,
             base=base,
             usage=usage,
             status=status,
@@ -107,6 +110,9 @@ class ReferenceProductService:
         if payload.name is not None:
             product.name = payload.name.strip()
             changes["name"] = product.name
+        if payload.name_en is not None:
+            product.name_en = payload.name_en.strip() or None
+            changes["name_en"] = product.name_en or ""
         if payload.base is not None:
             product.base = normalize_base(payload.base)
             changes["base"] = product.base
@@ -167,18 +173,24 @@ class ReferenceProductService:
         await self.session.flush()
         return to_product_detail(product)
 
-    async def list_visible_products(self, user_id: str | None = None) -> list[ProductSummaryRead]:
+    async def list_visible_products(
+        self, user_id: str | None = None, locale: str = "fr"
+    ) -> list[ProductSummaryRead]:
         items = await self.repo.list_visible_products(user_id=user_id)
-        return [to_product_summary(p) for p in items]
+        return [to_product_summary(p, locale=locale) for p in items]
 
     async def list_admin_products(
-        self, product_type: str | None = None
+        self, product_type: str | None = None, locale: str = "fr"
     ) -> list[ProductSummaryRead]:
         items = await self.repo.list_admin_products(product_type=product_type)
-        return [to_product_summary(p) for p in items]
+        return [to_product_summary(p, locale=locale) for p in items]
 
     async def get_product_detail(
-        self, product_id: str, user_id: str | None = None, is_admin: bool = False
+        self,
+        product_id: str,
+        user_id: str | None = None,
+        is_admin: bool = False,
+        locale: str = "fr",
     ) -> ProductDetailRead:
         product = await self.repo.get_product_by_id(product_id)
         if not product:
@@ -195,7 +207,7 @@ class ReferenceProductService:
         ):
             raise ForbiddenError("Ce produit personnalisé est privé.")
 
-        return to_product_detail(product)
+        return to_product_detail(product, locale=locale)
 
     async def create_custom_product_record(
         self,

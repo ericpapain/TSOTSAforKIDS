@@ -24,6 +24,7 @@ class Product(Base):
     id: Mapped[str] = mapped_column(BinaryUUID, primary_key=True, default=generate_uuid7)
     type: Mapped[str] = mapped_column(String(30), index=True, nullable=False)  # reference, custom
     name: Mapped[str] = mapped_column(String(200), index=True, nullable=False)
+    name_en: Mapped[str | None] = mapped_column(String(200), nullable=True)
     base: Mapped[str] = mapped_column(String(20), default="100g", nullable=False)  # 100g, 100ml
     usage: Mapped[str | None] = mapped_column(String(30), nullable=True)  # hospital, home
     owner_user_id: Mapped[str | None] = mapped_column(

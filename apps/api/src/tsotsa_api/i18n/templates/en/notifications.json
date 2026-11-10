@@ -1,0 +1,37 @@
+{
+  "reminder": {
+    "title": "Intake reminder for {first_name}",
+    "body": "It is time to give the {product_name} intake ({quantity} {unit}) to {first_name}.",
+    "actions": [
+      { "id": "given", "label": "Given" },
+      { "id": "later", "label": "Later" },
+      { "id": "not_given", "label": "Not given" }
+    ]
+  },
+  "caregiver_reminder": {
+    "title": "Follow-up reminder: {first_name}",
+    "body": "Scheduled intake at {local_time} for {first_name}."
+  },
+  "reminder_followup": {
+    "title": "Follow-up reminder: treatment intake",
+    "body": "The scheduled intake has not been confirmed yet.",
+    "actions": [
+      { "id": "given", "label": "Given" },
+      { "id": "later", "label": "Later" },
+      { "id": "not_given", "label": "Not given" }
+    ]
+  },
+  "intake_unconfirmed": {
+    "title": "Alert: unconfirmed intake",
+    "body": "A followed child has not taken their treatment within the scheduled 30 minutes."
+  },
+  "intake_confirmed": {
+    "title": "Confirmed intake",
+    "body": "Intake of {product_name} ({quantity} {unit}) confirmed for {first_name}."
+  },
+  "reminders_disabled": {
+    "title": "Alert: reminders disabled",
+    "body": "The legal guardian of {first_name} has disabled intake reminders."
+  }
+}
+

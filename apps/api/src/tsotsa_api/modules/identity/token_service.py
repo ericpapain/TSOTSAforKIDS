@@ -54,10 +54,12 @@ class TokenService:
             device_label=device_label,
         )
 
+        pref_loc = user.preferred_locale if user.preferred_locale in ("fr", "en") else "fr"
         user_profile = UserProfileResponse(
             id=user.id,
             display_name=user.display_name,
-            language=user.language,
+            language=pref_loc,
+            preferred_locale=pref_loc,  # type: ignore[arg-type]
             status=user.status,
             roles=roles,
             is_verified_caregiver=is_verified_caregiver,

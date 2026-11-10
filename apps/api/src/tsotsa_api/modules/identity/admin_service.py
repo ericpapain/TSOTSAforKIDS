@@ -12,6 +12,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from tsotsa_api.core.config import get_settings
 from tsotsa_api.core.errors import AppException, NotFoundError, ValidationError
 from tsotsa_api.core.security import hash_password, hash_token
+from tsotsa_api.i18n import render_template
 from tsotsa_api.modules.identity.admin_repo import IdentityAdminRepository
 from tsotsa_api.modules.identity.models import CaregiverProfile, Invitation, User
 from tsotsa_api.modules.identity.repository import IdentityRepository
@@ -44,6 +45,20 @@ class IdentityAdminService:
             role=role, status=status, search=search, limit=limit, offset=offset
         )
 
+    async def _ensure_target_available(self, clean_target: str) -> None:
+        exists = (
+            await self.repo.get_identity_by_email(clean_target)
+            if "@" in clean_target
+            else await self.repo.get_identity("phone", clean_target)
+        )
+        if exists:
+            target_type = "adresse e-mail" if "@" in clean_target else "numéro de téléphone"
+            raise AppException(
+                status_code=409,
+                code="ACCOUNT_ALREADY_EXISTS",
+                message=f"Un compte avec ce {target_type} existe déjà.",
+            )
+
     async def create_invited_user(
         self,
         created_by: str,
@@ -53,31 +68,14 @@ class IdentityAdminService:
         organization_id: str | None = None,
         is_verified_caregiver: bool = False,
         licence_number: str | None = None,
+        preferred_locale: str = "fr",
     ) -> tuple[User, Invitation, str]:
         """Admin creates user with 'invited' status and generates 7-day single-use token."""
         clean_target = phone_or_email.strip()
-        is_email = "@" in clean_target
-
-        if is_email:
-            existing = await self.repo.get_identity_by_email(clean_target)
-            if existing:
-                raise AppException(
-                    status_code=409,
-                    code="ACCOUNT_ALREADY_EXISTS",
-                    message="Un compte avec cette adresse e-mail existe déjà.",
-                )
-        else:
-            existing_phone = await self.repo.get_identity("phone", clean_target)
-            if existing_phone:
-                raise AppException(
-                    status_code=409,
-                    code="ACCOUNT_ALREADY_EXISTS",
-                    message="Un compte avec ce numéro de téléphone existe déjà.",
-                )
+        await self._ensure_target_available(clean_target)
 
         user = await self.repo.create_user(
-            display_name=display_name.strip(),
-            status="invited",
+            display_name=display_name.strip(), status="invited", preferred_locale=preferred_locale
         )
         await self.repo.assign_role(user.id, role)
 
@@ -92,25 +90,35 @@ class IdentityAdminService:
             )
 
         raw_token = secrets.token_urlsafe(32)
-        token_hash = hash_token(raw_token)
-        expires_at = datetime.now(UTC) + timedelta(days=7)
-
         inv = await self.admin_repo.create_invitation(
             created_by=created_by,
             user_id=user.id,
             role=role,
             phone_or_email=clean_target,
-            token_hash=token_hash,
-            expires_at=expires_at,
+            token_hash=hash_token(raw_token),
+            expires_at=datetime.now(UTC) + timedelta(days=7),
             organization_id=organization_id,
         )
-
+        email_tpl = render_template(
+            "emails",
+            "invitation",
+            locale=user.preferred_locale,
+            display_name=user.display_name or "",
+            role=role,
+            token=raw_token,
+        )
         await self.audit.log(
             action="admin_create_user_invitation",
             entity="user",
             actor_user_id=created_by,
             entity_id=user.id,
-            details={"role": role, "target": clean_target, "is_verified": is_verified_caregiver},
+            details={
+                "role": role,
+                "target": clean_target,
+                "is_verified": is_verified_caregiver,
+                "locale": user.preferred_locale,
+                "email_subject": email_tpl["subject"],
+            },
         )
         return user, inv, raw_token
 
@@ -130,6 +138,53 @@ class IdentityAdminService:
             "phone_or_email": inv.phone_or_email,
             "expires_at": inv.expires_at,
         }
+
+    async def _attach_invitation_identity(
+        self,
+        user_id: str,
+        method: str,
+        email: str | None,
+        password: str | None,
+        phone: str | None,
+        google_sub: str | None,
+        google_email: str | None,
+    ) -> None:
+        if method == "email":
+            if not email or not password or len(password) < 8:
+                raise ValidationError("Adresse e-mail et mot de passe (min. 8 car.) requis.")
+            clean_email = email.lower().strip()
+            pwd_hash = hash_password(password, rounds=self.settings.BCRYPT_ROUNDS)
+            await self.repo.create_identity(
+                user_id=user_id,
+                provider="email",
+                provider_subject=clean_email,
+                email=clean_email,
+                password_hash=pwd_hash,
+                email_verified=True,
+            )
+        elif method == "phone":
+            if not phone:
+                raise ValidationError("Numéro de téléphone requis.")
+            clean_phone = phone.strip()
+            await self.repo.create_identity(
+                user_id=user_id,
+                provider="phone",
+                provider_subject=clean_phone,
+                phone_e164=clean_phone,
+                phone_verified=True,
+            )
+        elif method == "google":
+            if not google_sub:
+                raise ValidationError("Identifiant Google requis.")
+            await self.repo.create_identity(
+                user_id=user_id,
+                provider="google",
+                provider_subject=google_sub,
+                email=google_email.lower().strip() if google_email else None,
+                email_verified=True,
+            )
+        else:
+            raise ValidationError(f"Méthode d'authentification inconnue : '{method}'.")
 
     async def accept_invitation(
         self,
@@ -155,46 +210,11 @@ class IdentityAdminService:
         if not user:
             raise NotFoundError(message="Compte invité introuvable.")
 
-        if method == "email":
-            if not email or not password or len(password) < 8:
-                raise ValidationError("Adresse e-mail et mot de passe (min. 8 car.) requis.")
-            clean_email = email.lower().strip()
-            pwd_hash = hash_password(password, rounds=self.settings.BCRYPT_ROUNDS)
-            await self.repo.create_identity(
-                user_id=user.id,
-                provider="email",
-                provider_subject=clean_email,
-                email=clean_email,
-                password_hash=pwd_hash,
-                email_verified=True,
-            )
-        elif method == "phone":
-            if not phone:
-                raise ValidationError("Numéro de téléphone requis.")
-            clean_phone = phone.strip()
-            await self.repo.create_identity(
-                user_id=user.id,
-                provider="phone",
-                provider_subject=clean_phone,
-                phone_e164=clean_phone,
-                phone_verified=True,
-            )
-        elif method == "google":
-            if not google_sub:
-                raise ValidationError("Identifiant Google requis.")
-            await self.repo.create_identity(
-                user_id=user.id,
-                provider="google",
-                provider_subject=google_sub,
-                email=google_email.lower().strip() if google_email else None,
-                email_verified=True,
-            )
-        else:
-            raise ValidationError(f"Méthode d'authentification inconnue : '{method}'.")
-
+        await self._attach_invitation_identity(
+            user.id, method, email, password, phone, google_sub, google_email
+        )
         await self.admin_repo.set_user_status(user.id, "active")
         await self.admin_repo.mark_invitation_accepted(inv.id)
-
         await self.audit.log(
             action="accept_invitation",
             entity="user",

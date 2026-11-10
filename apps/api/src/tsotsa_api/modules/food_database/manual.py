@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from decimal import Decimal
+from typing import Any
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -12,6 +13,7 @@ from tsotsa_api.modules.food_database.models import (
     FoodName,
     FoodNutrientValue,
     FoodRegion,
+    FoodTranslation,
     ImportBatch,
 )
 from tsotsa_api.modules.food_database.repository import FoodDatabaseRepository
@@ -20,16 +22,8 @@ from tsotsa_api.modules.food_database.validation import IngestionValidator
 from tsotsa_api.modules.nutrients.service import NutrientService
 
 
-async def create_manual_food_entry(
-    session: AsyncSession,
-    repo: FoodDatabaseRepository,
-    nutrient_service: NutrientService,
-    validator: IngestionValidator,
-    user_id: str,
-    payload: ManualFoodCreate,
-) -> Food:
-    """Validate and persist a manually keyed food item and composition."""
-    rows = [
+def _build_manual_validation_rows(payload: ManualFoodCreate) -> list[dict[str, Any]]:
+    return [
         {
             "food_name": payload.name,
             "category": payload.category or "",
@@ -44,6 +38,71 @@ async def create_manual_food_entry(
         }
         for n in payload.nutrients
     ]
+
+
+async def _attach_manual_food_relations(
+    session: AsyncSession,
+    repo: FoodDatabaseRepository,
+    nutrient_service: NutrientService,
+    food: Food,
+    batch_id: str,
+    user_id: str,
+    payload: ManualFoodCreate,
+) -> None:
+    if payload.name_en and payload.name_en.strip():
+        session.add(FoodTranslation(food_id=food.id, locale="en", name=payload.name_en.strip()))
+    for loc in payload.local_names:
+        session.add(
+            FoodName(
+                food_id=food.id,
+                language_or_dialect=loc.get("language", "local"),
+                name=loc["name"],
+            )
+        )
+    for reg_code in payload.regions:
+        reg = await repo.get_or_create_region(reg_code)
+        session.add(FoodRegion(food_id=food.id, region_id=reg.id))
+
+    source = await repo.find_or_create_source(
+        article_reference=payload.source.article_reference,
+        doi=payload.source.doi,
+        orkg_comparison_id=payload.source.orkg_comparison_id,
+        paper_title=payload.source.paper_title,
+        url=payload.source.url,
+    )
+    for n in payload.nutrients:
+        norm = await nutrient_service.normalize_and_validate(
+            raw_nutrient=n.nutrient,
+            raw_value=n.value,
+            raw_unit=n.unit,
+            sample_basis_g=Decimal("100.0"),
+        )
+        session.add(
+            FoodNutrientValue(
+                food_id=food.id,
+                nutrient_id=norm.nutrient_id or "",
+                value_per_100g=norm.normalized_value or Decimal("0.0"),
+                basis=n.basis,
+                sample_label=n.sample_label,
+                source_id=source.id,
+                batch_id=batch_id,
+                entered_by=user_id,
+                version=1,
+                is_current=True,
+            )
+        )
+
+
+async def create_manual_food_entry(
+    session: AsyncSession,
+    repo: FoodDatabaseRepository,
+    nutrient_service: NutrientService,
+    validator: IngestionValidator,
+    user_id: str,
+    payload: ManualFoodCreate,
+) -> Food:
+    """Validate and persist a manually keyed food item and composition."""
+    rows = _build_manual_validation_rows(payload)
     mapping = {k: k for k in rows[0].keys()}
     report = await validator.validate_rows("manual", f"manual_{payload.name}", rows, mapping)
     if report.rows_error > 0:
@@ -78,47 +137,8 @@ async def create_manual_food_entry(
     session.add(food)
     await session.flush()
 
-    for loc in payload.local_names:
-        session.add(
-            FoodName(
-                food_id=food.id,
-                language_or_dialect=loc.get("language", "local"),
-                name=loc["name"],
-            )
-        )
-
-    for reg_code in payload.regions:
-        reg = await repo.get_or_create_region(reg_code)
-        session.add(FoodRegion(food_id=food.id, region_id=reg.id))
-
-    source = await repo.find_or_create_source(
-        article_reference=payload.source.article_reference,
-        doi=payload.source.doi,
-        orkg_comparison_id=payload.source.orkg_comparison_id,
-        paper_title=payload.source.paper_title,
-        url=payload.source.url,
+    await _attach_manual_food_relations(
+        session, repo, nutrient_service, food, batch.id, user_id, payload
     )
-
-    for n in payload.nutrients:
-        norm = await nutrient_service.normalize_and_validate(
-            raw_nutrient=n.nutrient,
-            raw_value=n.value,
-            raw_unit=n.unit,
-            sample_basis_g=Decimal("100.0"),
-        )
-        val = FoodNutrientValue(
-            food_id=food.id,
-            nutrient_id=norm.nutrient_id or "",
-            value_per_100g=norm.normalized_value or Decimal("0.0"),
-            basis=n.basis,
-            sample_label=n.sample_label,
-            source_id=source.id,
-            batch_id=batch.id,
-            entered_by=user_id,
-            version=1,
-            is_current=True,
-        )
-        session.add(val)
-
     await session.flush()
     return food

@@ -247,7 +247,7 @@ export interface paths {
         };
         /**
          * Profil de l'utilisateur connecté
-         * @description Return identity and roles profile of current authenticated user.
+         * @description Return identity, roles, and preferred_locale of current authenticated user.
          */
         get: operations["get_me_v1_auth_me_get"];
         put?: never;
@@ -255,7 +255,35 @@ export interface paths {
         delete?: never;
         options?: never;
         head?: never;
-        patch?: never;
+        /**
+         * Mise à jour du profil et de la langue préférée
+         * @description Update preferred_locale and/or display_name of current authenticated user.
+         */
+        patch: operations["patch_me_v1_auth_me_patch"];
+        trace?: never;
+    };
+    "/v1/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Profil de l'utilisateur connecté
+         * @description Return identity, roles, and preferred_locale of current authenticated user.
+         */
+        get: operations["get_me_v1_me_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Mise à jour du profil et de la langue préférée
+         * @description Update preferred_locale and/or display_name of current authenticated user.
+         */
+        patch: operations["patch_me_v1_me_patch"];
         trace?: never;
     };
     "/v1/nutrients": {
@@ -3063,6 +3091,13 @@ export interface components {
             id: string;
             /** Name */
             name: string;
+            /**
+             * Original Name
+             * @default
+             */
+            original_name: string;
+            /** Name En */
+            name_en?: string | null;
             /** Kind */
             kind: string;
             /** Scientific Name */
@@ -3164,6 +3199,13 @@ export interface components {
             id: string;
             /** Name */
             name: string;
+            /**
+             * Original Name
+             * @default
+             */
+            original_name: string;
+            /** Name En */
+            name_en?: string | null;
             /** Kind */
             kind: string;
             /** Category */
@@ -3591,6 +3633,8 @@ export interface components {
         ManualFoodCreate: {
             /** Name */
             name: string;
+            /** Name En */
+            name_en?: string | null;
             /**
              * Kind
              * @default dish
@@ -3922,6 +3966,16 @@ export interface components {
             id: string;
             /** Code */
             code: string;
+            /**
+             * Name
+             * @default
+             */
+            name: string;
+            /**
+             * Original Name
+             * @default
+             */
+            original_name: string;
             /** Name Fr */
             name_fr: string;
             /** Name En */
@@ -3951,6 +4005,16 @@ export interface components {
             id: string;
             /** Code */
             code: string;
+            /**
+             * Name
+             * @default
+             */
+            name: string;
+            /**
+             * Original Name
+             * @default
+             */
+            original_name: string;
             /** Name Fr */
             name_fr: string;
             /** Name En */
@@ -4531,6 +4595,13 @@ export interface components {
             type: string;
             /** Name */
             name: string;
+            /**
+             * Original Name
+             * @default
+             */
+            original_name: string;
+            /** Name En */
+            name_en?: string | null;
             /** Base */
             base: string;
             /** Usage */
@@ -4607,6 +4678,13 @@ export interface components {
             type: string;
             /** Name */
             name: string;
+            /**
+             * Original Name
+             * @default
+             */
+            original_name: string;
+            /** Name En */
+            name_en?: string | null;
             /** Base */
             base: string;
             /** Usage */
@@ -4629,6 +4707,8 @@ export interface components {
         ReferenceProductCreate: {
             /** Name */
             name: string;
+            /** Name En */
+            name_en?: string | null;
             /**
              * Base
              * @default 100g
@@ -4668,6 +4748,8 @@ export interface components {
         ReferenceProductUpdate: {
             /** Name */
             name?: string | null;
+            /** Name En */
+            name_en?: string | null;
             /** Base */
             base?: string | null;
             /** Usage */
@@ -4853,6 +4935,12 @@ export interface components {
             display_name: string;
             /** Language */
             language: string;
+            /**
+             * Preferred Locale
+             * @default fr
+             * @enum {string}
+             */
+            preferred_locale: "fr" | "en";
             /** Status */
             status: string;
             /** Roles */
@@ -4862,6 +4950,16 @@ export interface components {
              * @default false
              */
             is_verified_caregiver: boolean;
+        };
+        /**
+         * UserProfileUpdateRequest
+         * @description Payload to update the current authenticated user's profile.
+         */
+        UserProfileUpdateRequest: {
+            /** Preferred Locale */
+            preferred_locale?: ("fr" | "en") | null;
+            /** Display Name */
+            display_name?: string | null;
         };
         /**
          * UserRegionPreferenceRead
@@ -5298,13 +5396,101 @@ export interface operations {
             };
         };
     };
+    patch_me_v1_auth_me_patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UserProfileUpdateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserProfileResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_me_v1_me_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserProfileResponse"];
+                };
+            };
+        };
+    };
+    patch_me_v1_me_patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UserProfileUpdateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserProfileResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     list_nutrients_v1_nutrients_get: {
         parameters: {
             query?: {
                 /** @description Filtrer uniquement les nutriments suivis */
                 tracked_only?: boolean;
             };
-            header?: never;
+            header?: {
+                "Accept-Language"?: string | null;
+            };
             path?: never;
             cookie?: never;
         };
@@ -5333,7 +5519,9 @@ export interface operations {
     get_nutrient_v1_nutrients__code__get: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                "Accept-Language"?: string | null;
+            };
             path: {
                 code: string;
             };
@@ -5549,7 +5737,9 @@ export interface operations {
     create_manual_food_v1_admin_foods_post: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                "Accept-Language"?: string | null;
+            };
             path?: never;
             cookie?: never;
         };
@@ -5593,7 +5783,9 @@ export interface operations {
                 /** @description Items per page */
                 limit?: number;
             };
-            header?: never;
+            header?: {
+                "Accept-Language"?: string | null;
+            };
             path?: never;
             cookie?: never;
         };
@@ -5622,7 +5814,9 @@ export interface operations {
     get_published_food_detail_v1_foods__food_id__get: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                "Accept-Language"?: string | null;
+            };
             path: {
                 food_id: string;
             };
@@ -5653,7 +5847,9 @@ export interface operations {
     list_products_v1_products_get: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                "Accept-Language"?: string | null;
+            };
             path?: never;
             cookie?: never;
         };
@@ -5668,12 +5864,23 @@ export interface operations {
                     "application/json": components["schemas"]["ProductSummaryRead"][];
                 };
             };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
         };
     };
     get_product_v1_products__product_id__get: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                "Accept-Language"?: string | null;
+            };
             path: {
                 product_id: string;
             };
@@ -5704,7 +5911,9 @@ export interface operations {
     list_admin_reference_products_v1_admin_reference_products_get: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                "Accept-Language"?: string | null;
+            };
             path?: never;
             cookie?: never;
         };
@@ -5717,6 +5926,15 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ProductSummaryRead"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

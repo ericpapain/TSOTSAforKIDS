@@ -35,6 +35,8 @@ class NutrientRead(BaseModel):
 
     id: str
     code: str
+    name: str = ""
+    original_name: str = ""
     name_fr: str
     name_en: str | None = None
     category: str

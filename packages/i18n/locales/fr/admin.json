@@ -125,6 +125,8 @@
     "pageTitle": "Nouvel aliment · saisie manuelle — Administration | TSOTSA Kids",
     "title": "Nouvel aliment · saisie manuelle",
     "nameLabel": "Nom",
+    "nameEnLabel": "Nom anglais (facultatif)",
+    "nameEnPlaceholder": "[ex. Peanut]",
     "localNameLabel": "Nom local",
     "localNamePlaceholder": "[nom local]",
     "categoryLabel": "Catégorie",

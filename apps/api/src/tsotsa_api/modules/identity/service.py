@@ -67,7 +67,6 @@ class IdentityService:
                 message="Google email address must be verified.",
                 details={"reason": "unverified_google_email"},
             )
-
         google_sub = payload["sub"]
         email = payload.get("email")
         display_name = payload.get("name") or (email.split("@")[0] if email else "Utilisateur")
@@ -87,23 +86,34 @@ class IdentityService:
                 email_verified=True,
             )
             await self.repository.assign_role(user.id, "user")
-
         return await self.tokens.issue_tokens(user, device_label="Google Auth")
 
     async def request_phone_otp(
-        self, phone_e164: str, ip_address: str = "127.0.0.1"
+        self, phone_e164: str, ip_address: str = "127.0.0.1", locale: str | None = None
     ) -> OtpRequestResponse:
-        """Rate limit, generate 6-digit OTP code, and dispatch SMS."""
+        """Rate limit, generate 6-digit OTP code, and dispatch SMS in recipient locale."""
         RateLimiter.check_limit(f"ip:{ip_address}", max_attempts=5, window_seconds=60)
         RateLimiter.check_limit(f"phone:{phone_e164}", max_attempts=3, window_seconds=120)
 
         code = generate_numeric_otp(6)
         expires_at = datetime.now(UTC) + timedelta(minutes=self.settings.OTP_TTL_MINUTES)
         await self.repository.create_otp(phone_e164, hash_token(code), expires_at)
-        await self.otp_sender.send_otp(phone_e164, code)
 
+        recipient_locale = locale
+        if not recipient_locale:
+            identity = await self.repository.get_identity("phone", phone_e164)
+            if identity:
+                user = await self.repository.get_user_by_id(identity.user_id)
+                if user:
+                    recipient_locale = user.preferred_locale
+        await self.otp_sender.send_otp(phone_e164, code, locale=recipient_locale or "fr")
+        msg = (
+            "A confirmation code has been sent by SMS."
+            if recipient_locale == "en"
+            else "Un code de confirmation a été envoyé par SMS."
+        )
         return OtpRequestResponse(
-            message="Un code de confirmation a été envoyé par SMS.",
+            message=msg,
             expires_in_seconds=self.settings.OTP_TTL_MINUTES * 60,
         )
 
@@ -209,7 +219,6 @@ class IdentityService:
                 message="Adresse e-mail ou mot de passe incorrect.",
                 details={"reason": "invalid_credentials"},
             )
-
         user = await self.repository.get_user_by_id(identity.user_id)
         if not user or user.status != "active":
             raise UnauthorizedError(
@@ -218,7 +227,6 @@ class IdentityService:
         return await self.tokens.issue_tokens(user, device_label="Email Auth")
 
     async def verify_email_token(self, token_str: str) -> None:
-        """Verify an email verification token."""
         token = await self.repository.get_valid_email_token(hash_token(token_str), "verify")
         if not token:
             raise NotFoundError(
@@ -229,7 +237,6 @@ class IdentityService:
         await self.repository.mark_email_verified(token.user_identity_id)
 
     async def request_password_reset(self, email: str, ip_address: str = "127.0.0.1") -> str | None:
-        """Generate a password reset token if account exists."""
         clean_email = email.lower().strip()
         RateLimiter.check_limit(f"ip:{ip_address}", max_attempts=5, window_seconds=60)
         RateLimiter.check_limit(f"email:{clean_email}", max_attempts=3, window_seconds=60)
@@ -248,7 +255,6 @@ class IdentityService:
     async def reset_password(
         self, token_str: str, new_password: str, ip_address: str = "127.0.0.1"
     ) -> None:
-        """Reset password using a valid reset token."""
         RateLimiter.check_limit(f"ip:{ip_address}", max_attempts=5, window_seconds=60)
         token = await self.repository.get_valid_email_token(hash_token(token_str), "reset")
         if not token:
@@ -263,11 +269,9 @@ class IdentityService:
             await self.repository.revoke_all_user_refresh_tokens(token.user_identity.user_id)
 
     async def refresh_access_token(self, refresh_token_str: str) -> TokenResponse:
-        """Rotate refresh token and issue new access token."""
         return await self.tokens.refresh_access_token(refresh_token_str)
 
     async def revoke_refresh_token(self, refresh_token_str: str) -> None:
-        """Revoke a refresh token on user logout."""
         await self.tokens.revoke_refresh_token(refresh_token_str)
 
     async def attach_caregiver_to_organization(

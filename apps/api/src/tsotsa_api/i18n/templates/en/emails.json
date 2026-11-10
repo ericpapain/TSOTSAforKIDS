@@ -1,0 +1,15 @@
+{
+  "invitation": {
+    "subject": "Invitation to join TSOTSA Kids",
+    "body": "Hello {display_name}, you have been invited to join TSOTSA Kids as {role}. Use your invitation link: {token}"
+  },
+  "password_reset": {
+    "subject": "Reset your TSOTSA Kids password",
+    "body": "To reset your password, use this link valid for 30 minutes: {token}"
+  },
+  "email_verify": {
+    "subject": "Verify your TSOTSA Kids email address",
+    "body": "Hello {display_name}, please confirm your email address with this link: {token}"
+  }
+}
+

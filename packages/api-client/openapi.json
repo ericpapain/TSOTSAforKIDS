@@ -480,7 +480,7 @@
           "auth"
         ],
         "summary": "Profil de l'utilisateur connect\u00e9",
-        "description": "Return identity and roles profile of current authenticated user.",
+        "description": "Return identity, roles, and preferred_locale of current authenticated user.",
         "operationId": "get_me_v1_auth_me_get",
         "responses": {
           "200": {
@@ -489,6 +489,123 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/UserProfileResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "patch": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Mise \u00e0 jour du profil et de la langue pr\u00e9f\u00e9r\u00e9e",
+        "description": "Update preferred_locale and/or display_name of current authenticated user.",
+        "operationId": "patch_me_v1_auth_me_patch",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserProfileUpdateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserProfileResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/me": {
+      "get": {
+        "tags": [
+          "profile"
+        ],
+        "summary": "Profil de l'utilisateur connect\u00e9",
+        "description": "Return identity, roles, and preferred_locale of current authenticated user.",
+        "operationId": "get_me_v1_me_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserProfileResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "patch": {
+        "tags": [
+          "profile"
+        ],
+        "summary": "Mise \u00e0 jour du profil et de la langue pr\u00e9f\u00e9r\u00e9e",
+        "description": "Update preferred_locale and/or display_name of current authenticated user.",
+        "operationId": "patch_me_v1_me_patch",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserProfileUpdateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserProfileResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
                 }
               }
             }
@@ -509,6 +626,11 @@
         "summary": "List Nutrients",
         "description": "Retrieve canonical nutrients.",
         "operationId": "list_nutrients_v1_nutrients_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "parameters": [
           {
             "name": "tracked_only",
@@ -521,6 +643,22 @@
               "title": "Tracked Only"
             },
             "description": "Filtrer uniquement les nutriments suivis"
+          },
+          {
+            "name": "Accept-Language",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Accept-Language"
+            }
           }
         ],
         "responses": {
@@ -559,6 +697,11 @@
         "summary": "Get Nutrient",
         "description": "Retrieve detailed description of a specific nutrient by its canonical code.",
         "operationId": "get_nutrient_v1_nutrients__code__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "parameters": [
           {
             "name": "code",
@@ -567,6 +710,22 @@
             "schema": {
               "type": "string",
               "title": "Code"
+            }
+          },
+          {
+            "name": "Accept-Language",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Accept-Language"
             }
           }
         ],
@@ -886,15 +1045,38 @@
         "summary": "Create Manual Food",
         "description": "Manually enter food item and composition through identical quality controls.",
         "operationId": "create_manual_food_v1_admin_foods_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "Accept-Language",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Accept-Language"
+            }
+          }
+        ],
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/ManualFoodCreate"
               }
             }
-          },
-          "required": true
+          }
         },
         "responses": {
           "201": {
@@ -917,12 +1099,7 @@
               }
             }
           }
-        },
-        "security": [
-          {
-            "HTTPBearer": []
-          }
-        ]
+        }
       }
     },
     "/v1/foods": {
@@ -933,6 +1110,11 @@
         "summary": "Search Published Foods",
         "description": "Retrieve published food catalog with pagination and filters.",
         "operationId": "search_published_foods_v1_foods_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "parameters": [
           {
             "name": "q",
@@ -1014,6 +1196,22 @@
               "title": "Limit"
             },
             "description": "Items per page"
+          },
+          {
+            "name": "Accept-Language",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Accept-Language"
+            }
           }
         ],
         "responses": {
@@ -1048,6 +1246,11 @@
         "summary": "Get Published Food Detail",
         "description": "Retrieve full details of a published food item.",
         "operationId": "get_published_food_detail_v1_foods__food_id__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "parameters": [
           {
             "name": "food_id",
@@ -1056,6 +1259,22 @@
             "schema": {
               "type": "string",
               "title": "Food Id"
+            }
+          },
+          {
+            "name": "Accept-Language",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Accept-Language"
             }
           }
         ],
@@ -1091,27 +1310,55 @@
         "summary": "List Products",
         "description": "List validated reference products, published custom products, and user's custom products.",
         "operationId": "list_products_v1_products_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "Accept-Language",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Accept-Language"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful Response",
             "content": {
               "application/json": {
                 "schema": {
+                  "type": "array",
                   "items": {
                     "$ref": "#/components/schemas/ProductSummaryRead"
                   },
-                  "type": "array",
                   "title": "Response List Products V1 Products Get"
                 }
               }
             }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
           }
-        },
-        "security": [
-          {
-            "HTTPBearer": []
-          }
-        ]
+        }
       }
     },
     "/v1/products/{product_id}": {
@@ -1135,6 +1382,22 @@
             "schema": {
               "type": "string",
               "title": "Product Id"
+            }
+          },
+          {
+            "name": "Accept-Language",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Accept-Language"
             }
           }
         ],
@@ -1163,35 +1426,6 @@
       }
     },
     "/v1/admin/reference-products": {
-      "get": {
-        "tags": [
-          "admin-reference-products"
-        ],
-        "summary": "List Admin Reference Products",
-        "description": "List all reference products (all statuses) for administration.",
-        "operationId": "list_admin_reference_products_v1_admin_reference_products_get",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "items": {
-                    "$ref": "#/components/schemas/ProductSummaryRead"
-                  },
-                  "type": "array",
-                  "title": "Response List Admin Reference Products V1 Admin Reference Products Get"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "HTTPBearer": []
-          }
-        ]
-      },
       "post": {
         "tags": [
           "admin-reference-products"
@@ -1199,15 +1433,20 @@
         "summary": "Create Reference Product",
         "description": "Create a reference product (restricted to administration, requires source).",
         "operationId": "create_reference_product_v1_admin_reference_products_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/ReferenceProductCreate"
               }
             }
-          },
-          "required": true
+          }
         },
         "responses": {
           "201": {
@@ -1230,12 +1469,64 @@
               }
             }
           }
-        },
+        }
+      },
+      "get": {
+        "tags": [
+          "admin-reference-products"
+        ],
+        "summary": "List Admin Reference Products",
+        "description": "List all reference products (all statuses) for administration.",
+        "operationId": "list_admin_reference_products_v1_admin_reference_products_get",
         "security": [
           {
             "HTTPBearer": []
           }
-        ]
+        ],
+        "parameters": [
+          {
+            "name": "Accept-Language",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Accept-Language"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ProductSummaryRead"
+                  },
+                  "title": "Response List Admin Reference Products V1 Admin Reference Products Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/v1/admin/reference-products/{product_id}": {
@@ -8812,6 +9103,22 @@
             "type": "string",
             "title": "Name"
           },
+          "original_name": {
+            "type": "string",
+            "title": "Original Name",
+            "default": ""
+          },
+          "name_en": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name En"
+          },
           "kind": {
             "type": "string",
             "title": "Kind"
@@ -9075,6 +9382,22 @@
           "name": {
             "type": "string",
             "title": "Name"
+          },
+          "original_name": {
+            "type": "string",
+            "title": "Original Name",
+            "default": ""
+          },
+          "name_en": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name En"
           },
           "kind": {
             "type": "string",
@@ -10190,6 +10513,17 @@
             "type": "string",
             "title": "Name"
           },
+          "name_en": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name En"
+          },
           "kind": {
             "type": "string",
             "title": "Kind",
@@ -10918,6 +11252,16 @@
             "type": "string",
             "title": "Code"
           },
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "default": ""
+          },
+          "original_name": {
+            "type": "string",
+            "title": "Original Name",
+            "default": ""
+          },
           "name_fr": {
             "type": "string",
             "title": "Name Fr"
@@ -10996,6 +11340,16 @@
           "code": {
             "type": "string",
             "title": "Code"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "default": ""
+          },
+          "original_name": {
+            "type": "string",
+            "title": "Original Name",
+            "default": ""
           },
           "name_fr": {
             "type": "string",
@@ -12369,6 +12723,22 @@
             "type": "string",
             "title": "Name"
           },
+          "original_name": {
+            "type": "string",
+            "title": "Original Name",
+            "default": ""
+          },
+          "name_en": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name En"
+          },
           "base": {
             "type": "string",
             "title": "Base"
@@ -12595,6 +12965,22 @@
             "type": "string",
             "title": "Name"
           },
+          "original_name": {
+            "type": "string",
+            "title": "Original Name",
+            "default": ""
+          },
+          "name_en": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name En"
+          },
           "base": {
             "type": "string",
             "title": "Base"
@@ -12677,6 +13063,17 @@
             "maxLength": 200,
             "minLength": 1,
             "title": "Name"
+          },
+          "name_en": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name En"
           },
           "base": {
             "type": "string",
@@ -12763,6 +13160,17 @@
               }
             ],
             "title": "Name"
+          },
+          "name_en": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name En"
           },
           "base": {
             "anyOf": [
@@ -13230,6 +13638,15 @@
             "type": "string",
             "title": "Language"
           },
+          "preferred_locale": {
+            "type": "string",
+            "enum": [
+              "fr",
+              "en"
+            ],
+            "title": "Preferred Locale",
+            "default": "fr"
+          },
           "status": {
             "type": "string",
             "title": "Status"
@@ -13256,6 +13673,41 @@
         ],
         "title": "UserProfileResponse",
         "description": "Public user identity and profile view."
+      },
+      "UserProfileUpdateRequest": {
+        "properties": {
+          "preferred_locale": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "fr",
+                  "en"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Preferred Locale"
+          },
+          "display_name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 150,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Display Name"
+          }
+        },
+        "type": "object",
+        "title": "UserProfileUpdateRequest",
+        "description": "Payload to update the current authenticated user's profile."
       },
       "UserRegionPreferenceRead": {
         "properties": {

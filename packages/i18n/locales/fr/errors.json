@@ -1,4 +1,35 @@
 {
+  "generic": "Une erreur inattendue est survenue. Veuillez réessayer.",
+  "auth": {
+    "otp_expired": "Le code de confirmation a expiré ou est introuvable. Veuillez en demander un nouveau.",
+    "otp_invalid": "Le code de confirmation saisi est incorrect.",
+    "otp_max_attempts": "Nombre maximal de tentatives dépassé. Veuillez demander un nouveau code.",
+    "email_already_exists": "Cette adresse e-mail est déjà associée à un compte.",
+    "account_already_exists": "Un compte avec ces coordonnées existe déjà.",
+    "caregiver_not_verified": "Votre profil soignant n'est pas encore vérifié par l'administration.",
+    "rate_limit_exceeded": "Trop de tentatives. Veuillez patienter avant de réessayer.",
+    "unauthorized": "Authentification requise pour accéder à cette ressource.",
+    "forbidden": "Vous n'avez pas les autorisations nécessaires pour cette action.",
+    "invalid_credentials": "Identifiants incorrects. Veuillez vérifier votre saisie.",
+    "invalid_google_token": "Jeton Google invalide ou expiré.",
+    "unverified_google_email": "Votre adresse e-mail Google doit être vérifiée.",
+    "inactive_user": "Ce compte est inactif ou suspendu.",
+    "invalid_token": "Le lien ou jeton est invalide ou expiré.",
+    "invitation_expired": "Cette invitation a expiré."
+  },
+  "common": {
+    "not_found": "La ressource demandée est introuvable.",
+    "validation_error": "Les données envoyées sont invalides ou incomplètes.",
+    "service_unavailable": "Le service est temporairement indisponible. Veuillez réessayer plus tard.",
+    "internal_error": "Une erreur interne est survenue sur le serveur."
+  },
+  "food": {
+    "missing_source": "Une source bibliographique ou ORKG est obligatoire.",
+    "self_review_forbidden": "Interdiction de valider son propre lot : une relecture par une autre personne est requise."
+  },
+  "region": {
+    "already_exists": "Cette région existe déjà dans le système."
+  },
   "import": {
     "rowChecks": {
       "VALID": "✓ valide",

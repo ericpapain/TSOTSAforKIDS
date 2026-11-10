@@ -7,6 +7,7 @@ from datetime import UTC, datetime
 from sqlalchemy import (
     CheckConstraint,
     DateTime,
+    Enum,
     ForeignKey,
     Index,
     Integer,
@@ -27,6 +28,12 @@ class User(Base):
     id: Mapped[str] = mapped_column(BinaryUUID, primary_key=True, default=generate_uuid7)
     display_name: Mapped[str] = mapped_column(String(150), nullable=False)
     language: Mapped[str] = mapped_column(String(10), default="fr", nullable=False)
+    preferred_locale: Mapped[str] = mapped_column(
+        Enum("fr", "en", name="user_preferred_locale_enum"),
+        default="fr",
+        server_default="fr",
+        nullable=False,
+    )
     preferred_region_id: Mapped[str | None] = mapped_column(
         BinaryUUID, ForeignKey("regions.id"), nullable=True, index=True
     )

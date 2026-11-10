@@ -125,6 +125,8 @@
     "pageTitle": "New food · manual entry — Administration | TSOTSA Kids",
     "title": "New food · manual entry",
     "nameLabel": "Name",
+    "nameEnLabel": "English name (optional)",
+    "nameEnPlaceholder": "[e.g. Peanut]",
     "localNameLabel": "Local name",
     "localNamePlaceholder": "[local name]",
     "categoryLabel": "Category",
