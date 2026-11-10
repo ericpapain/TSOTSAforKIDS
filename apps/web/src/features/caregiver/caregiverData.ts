@@ -1,5 +1,6 @@
 import type {
   AlertItem,
+  CaregiverDoctor,
   CaregiverNotification,
   EvaluationRecord,
   FollowedPerson,
@@ -7,6 +8,37 @@ import type {
   PersonNotificationSettings,
   ScheduledEval,
 } from "./types";
+
+export const initialCaregiverDoctors: CaregiverDoctor[] = [
+  {
+    id: "doc-felicite",
+    name: "Prof. Félicité Ngeufack",
+    specialty: "Pédiatrie & Nutrition",
+    facility: "CMA de Kousséri",
+    patientCount: 2,
+  },
+  {
+    id: "doc-eboule",
+    name: "Dr. Samuel Eboule",
+    specialty: "Médecine générale & Santé publique",
+    facility: "Hôpital Régional de Maroua",
+    patientCount: 1,
+  },
+  {
+    id: "doc-bello",
+    name: "Dr. Aïssatou Bello",
+    specialty: "Pédiatrie hospitalière",
+    facility: "Hôpital Régional de Garoua",
+    patientCount: 1,
+  },
+  {
+    id: "doc-mbida",
+    name: "Dr. Christian Mbida",
+    specialty: "Nutrition clinique",
+    facility: "CMA de Kousséri",
+    patientCount: 0,
+  },
+];
 
 export const initialFollowedPersons: FollowedPerson[] = [
   {
@@ -22,6 +54,8 @@ export const initialFollowedPersons: FollowedPerson[] = [
     lastEvaluation: "29/10/2026",
     pb: 121,
     zScore: -1.83,
+    assignedDoctorId: "doc-felicite",
+    assignedDoctorName: "Prof. Félicité Ngeufack",
   },
   {
     id: "M-008",
@@ -36,6 +70,8 @@ export const initialFollowedPersons: FollowedPerson[] = [
     lastEvaluation: "27/10/2026",
     pb: 111,
     zScore: -3.2,
+    assignedDoctorId: "doc-eboule",
+    assignedDoctorName: "Dr. Samuel Eboule",
   },
   {
     id: "F-022",
@@ -50,6 +86,8 @@ export const initialFollowedPersons: FollowedPerson[] = [
     lastEvaluation: "28/10/2026",
     pb: 118,
     zScore: -2.15,
+    assignedDoctorId: "doc-bello",
+    assignedDoctorName: "Dr. Aïssatou Bello",
   },
   {
     id: "I-003",
@@ -64,6 +102,8 @@ export const initialFollowedPersons: FollowedPerson[] = [
     lastEvaluation: "10/10/2026",
     pb: 128,
     zScore: -1.2,
+    assignedDoctorId: "doc-felicite",
+    assignedDoctorName: "Prof. Félicité Ngeufack",
   },
 ];
 

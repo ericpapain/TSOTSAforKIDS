@@ -4,31 +4,44 @@ import { useTranslation } from "react-i18next";
 import { formatNumber, formatDate, normalizeLocale, DEFAULT_LOCALE } from "@tsotsa/i18n";
 import "../../i18n/setup";
 import { Button, DataTable, type DataTableColumn } from "../../components";
-import { initialFollowedPersons } from "../../features/caregiver/caregiverData";
 import { parseFrenchDate } from "../../features/caregiver/evaluationCalculator";
 import type { FollowedPerson } from "../../features/caregiver/types";
+import { useCaregiverStore } from "../../features/caregiver/useCaregiverStore";
+import { ReassignDoctorModal } from "./ReassignDoctorModal";
+import { SuperCaregiverBar } from "./SuperCaregiverBar";
 
 export function FollowedPersonsPage(): React.JSX.Element {
   const { t, i18n } = useTranslation("caregiver");
   const { t: tMedical } = useTranslation("medical");
   const locale = normalizeLocale(i18n.resolvedLanguage ?? i18n.language) ?? DEFAULT_LOCALE;
   const navigate = useNavigate();
+
+  const {
+    persons,
+    doctors,
+    isSuperCaregiver,
+    setSuperCaregiver,
+    reassignPatient,
+  } = useCaregiverStore();
+
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [selectedPersonForReassign, setSelectedPersonForReassign] = useState<FollowedPerson | null>(null);
+  const [successToast, setSuccessToast] = useState<string | null>(null);
 
   useEffect(() => {
     document.title = t("persons.pageTitle");
   }, [t]);
 
   const filteredData = useMemo(() => {
-    return initialFollowedPersons.filter((p) => {
+    return persons.filter((p) => {
       const matchesSearch =
         p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         p.code.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesStatus = statusFilter === "all" || p.status === statusFilter;
       return matchesSearch && matchesStatus;
     });
-  }, [searchTerm, statusFilter]);
+  }, [persons, searchTerm, statusFilter]);
 
   const formatAge = (rawAge: string): string => {
     const match = /^(\d+)/.exec(rawAge);
@@ -57,23 +70,38 @@ export function FollowedPersonsPage(): React.JSX.Element {
     return tMedical("status.postSam");
   };
 
+  const handleConfirmReassign = (personId: string, toDoctorId: string, reason: string) => {
+    const success = reassignPatient(personId, toDoctorId, reason);
+    if (success) {
+      const targetDoc = doctors.find((d) => d.id === toDoctorId);
+      const targetPerson = persons.find((p) => p.id === personId);
+      setSuccessToast(
+        t("persons.reassignModal.successToast", {
+          code: targetPerson?.code || personId,
+          doctor: targetDoc?.name || toDoctorId,
+        })
+      );
+      setTimeout(() => setSuccessToast(null), 4000);
+    }
+  };
+
   const columns: DataTableColumn<FollowedPerson>[] = [
     {
       key: "code",
       header: t("persons.columns.code"),
-      width: "120px",
+      width: "110px",
       render: (row) => <span className="font-mono font-bold text-care">{row.code}</span>,
     },
     {
       key: "name",
       header: t("persons.columns.name"),
-      width: "140px",
+      width: "130px",
       render: (row) => <span className="font-bold text-text">{row.name}</span>,
     },
     {
       key: "age",
       header: t("persons.columns.ageGender"),
-      width: "130px",
+      width: "120px",
       render: (row) => <span>{`${formatAge(row.age)} · ${row.gender}`}</span>,
     },
     {
@@ -82,6 +110,16 @@ export function FollowedPersonsPage(): React.JSX.Element {
       render: (row) => (
         <span className="text-13">
           {`${formatRegion(row.region)} · ${formatFacility(row.facility)}`}
+        </span>
+      ),
+    },
+    {
+      key: "doctor",
+      header: t("persons.columns.doctor", "Médecin référent"),
+      width: "160px",
+      render: (row) => (
+        <span className="font-semibold text-13 text-[#1B4D7E]">
+          {row.assignedDoctorName || "Prof. Félicité Ngeufack"}
         </span>
       ),
     },
@@ -115,7 +153,7 @@ export function FollowedPersonsPage(): React.JSX.Element {
     {
       key: "lastEvaluation",
       header: t("persons.columns.lastEvaluation"),
-      width: "140px",
+      width: "130px",
       render: (row) => (
         <span>
           {formatDate(parseFrenchDate(row.lastEvaluation), locale, {
@@ -130,19 +168,28 @@ export function FollowedPersonsPage(): React.JSX.Element {
     {
       key: "actions",
       header: t("persons.columns.actions"),
-      width: "110px",
+      width: isSuperCaregiver ? "180px" : "110px",
       render: (row) => (
-        <Button
-          variant="outline"
-          size="sm"
-          data-testid={`view-person-${row.id}`}
-          onClick={(e) => {
-            e.stopPropagation();
-            navigate(`/soignant/personnes/${row.id}`);
-          }}
-        >
-          {t("persons.recordBtn")}
-        </Button>
+        <div className="flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
+          <Button
+            variant="outline"
+            size="sm"
+            data-testid={`view-person-${row.id}`}
+            onClick={() => navigate(`/soignant/personnes/${row.id}`)}
+          >
+            {t("persons.recordBtn")}
+          </Button>
+          {isSuperCaregiver && (
+            <button
+              type="button"
+              data-testid={`reassign-btn-${row.id}`}
+              onClick={() => setSelectedPersonForReassign(row)}
+              className="px-2.5 py-1 text-[11px] font-bold bg-[#EBF3FB] text-[#1B4D7E] hover:bg-[#D4E6F8] rounded transition-colors"
+            >
+              {t("persons.reassign", "Réattribuer")}
+            </button>
+          )}
+        </div>
       ),
     },
   ];
@@ -160,6 +207,20 @@ export function FollowedPersonsPage(): React.JSX.Element {
           {t("persons.newAdmissionBtn")}
         </Button>
       </div>
+
+      <SuperCaregiverBar
+        isSuperCaregiver={isSuperCaregiver}
+        onToggle={() => setSuperCaregiver(!isSuperCaregiver)}
+      />
+
+      {successToast && (
+        <div
+          data-testid="reassign-success-toast"
+          className="p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 text-[13px] font-bold rounded-lg"
+        >
+          {successToast}
+        </div>
+      )}
 
       {/* Filter and search bar */}
       <div className="flex flex-wrap items-center gap-3">
@@ -185,15 +246,6 @@ export function FollowedPersonsPage(): React.JSX.Element {
           <option value="MAS">{tMedical("status.sam")}</option>
           <option value="Suivi post-MAS">{tMedical("status.postSam")}</option>
         </select>
-        <span className="px-3 py-2 text-13 bg-surface-2 border border-border rounded-input text-text-muted cursor-pointer select-none">
-          {t("persons.regionFilter")}
-        </span>
-        <span className="px-3 py-2 text-13 bg-surface-2 border border-border rounded-input text-text-muted cursor-pointer select-none">
-          {t("persons.facilityFilter")}
-        </span>
-        <span className="px-3 py-2 text-13 bg-surface-2 border border-border rounded-input text-text-muted cursor-pointer select-none">
-          {t("persons.ageFilter")}
-        </span>
       </div>
 
       <DataTable
@@ -203,6 +255,14 @@ export function FollowedPersonsPage(): React.JSX.Element {
         keyExtractor={(row) => row.id}
         space="care"
         onRowClick={(row) => navigate(`/soignant/personnes/${row.id}`)}
+      />
+
+      <ReassignDoctorModal
+        person={selectedPersonForReassign}
+        isOpen={!!selectedPersonForReassign}
+        doctors={doctors}
+        onClose={() => setSelectedPersonForReassign(null)}
+        onConfirm={handleConfirmReassign}
       />
     </div>
   );

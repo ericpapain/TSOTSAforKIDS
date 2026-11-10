@@ -12,6 +12,17 @@ export interface SecondParentInvite {
   invitedAt: string;
 }
 
+export interface DoctorReport {
+  id: string;
+  date: string;
+  doctorName: string;
+  facility: string;
+  title: string;
+  targetWeightKg: number;
+  prescription: string;
+  observations: string;
+}
+
 export interface ChildMember {
   id: string;
   code: string;
@@ -25,6 +36,10 @@ export interface ChildMember {
   edema: EdemaGrade;
   status: ChildStatus;
   facilityName: string;
+  doctorId?: string;
+  doctorName?: string;
+  doctorFacility?: string;
+  doctorReports?: DoctorReport[];
   lastIntakeTime?: string;
   hasConsent: boolean;
   secondParentInvite?: SecondParentInvite;
@@ -69,3 +84,4 @@ export interface UserSettings {
   quietHoursEnd: string;
   preferredChannel: "web" | "sms" | "email";
 }
+

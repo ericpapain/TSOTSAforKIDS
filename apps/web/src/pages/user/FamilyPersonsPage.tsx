@@ -142,6 +142,10 @@ export const FamilyPersonsPage: React.FC = () => {
                   {/* Info row */}
                   <div className="space-y-1.5 text-[12px] text-[#5B6B66] mb-4">
                     <div className="flex justify-between">
+                      <span>{t("mobile:profile.attendingDoctor", "Médecin")} :</span>
+                      <span className="font-bold text-primary">{child.doctorName || "Prof. Félicité Ngeufack"}</span>
+                    </div>
+                    <div className="flex justify-between">
                       <span>{t("mobile:profile.facility", "Centre")} :</span>
                       <span className="font-bold text-[#17302A]">{child.facilityName}</span>
                     </div>

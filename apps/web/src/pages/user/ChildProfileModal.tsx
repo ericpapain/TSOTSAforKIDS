@@ -1,6 +1,6 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { FaTimes, FaWeight, FaRulerVertical, FaHeartbeat, FaUserFriends, FaCheckCircle } from "react-icons/fa";
+import { FaTimes, FaWeight, FaRulerVertical, FaHeartbeat, FaUserFriends, FaCheckCircle, FaUserMd, FaFileMedical } from "react-icons/fa";
 import type { ChildMember } from "../../features/user/types";
 import { useUserStore } from "../../features/user/useUserStore";
 
@@ -156,6 +156,48 @@ export const ChildProfileModal: React.FC<ChildProfileModalProps> = ({
                 </button>
               )}
             </div>
+          </div>
+
+          {/* Attending Doctor & Reports */}
+          <div className="p-3.5 rounded-xl bg-[#EDF5F2] border border-[#C5DDD3] space-y-2.5">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <FaUserMd className="text-primary text-[15px]" />
+                <span className="text-[12px] font-bold text-primary uppercase tracking-wide">
+                  {t("mobile:profile.attendingDoctor", "Médecin référent")}
+                </span>
+              </div>
+              <span className="text-[12px] font-bold text-[#17302A]">
+                {child.doctorName || "Prof. Félicité Ngeufack"}
+              </span>
+            </div>
+
+            {child.doctorReports && child.doctorReports.length > 0 && (
+              <div className="space-y-2 pt-1 border-t border-[#D5E6DF]" data-testid="doctor-reports-section">
+                <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#3B4B46]">
+                  <FaFileMedical size={11} />
+                  <span>{t("mobile:profile.doctorReportsTitle", "Rapports & Recommandations du médecin")}</span>
+                </div>
+                {child.doctorReports.slice(0, 1).map((rep) => (
+                  <div key={rep.id} className="p-2.5 bg-white rounded-lg border border-[#D5E6DF] text-[12px] space-y-1">
+                    <div className="flex justify-between items-center">
+                      <span className="font-bold text-[#17302A]">{rep.title}</span>
+                      <span className="text-[10px] text-[#5B6B66]">{rep.date}</span>
+                    </div>
+                    <p className="text-[11px] text-emerald-800 font-semibold">
+                      {t("mobile:profile.doctorTargetWeight", "Poids cible : {{weight}} kg", { weight: rep.targetWeightKg })}
+                    </p>
+                    <p className="text-[11px] text-[#17302A]">
+                      <span className="font-bold text-[#5B6B66]">{t("mobile:profile.doctorPrescription", "Protocole")} : </span>
+                      {rep.prescription}
+                    </p>
+                    <p className="text-[11px] text-[#5B6B66] italic">
+                      « {rep.observations} »
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Action buttons */}

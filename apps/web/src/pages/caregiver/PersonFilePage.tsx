@@ -9,6 +9,9 @@ import {
   aminaNewEvaluationRecord,
   initialAminaIntakePlan,
 } from "../../features/caregiver/caregiverData";
+import { useCaregiverStore } from "../../features/caregiver/useCaregiverStore";
+import { ReassignDoctorModal } from "./ReassignDoctorModal";
+import { PersonHistoryTable } from "./PersonHistoryTable";
 import type { ZScorePoint } from "../../types";
 
 function formatShortDayMonth(dateStr: string, locale: SupportedLocale): string {
@@ -26,9 +29,16 @@ export function PersonFilePage(): React.JSX.Element {
   const [searchParams] = useSearchParams();
   const isUpdated = searchParams.get("updated") === "true";
   const [activeCurve, setActiveCurve] = useState<"wfl" | "muac" | "wfa">("wfl");
+  const [isReassignOpen, setIsReassignOpen] = useState(false);
+
   const { t, i18n } = useTranslation("caregiver");
   const { t: tMedical } = useTranslation("medical");
   const locale: SupportedLocale = i18n.language === "en" ? "en" : "fr";
+
+  const { persons, doctors, isSuperCaregiver, reassignPatient } = useCaregiverStore();
+  const currentPerson =
+    persons.find((p) => p.id === personId || p.code.toLowerCase().includes(personId.toLowerCase())) ||
+    persons[0];
 
   useEffect(() => {
     document.title = t("record.pageTitle", { name: "Hamadou", id: personId });
@@ -148,6 +158,7 @@ export function PersonFilePage(): React.JSX.Element {
               {[
                 { label: t("record.fields.id"), value: `#${personId}`, className: "font-mono font-bold text-care text-14" },
                 { label: t("record.fields.firstName"), value: "Hamadou", className: "font-bold text-text" },
+                { label: t("persons.columns.doctor", "Médecin référent"), value: currentPerson?.assignedDoctorName || "Prof. Félicité Ngeufack", className: "font-bold text-[#1B4D7E]" },
                 { label: t("record.fields.birthDate"), value: formatDate(new Date(Date.UTC(2024, 11, 12, 12, 0, 0)), locale), className: "text-text" },
                 { label: t("record.fields.sex"), value: t("record.fields.sexFemale"), className: "text-text" },
                 { label: t("record.fields.region"), value: t("persons.regions.farNorth"), className: "text-text" },
@@ -160,6 +171,19 @@ export function PersonFilePage(): React.JSX.Element {
                 </div>
               ))}
             </dl>
+
+            {isSuperCaregiver && (
+              <div className="pt-3 mt-3 border-t border-border flex justify-end">
+                <button
+                  type="button"
+                  data-testid="reassign-file-btn"
+                  onClick={() => setIsReassignOpen(true)}
+                  className="text-[12px] font-bold text-care hover:underline"
+                >
+                  {t("persons.reassign", "Réattribuer le patient")} ›
+                </button>
+              </div>
+            )}
           </Card>
 
           <Card title={t("record.activeAlertsCardTitle")}>
@@ -179,7 +203,7 @@ export function PersonFilePage(): React.JSX.Element {
                 <button
                   type="button"
                   onClick={() => setActiveCurve("wfl")}
-                  className={`px-2 py-1 rounded text-11 font-bold ${
+                  className={`px-2.5 py-1 text-12 font-bold rounded ${
                     activeCurve === "wfl" ? "bg-care text-white" : "bg-surface-2 text-text-muted"
                   }`}
                 >
@@ -188,7 +212,7 @@ export function PersonFilePage(): React.JSX.Element {
                 <button
                   type="button"
                   onClick={() => setActiveCurve("muac")}
-                  className={`px-2 py-1 rounded text-11 font-bold ${
+                  className={`px-2.5 py-1 text-12 font-bold rounded ${
                     activeCurve === "muac" ? "bg-care text-white" : "bg-surface-2 text-text-muted"
                   }`}
                 >
@@ -197,58 +221,17 @@ export function PersonFilePage(): React.JSX.Element {
               </div>
             }
           >
-            <div className="py-2" data-testid="growth-chart-wrapper">
-              <ZScoreChart
-                points={zScorePoints}
-                height={260}
-                currentZScore={zScorePoints[zScorePoints.length - 1]?.zScore}
-                testID="growth-chart"
-              />
+            <div className="h-[240px]">
+              <ZScoreChart points={zScorePoints} testID="wfl-zscore-chart" />
             </div>
           </Card>
 
           <Card title={t("record.historyCardTitle")}>
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-13 border-collapse">
-                <thead>
-                  <tr className="border-b border-border bg-surface-2 text-12 font-bold text-text-muted">
-                    <th className="py-2 px-2.5">{t("record.historyColumns.date")}</th>
-                    <th className="py-2 px-2.5">{t("record.historyColumns.weight")}</th>
-                    <th className="py-2 px-2.5">{t("record.historyColumns.height")}</th>
-                    <th className="py-2 px-2.5">{t("record.historyColumns.muac")}</th>
-                    <th className="py-2 px-2.5">{t("record.historyColumns.zScore")}</th>
-                    <th className="py-2 px-2.5">{t("record.historyColumns.edema")}</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border">
-                  {evaluations.map((ev) => {
-                    const isNew = ev.date === "12/11";
-                    return (
-                      <tr
-                        key={ev.id}
-                        data-testid={`eval-row-${ev.date.replace("/", "-")}`}
-                        className={isNew ? "bg-[#FFF1E2] font-semibold" : ""}
-                      >
-                        <td className="py-2 px-2.5">{formatShortDayMonth(ev.date, locale)}</td>
-                        <td className="py-2 px-2.5">
-                          {`${formatNumber(ev.weightKg, locale, { minimumFractionDigits: 1, maximumFractionDigits: 1 })} kg`}
-                        </td>
-                        <td className="py-2 px-2.5">
-                          {`${formatNumber(ev.lengthCm, locale, { minimumFractionDigits: 1, maximumFractionDigits: 1 })} cm`}
-                        </td>
-                        <td className="py-2 px-2.5">{`${formatNumber(ev.pbMm, locale)} mm`}</td>
-                        <td className="py-2 px-2.5 font-bold text-care">
-                          {formatNumber(ev.zScore, locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                        </td>
-                        <td className="py-2 px-2.5">
-                          {ev.edema === "Non" ? t("record.edemaNone") : ev.edema}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
+            <PersonHistoryTable
+              evaluations={evaluations}
+              locale={locale}
+              formatShortDayMonth={formatShortDayMonth}
+            />
           </Card>
         </div>
 
@@ -290,7 +273,17 @@ export function PersonFilePage(): React.JSX.Element {
           </Card>
         </div>
       </div>
+
+      <ReassignDoctorModal
+        person={currentPerson}
+        isOpen={isReassignOpen}
+        doctors={doctors}
+        onClose={() => setIsReassignOpen(false)}
+        onConfirm={(pId, toDocId, reason) => {
+          reassignPatient(pId, toDocId, reason);
+          setIsReassignOpen(false);
+        }}
+      />
     </div>
   );
 }
-

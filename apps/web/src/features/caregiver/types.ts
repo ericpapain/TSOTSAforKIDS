@@ -20,6 +20,22 @@ export interface ScheduledEval {
   title: string;
 }
 
+export interface CaregiverDoctor {
+  id: string;
+  name: string;
+  specialty: string;
+  facility: string;
+  patientCount: number;
+}
+
+export interface PatientTransferRecord {
+  date: string;
+  fromDoctor: string;
+  toDoctor: string;
+  reassignedBy: string;
+  reason: string;
+}
+
 export interface FollowedPerson {
   id: string;
   code: string;
@@ -33,6 +49,9 @@ export interface FollowedPerson {
   lastEvaluation: string;
   pb: number; // in mm
   zScore: number;
+  assignedDoctorId?: string;
+  assignedDoctorName?: string;
+  transferHistory?: PatientTransferRecord[];
 }
 
 export interface EvaluationRecord {

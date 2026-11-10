@@ -170,7 +170,13 @@
     "ageMonths_one": "{{count}} month",
     "ageMonths_other": "{{count}} months",
     "ageYears_one": "{{count}} year",
-    "ageYears_other": "{{count}} years"
+    "ageYears_other": "{{count}} years",
+    "attendingDoctor": "Attending doctor",
+    "doctorReportsTitle": "Doctor's reports & recommendations",
+    "doctorTargetWeight": "Target weight: {{weight}} kg",
+    "doctorPrescription": "Recommended medical protocol",
+    "doctorObservations": "Doctor's observations",
+    "doctorAssignedNotice": "Medical monitoring provided by {{doctor}} ({{facility}})."
   },
   "choose": {
     "title": "Choose a product",

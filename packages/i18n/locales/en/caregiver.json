@@ -59,7 +59,8 @@
       "facility": "Region / Facility",
       "status": "Nutritional status",
       "lastEvaluation": "Last assessment",
-      "actions": "Actions"
+      "actions": "Actions",
+      "doctor": "Attending Doctor"
     },
     "muacShort": "MUAC {{pb}} mm · z = {{z}}",
     "recordBtn": "Record ›",
@@ -72,7 +73,25 @@
       "kousseri": "Kousséri Medical Center",
       "maroua": "Maroua Regional Hospital",
       "garoua": "Garoua Regional Hospital"
-    }
+    },
+    "reassign": "Reassign",
+    "superDoctorMode": "Chief Caregiver (Lead Doctor)",
+    "superDoctorBadge": "Chief Caregiver",
+    "superDoctorNotice": "As Chief Caregiver, you can assign and transfer patient files between colleagues.",
+    "standardDoctorNotice": "Practitioner mode: viewing your assigned patient files.",
+    "reassignModal": {
+      "title": "Patient Reassignment",
+      "patientLabel": "Target patient",
+      "currentDoctor": "Current doctor",
+      "targetDoctor": "New attending doctor",
+      "reasonLabel": "Clinical reason for transfer",
+      "reasonPlaceholder": "E.g.: Referral to pediatric nutrition",
+      "confirmBtn": "Confirm transfer",
+      "successToast": "Patient file #{{code}} successfully reassigned to {{doctor}}."
+    },
+    "standardDoctorMode": "Practitioner",
+    "switchToStandard": "Disable Chief Caregiver mode",
+    "switchToSuper": "Enable Chief Caregiver mode"
   },
   "record": {
     "pageTitle": "Record {{name}} (#{{id}}) — Caregiver portal | TSOTSA Kids",

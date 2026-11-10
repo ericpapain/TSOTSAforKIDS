@@ -29,6 +29,21 @@ const defaultChildren: ChildMember[] = [
     edema: "none",
     status: "MAS",
     facilityName: "CMA de démo",
+    doctorId: "doc-felicite",
+    doctorName: "Prof. Félicité Ngeufack",
+    doctorFacility: "CMA de démo",
+    doctorReports: [
+      {
+        id: "rep-amina-1",
+        date: "29/10/2026",
+        doctorName: "Prof. Félicité Ngeufack",
+        facility: "CMA de démo",
+        title: "Protocole de rattrapage nutritionnel MAM",
+        targetWeightKg: 9.2,
+        prescription: "1 portion de bouillie enrichie à l'arachide le matin + 1 sachet de Plumpy'Nut le soir",
+        observations: "Bonne reprise pondérale (+150g en 7j). Poursuivre l'apport protéino-énergétique et surveillance du PB.",
+      },
+    ],
     lastIntakeTime: "12:30",
     hasConsent: true,
   },
@@ -45,6 +60,21 @@ const defaultChildren: ChildMember[] = [
     edema: "none",
     status: "normal",
     facilityName: "Hôpital de District",
+    doctorId: "doc-felicite",
+    doctorName: "Prof. Félicité Ngeufack",
+    doctorFacility: "CMA de démo",
+    doctorReports: [
+      {
+        id: "rep-hamadou-1",
+        date: "15/10/2026",
+        doctorName: "Prof. Félicité Ngeufack",
+        facility: "CMA de démo",
+        title: "Suivi de croissance standard",
+        targetWeightKg: 15.0,
+        prescription: "Régime diversifié enrichi aux légumineuses locales.",
+        observations: "Courbe OMS harmonieuse, croissance normale.",
+      },
+    ],
     lastIntakeTime: "08:00",
     hasConsent: true,
   },
@@ -151,6 +181,21 @@ export const userStore = {
       id: `child-${Date.now()}`,
       code: `#${initialLetter}-${String(nextNum).padStart(3, "0")}`,
       hasConsent: true,
+      doctorId: child.doctorId || "doc-felicite",
+      doctorName: child.doctorName || "Prof. Félicité Ngeufack",
+      doctorFacility: child.doctorFacility || "CMA de démo",
+      doctorReports: child.doctorReports || [
+        {
+          id: `rep-${Date.now()}`,
+          date: "10/11/2026",
+          doctorName: "Prof. Félicité Ngeufack",
+          facility: "CMA de démo",
+          title: "Attribution automatique du médecin référent familial",
+          targetWeightKg: Math.round(((child.weightKg || 8) * 1.1) * 10) / 10,
+          prescription: "Poursuivre l'alimentation diversifiée avec équivalents nutritionnels locaux.",
+          observations: "Dossier rattaché à la patientèle du Prof. Félicité Ngeufack suite au consentement parental.",
+        },
+      ],
     };
     state.children = [newChild, ...state.children];
     state.activeChildId = newChild.id;
@@ -212,3 +257,4 @@ export const userStore = {
     persistAndNotify();
   },
 };
+

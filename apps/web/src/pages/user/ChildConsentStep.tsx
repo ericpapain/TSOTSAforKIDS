@@ -68,6 +68,14 @@ export const ChildConsentStep: React.FC<ChildConsentStepProps> = ({
         </li>
       </ul>
 
+      <div className="p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-[12px] font-semibold">
+        {t(
+          "mobile:profile.doctorAssignedNotice",
+          "Suivi médical assuré par le {{doctor}} ({{facility}}).",
+          { doctor: "Prof. Félicité Ngeufack", facility: "CMA de démo" }
+        )}
+      </div>
+
       <label className="flex items-start gap-3 p-3 rounded-lg border border-[#D5DEDA] bg-[#F7F9F8] cursor-pointer">
         <input
           type="checkbox"
@@ -106,3 +114,4 @@ export const ChildConsentStep: React.FC<ChildConsentStepProps> = ({
     </div>
   );
 };
+

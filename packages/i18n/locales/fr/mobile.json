@@ -170,7 +170,13 @@
     "ageMonths_one": "{{count}} mois",
     "ageMonths_other": "{{count}} mois",
     "ageYears_one": "{{count}} an",
-    "ageYears_other": "{{count}} ans"
+    "ageYears_other": "{{count}} ans",
+    "attendingDoctor": "Médecin référent",
+    "doctorReportsTitle": "Rapports & Recommandations du médecin",
+    "doctorTargetWeight": "Poids cible : {{weight}} kg",
+    "doctorPrescription": "Protocole médical recommandé",
+    "doctorObservations": "Observations du médecin",
+    "doctorAssignedNotice": "Suivi médical assuré par le {{doctor}} ({{facility}})."
   },
   "choose": {
     "title": "Choisir un produit",

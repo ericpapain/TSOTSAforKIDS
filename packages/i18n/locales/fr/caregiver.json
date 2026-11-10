@@ -59,7 +59,8 @@
       "facility": "Région / Établissement",
       "status": "Statut nutritionnel",
       "lastEvaluation": "Dernière évaluation",
-      "actions": "Actions"
+      "actions": "Actions",
+      "doctor": "Médecin référent"
     },
     "muacShort": "PB {{pb}} mm · z = {{z}}",
     "recordBtn": "Dossier ›",
@@ -72,7 +73,25 @@
       "kousseri": "CMA de Kousséri",
       "maroua": "Hôpital Régional de Maroua",
       "garoua": "Hôpital Régional de Garoua"
-    }
+    },
+    "reassign": "Réattribuer",
+    "superDoctorMode": "Super Soignant (Médecin-Chef)",
+    "superDoctorBadge": "Super Soignant",
+    "superDoctorNotice": "En tant que Super Soignant, vous pouvez réattribuer les dossiers patients entre confrères.",
+    "standardDoctorNotice": "Mode praticien : consultation de vos dossiers patients assignés.",
+    "reassignModal": {
+      "title": "Réattribution du patient",
+      "patientLabel": "Patient concerné",
+      "currentDoctor": "Médecin actuel",
+      "targetDoctor": "Nouveau médecin référent",
+      "reasonLabel": "Motif clinique de la réattribution",
+      "reasonPlaceholder": "Ex : Réorientation vers la pédiatrie nutritionnelle",
+      "confirmBtn": "Confirmer le transfert",
+      "successToast": "Dossier #{{code}} réattribué avec succès à {{doctor}}."
+    },
+    "standardDoctorMode": "Praticien",
+    "switchToStandard": "Désactiver mode Super Soignant",
+    "switchToSuper": "Activer mode Super Soignant"
   },
   "record": {
     "pageTitle": "Dossier {{name}} (#{{id}}) — Espace soignant | TSOTSA Kids",
