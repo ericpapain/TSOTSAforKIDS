@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { FontAwesome5 } from "@expo/vector-icons";
+import { useTranslation } from "react-i18next";
 import { colors } from "../src/theme/colors";
 import { nutrientsStyles as styles } from "../src/features/products/nutrientsStyles";
 
@@ -25,6 +26,7 @@ const ALL_NUTRIENTS = [
 const DEFAULT_NUTRIENTS = ["Protéines", "Lipides", "Fer"];
 
 export default function NutrientsScreen() {
+  const { t } = useTranslation(["mobile", "common"]);
   const router = useRouter();
   const params = useLocalSearchParams<{
     productId?: string;
@@ -44,6 +46,19 @@ export default function NutrientsScreen() {
     : DEFAULT_NUTRIENTS;
 
   const [selected, setSelected] = useState<string[]>(initialSelected);
+
+  const getNutrientLabel = (name: string): string => {
+    const map: Record<string, string> = {
+      Énergie: t("mobile:food.energy", { defaultValue: "Énergie" }),
+      Protéines: t("mobile:food.proteins", { defaultValue: "Protéines" }),
+      Lipides: t("mobile:food.lipids", { defaultValue: "Lipides" }),
+      Fer: t("mobile:food.iron", { defaultValue: "Fer" }),
+      Calcium: t("mobile:food.calcium", { defaultValue: "Calcium" }),
+      Zinc: t("mobile:food.zinc", { defaultValue: "Zinc" }),
+      "Vitamine A": t("mobile:food.vitaminA", { defaultValue: "Vitamine A" }),
+    };
+    return map[name] ?? name;
+  };
 
   const toggleNutrient = (name: string) => {
     if (selected.includes(name)) {
@@ -79,7 +94,7 @@ export default function NutrientsScreen() {
       <View style={styles.appBar}>
         <TouchableOpacity
           testID="btn-back"
-          accessibilityLabel="Retour"
+          accessibilityLabel={t("common:actions.back", { defaultValue: "Retour" })}
           accessibilityRole="button"
           onPress={() =>
             router.push({
@@ -98,13 +113,17 @@ export default function NutrientsScreen() {
           <FontAwesome5 name="arrow-left" size={24} color={colors.white} />
         </TouchableOpacity>
 
-        <Text style={styles.appBarTitle}>Nutriments</Text>
+        <Text style={styles.appBarTitle}>
+          {t("mobile:nutrients.title", { defaultValue: "Nutriments" })}
+        </Text>
         <View style={styles.touchIcon} />
       </View>
 
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <Text style={styles.introText}>
-          Nutriments à retrouver dans les aliments locaux :
+          {t("mobile:nutrients.intro", {
+            defaultValue: "Nutriments à retrouver dans les aliments locaux :",
+          })}
         </Text>
 
         {ALL_NUTRIENTS.map((item) => {
@@ -125,7 +144,7 @@ export default function NutrientsScreen() {
                 )}
               </View>
               <Text style={isChecked ? styles.checkLabelChecked : styles.checkLabel}>
-                {item}
+                {getNutrientLabel(item)}
               </Text>
             </TouchableOpacity>
           );
@@ -138,7 +157,11 @@ export default function NutrientsScreen() {
           onPress={handleResetDefault}
           style={styles.btnReset}
         >
-          <Text style={styles.btnResetText}>Rétablir le choix par défaut</Text>
+          <Text style={styles.btnResetText}>
+            {t("mobile:nutrients.resetDefault", {
+              defaultValue: "Rétablir le choix par défaut",
+            })}
+          </Text>
         </TouchableOpacity>
 
         {/* Apply Button */}
@@ -148,7 +171,9 @@ export default function NutrientsScreen() {
           onPress={handleApply}
           style={styles.btnApply}
         >
-          <Text style={styles.btnApplyText}>Appliquer</Text>
+          <Text style={styles.btnApplyText}>
+            {t("mobile:nutrients.apply", { defaultValue: "Appliquer" })}
+          </Text>
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>

@@ -9,11 +9,13 @@ import {
 } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { FontAwesome5 } from "@expo/vector-icons";
+import { useTranslation } from "react-i18next";
 import { colors } from "../src/theme/colors";
 import { productStyles as styles } from "../src/features/products/productStyles";
 
 export default function EmptyEquivalentsScreen() {
   const router = useRouter();
+  const { t } = useTranslation(["mobile", "common"]);
   const params = useLocalSearchParams<{
     productId?: string;
     productName?: string;
@@ -47,7 +49,7 @@ export default function EmptyEquivalentsScreen() {
       <View style={styles.appBar}>
         <TouchableOpacity
           testID="btn-back"
-          accessibilityLabel="Retour"
+          accessibilityLabel={t("common:actions.back", { defaultValue: "Retour" })}
           accessibilityRole="button"
           onPress={() => router.push({ pathname: "/u-region", params: { personId: params.personId ?? "", name: personName, region: "Ouest" } })}
           style={styles.touchIcon}
@@ -65,37 +67,51 @@ export default function EmptyEquivalentsScreen() {
           <View style={styles.productCardHeader}>
             <Text style={styles.productName}>{productName}</Text>
             <TouchableOpacity testID="btn-details">
-              <Text style={styles.detailsLink}>Détails ›</Text>
+              <Text style={styles.detailsLink}>
+                {t("mobile:product.details", { defaultValue: "Détails ›" })}
+              </Text>
             </TouchableOpacity>
           </View>
 
-          <Text style={styles.productBase}>ATPE · pour 100 g</Text>
+          <Text style={styles.productBase}>
+            {t("mobile:product.rutfBase", { defaultValue: "ATPE · pour 100 g" })}
+          </Text>
 
           <View style={styles.nutrientGrid}>
             <View style={styles.gridRow}>
               <View style={styles.gridCol}>
-                <Text style={styles.gridLabel}>Énergie</Text>
+                <Text style={styles.gridLabel}>
+                  {t("mobile:product.energy", { defaultValue: "Énergie" })}
+                </Text>
                 <Text style={styles.gridValue}>520–550 kcal</Text>
               </View>
               <View style={styles.gridCol}>
-                <Text style={styles.gridLabel}>Protéines</Text>
+                <Text style={styles.gridLabel}>
+                  {t("mobile:product.proteins", { defaultValue: "Protéines" })}
+                </Text>
                 <Text style={styles.gridValue}>≈ 13–16 g</Text>
               </View>
             </View>
             <View style={styles.gridRow}>
               <View style={styles.gridCol}>
-                <Text style={styles.gridLabel}>Lipides</Text>
+                <Text style={styles.gridLabel}>
+                  {t("mobile:product.lipids", { defaultValue: "Lipides" })}
+                </Text>
                 <Text style={styles.gridValue}>≈ 26–37 g</Text>
               </View>
               <View style={styles.gridCol}>
-                <Text style={styles.gridLabel}>Fer</Text>
+                <Text style={styles.gridLabel}>
+                  {t("mobile:product.iron", { defaultValue: "Fer" })}
+                </Text>
                 <Text style={styles.gridValue}>10–14 mg</Text>
               </View>
             </View>
           </View>
 
           <View style={styles.costBox}>
-            <Text style={styles.costText}>Coût : prix non renseigné pour l'Ouest</Text>
+            <Text style={styles.costText}>
+              {t("mobile:product.costNotSpecified", { defaultValue: "Coût : prix non renseigné pour l'Ouest" })}
+            </Text>
           </View>
         </View>
 
@@ -106,7 +122,9 @@ export default function EmptyEquivalentsScreen() {
           onPress={handleShowAllRegions}
           style={styles.pillRegionActive}
         >
-          <Text style={styles.pillRegionActiveText}>{regionName} uniquement ✕</Text>
+          <Text style={styles.pillRegionActiveText}>
+            {t("mobile:region.regionOnly", { region: regionName, defaultValue: `${regionName} uniquement ✕` })}
+          </Text>
         </TouchableOpacity>
 
         {/* Empty state illustration & text */}
@@ -116,7 +134,9 @@ export default function EmptyEquivalentsScreen() {
           </View>
 
           <Text style={styles.emptyNoticeText}>
-            Aucun aliment local n'est encore renseigné pour cette région.
+            {t("mobile:empty.notice", {
+              defaultValue: "Aucun aliment local n'est encore renseigné pour cette région.",
+            })}
           </Text>
 
           <TouchableOpacity
@@ -125,7 +145,9 @@ export default function EmptyEquivalentsScreen() {
             onPress={handleShowAllRegions}
             style={styles.btnShowAllRegions}
           >
-            <Text style={styles.btnShowAllRegionsText}>Afficher toutes les régions</Text>
+            <Text style={styles.btnShowAllRegionsText}>
+              {t("mobile:empty.showAllRegions", { defaultValue: "Afficher toutes les régions" })}
+            </Text>
           </TouchableOpacity>
         </View>
       </ScrollView>

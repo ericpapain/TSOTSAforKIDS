@@ -3,6 +3,7 @@ import { useRouter } from "expo-router";
 import React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useTranslation } from "react-i18next";
 
 import { AppBar } from "../src/components/AppBar";
 import { colors } from "../src/theme/colors";
@@ -10,6 +11,7 @@ import { fontFamilies, fontSizes } from "../src/theme/typography";
 
 export default function SoonScreen(): React.JSX.Element {
   const router = useRouter();
+  const { t } = useTranslation("mobile");
 
   const handleDismiss = (): void => {
     router.replace("/u-modules");
@@ -17,7 +19,7 @@ export default function SoonScreen(): React.JSX.Element {
 
   return (
     <SafeAreaView style={styles.safeArea} edges={["top", "bottom"]}>
-      <AppBar title="Bonjour" />
+      <AppBar title={t("modules.title", { defaultValue: "Bonjour" })} />
 
       {/* Overlay background */}
       <View style={styles.overlay}>
@@ -33,9 +35,13 @@ export default function SoonScreen(): React.JSX.Element {
             <FontAwesome5 name="heartbeat" size={57} color={colors.danger} />
           </View>
 
-          <Text style={styles.title}>Bientôt disponible</Text>
+          <Text style={styles.title}>
+            {t("soon.title", { defaultValue: "Bientôt disponible" })}
+          </Text>
           <Text style={styles.message}>
-            Le suivi de la tension artérielle arrive dans une prochaine version.
+            {t("soon.message", {
+              defaultValue: "Le suivi de la tension artérielle arrive dans une prochaine version.",
+            })}
           </Text>
 
           {/* Action buttons row */}
@@ -50,7 +56,9 @@ export default function SoonScreen(): React.JSX.Element {
               ]}
               onPress={handleDismiss}
             >
-              <Text style={styles.notifyText}>Me prévenir</Text>
+              <Text style={styles.notifyText}>
+                {t("soon.notify", { defaultValue: "Me prévenir" })}
+              </Text>
             </Pressable>
 
             {/* Fermer button */}
@@ -63,7 +71,9 @@ export default function SoonScreen(): React.JSX.Element {
               ]}
               onPress={handleDismiss}
             >
-              <Text style={styles.closeText}>Fermer</Text>
+              <Text style={styles.closeText}>
+                {t("soon.close", { defaultValue: "Fermer" })}
+              </Text>
             </Pressable>
           </View>
         </View>

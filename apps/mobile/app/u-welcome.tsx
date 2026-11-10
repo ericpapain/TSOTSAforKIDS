@@ -9,13 +9,16 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useTranslation } from "react-i18next";
 
 import { BrandLogo } from "../src/components/BrandLogo";
+import { LanguageSelector } from "../src/components/LanguageSelector";
 import { colors } from "../src/theme/colors";
 import { fontFamilies, fontSizes } from "../src/theme/typography";
 
 export default function WelcomeScreen(): React.JSX.Element {
   const router = useRouter();
+  const { t } = useTranslation("mobile");
 
   return (
     <SafeAreaView style={styles.safeArea} edges={["top", "bottom"]}>
@@ -34,7 +37,9 @@ export default function WelcomeScreen(): React.JSX.Element {
         </View>
 
         {/* Subtitle */}
-        <Text style={styles.subtitle}>Bien nourrir, bien suivre.</Text>
+        <Text style={styles.subtitle}>
+          {t("welcome.subtitle", { defaultValue: "Bien nourrir, bien suivre." })}
+        </Text>
 
         {/* Action Buttons */}
         <View style={styles.buttonsGroup}>
@@ -51,7 +56,9 @@ export default function WelcomeScreen(): React.JSX.Element {
             <View style={styles.buttonIcon}>
               <FontAwesome5 name="google" size={30} color="#4285F4" />
             </View>
-            <Text style={styles.googleText}>Continuer avec Google</Text>
+            <Text style={styles.googleText}>
+              {t("welcome.google", { defaultValue: "Continuer avec Google" })}
+            </Text>
           </Pressable>
 
           {/* Phone Button */}
@@ -67,7 +74,9 @@ export default function WelcomeScreen(): React.JSX.Element {
             <View style={styles.buttonIcon}>
               <FontAwesome5 name="mobile-alt" size={30} color={colors.white} />
             </View>
-            <Text style={styles.phoneText}>Continuer avec mon téléphone</Text>
+            <Text style={styles.phoneText}>
+              {t("welcome.phone", { defaultValue: "Continuer avec mon téléphone" })}
+            </Text>
           </Pressable>
 
           {/* Email Button */}
@@ -83,26 +92,19 @@ export default function WelcomeScreen(): React.JSX.Element {
             <View style={styles.buttonIcon}>
               <FontAwesome5 name="envelope" size={30} color={colors.primary} />
             </View>
-            <Text style={styles.emailText}>Continuer avec mon e-mail</Text>
+            <Text style={styles.emailText}>
+              {t("welcome.email", { defaultValue: "Continuer avec mon e-mail" })}
+            </Text>
           </Pressable>
         </View>
 
         {/* Family info note */}
         <Text style={styles.familyNote}>
-          Un seul compte pour toute la famille.
+          {t("welcome.familyNote", { defaultValue: "Un seul compte pour toute la famille." })}
         </Text>
 
         {/* Language selector */}
-        <Pressable
-          testID="btn-welcome-language"
-          style={({ pressed }) => [
-            styles.languageButton,
-            pressed && styles.pressed,
-          ]}
-          onPress={() => {}}
-        >
-          <Text style={styles.languageText}>Français ▾</Text>
-        </Pressable>
+        <LanguageSelector mode="button" testID="btn-welcome-language" />
       </ScrollView>
     </SafeAreaView>
   );

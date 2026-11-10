@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { FontAwesome5 } from "@expo/vector-icons";
+import { useTranslation } from "react-i18next";
 import { colors } from "../src/theme/colors";
 import { productStyles as styles } from "../src/features/products/productStyles";
 import { FALLBACK_EQUIVALENTS } from "../src/features/products/productDefaults";
@@ -24,6 +25,7 @@ import type {
 
 export default function ProductScreen() {
   const router = useRouter();
+  const { t } = useTranslation(["mobile", "common"]);
   const params = useLocalSearchParams<{
     productId?: string;
     productName?: string;
@@ -46,7 +48,9 @@ export default function ProductScreen() {
 
   const [_product, setProduct] = useState<ProductDetail | null>(null);
   const [equivalents, setEquivalents] = useState<EquivalentFoodItem[]>([]);
-  const [costText, setCostText] = useState<string>("Coût : prix non renseigné pour l'Ouest");
+  const [costText, setCostText] = useState<string>(
+    t("mobile:product.costNotSpecified", { defaultValue: "Coût : prix non renseigné pour l'Ouest" })
+  );
 
   const nutrientsParam = params.nutrients ?? "";
 
@@ -67,14 +71,20 @@ export default function ProductScreen() {
       });
       getProductPrice(params.productId, regionName).then((priceObj) => {
         if (isMounted && priceObj?.display) {
-          setCostText(`Coût : ${priceObj.display} dans l'${regionName}`);
+          setCostText(
+            t("mobile:product.costDisplay", {
+              price: priceObj.display,
+              region: regionName,
+              defaultValue: `Coût : ${priceObj.display} dans l'${regionName}`,
+            })
+          );
         }
       });
     }
     return () => {
       isMounted = false;
     };
-  }, [params.productId, regionName, nutrientsParam, activeNutrients]);
+  }, [params.productId, regionName, nutrientsParam, activeNutrients, t]);
 
   const items = equivalents.length > 0 ? equivalents : FALLBACK_EQUIVALENTS;
 
@@ -101,7 +111,7 @@ export default function ProductScreen() {
       <View style={styles.appBar}>
         <TouchableOpacity
           testID="btn-back"
-          accessibilityLabel="Retour"
+          accessibilityLabel={t("common:actions.back", { defaultValue: "Retour" })}
           accessibilityRole="button"
           onPress={() => router.push({ pathname: "/u-dropdown", params: { personId: params.personId ?? "", name: personName, region: regionName } })}
           style={styles.touchIcon}
@@ -119,30 +129,34 @@ export default function ProductScreen() {
           <View style={styles.productCardHeader}>
             <Text style={styles.productName}>{productName}</Text>
             <TouchableOpacity testID="btn-details">
-              <Text style={styles.detailsLink}>Détails ›</Text>
+              <Text style={styles.detailsLink}>
+                {t("mobile:product.details", { defaultValue: "Détails ›" })}
+              </Text>
             </TouchableOpacity>
           </View>
 
-          <Text style={styles.productBase}>ATPE · pour 100 g</Text>
+          <Text style={styles.productBase}>
+            {t("mobile:product.rutfBase", { defaultValue: "ATPE · pour 100 g" })}
+          </Text>
 
           <View style={styles.nutrientGrid}>
             <View style={styles.gridRow}>
               <View style={styles.gridCol}>
-                <Text style={styles.gridLabel}>Énergie</Text>
+                <Text style={styles.gridLabel}>{t("mobile:product.energy", { defaultValue: "Énergie" })}</Text>
                 <Text style={styles.gridValue}>520–550 kcal</Text>
               </View>
               <View style={styles.gridCol}>
-                <Text style={styles.gridLabel}>Protéines</Text>
+                <Text style={styles.gridLabel}>{t("mobile:product.proteins", { defaultValue: "Protéines" })}</Text>
                 <Text style={styles.gridValue}>≈ 13–16 g</Text>
               </View>
             </View>
             <View style={styles.gridRow}>
               <View style={styles.gridCol}>
-                <Text style={styles.gridLabel}>Lipides</Text>
+                <Text style={styles.gridLabel}>{t("mobile:product.lipids", { defaultValue: "Lipides" })}</Text>
                 <Text style={styles.gridValue}>≈ 26–37 g</Text>
               </View>
               <View style={styles.gridCol}>
-                <Text style={styles.gridLabel}>Fer</Text>
+                <Text style={styles.gridLabel}>{t("mobile:product.iron", { defaultValue: "Fer" })}</Text>
                 <Text style={styles.gridValue}>10–14 mg</Text>
               </View>
             </View>
@@ -154,7 +168,9 @@ export default function ProductScreen() {
         </View>
 
         {/* Section title */}
-        <Text style={styles.sectionTitle}>Aliments locaux équivalents</Text>
+        <Text style={styles.sectionTitle}>
+          {t("mobile:product.equivalents", { defaultValue: "Aliments locaux équivalents" })}
+        </Text>
 
         {/* Filter Pills Row */}
         <View style={styles.filtersRow}>
@@ -177,7 +193,10 @@ export default function ProductScreen() {
             style={styles.pillNutrients}
           >
             <Text style={styles.pillNutrientsText}>
-              Nutriments : {activeNutrients.length} ✎
+              {t("mobile:product.filterNutrients", {
+                count: activeNutrients.length,
+                defaultValue: `Nutriments : ${activeNutrients.length} ✎`,
+              })}
             </Text>
           </TouchableOpacity>
 
@@ -198,7 +217,9 @@ export default function ProductScreen() {
             }
             style={styles.pillRegion}
           >
-            <Text style={styles.pillRegionText}>Toutes régions ▾</Text>
+            <Text style={styles.pillRegionText}>
+              {t("mobile:product.filterRegionAll", { defaultValue: "Toutes régions ▾" })}
+            </Text>
           </TouchableOpacity>
         </View>
 
@@ -206,7 +227,9 @@ export default function ProductScreen() {
         {items.map((item, index) => {
           const rank = index + 1;
           const isArachide = item.food_name.toLowerCase().includes("arachide");
-          const regionLabel = item.is_in_target_region ? "Ouest ✓" : "Autres régions";
+          const regionLabel = item.is_in_target_region
+            ? t("mobile:product.inRegion", { region: "Ouest", defaultValue: "Ouest ✓" })
+            : t("mobile:product.otherRegions", { defaultValue: "Autres régions" });
           const extraLabel = item.extra_nutrients?.length ? `+ ${item.extra_nutrients.join(", ")}` : "";
 
           return (
@@ -242,26 +265,25 @@ export default function ProductScreen() {
         <View style={styles.bottomActionRow}>
           <TouchableOpacity testID="btn-web-version">
             <Text style={styles.webLinkText}>
-              Voir les {items.length} résultats · Version web ›
+              {t("mobile:product.seeWebResults", {
+                count: items.length,
+                defaultValue: `Voir les ${items.length} résultats · Version web ›`,
+              })}
             </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             testID="btn-give"
             accessibilityRole="button"
-            onPress={() =>
-              router.push({
-                pathname: "/u-give",
-                params: {
-                  productName,
-                  personId: params.personId ?? "",
-                  name: personName,
-                },
-              })
-            }
+            onPress={() => router.push({ pathname: "/u-give", params: { productName, personId: params.personId ?? "", name: personName } })}
             style={styles.btnGive}
           >
-            <Text style={styles.btnGiveText}>Donner à {personName}</Text>
+            <Text style={styles.btnGiveText}>
+              {t("mobile:product.giveThisProduct", {
+                name: personName,
+                defaultValue: `Donner à ${personName}`,
+              })}
+            </Text>
           </TouchableOpacity>
         </View>
       </ScrollView>

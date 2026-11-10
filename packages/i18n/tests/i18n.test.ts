@@ -25,6 +25,7 @@ describe("@tsotsa/i18n core & Intl formatters", () => {
       "notifications",
       "errors",
       "medical",
+      "mobile",
     ]);
   });
 

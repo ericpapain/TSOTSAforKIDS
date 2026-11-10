@@ -70,3 +70,28 @@ jest.mock("@expo/vector-icons", () => {
   };
 });
 
+// Expo Localization
+jest.mock("expo-localization", () => ({
+  getLocales: () => [{ languageCode: "fr", languageTag: "fr-FR" }],
+  locale: "fr-FR",
+}));
+
+// i18n setup for unit tests
+const i18n = require("i18next");
+const { initReactI18next } = require("react-i18next");
+const { I18N_RESOURCES } = require("@tsotsa/i18n");
+
+if (!i18n.isInitialized) {
+  i18n.use(initReactI18next).init({
+    lng: "fr",
+    fallbackLng: "fr",
+    resources: I18N_RESOURCES,
+    interpolation: {
+      escapeValue: false,
+    },
+    react: {
+      useSuspense: false,
+    },
+  });
+}
+

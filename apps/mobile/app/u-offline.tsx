@@ -2,24 +2,30 @@ import { useRouter } from "expo-router";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useTranslation } from "react-i18next";
 
 import { AppBar } from "../src/components/AppBar";
 import { colors } from "../src/theme/colors";
 import { fontFamilies, fontSizes } from "../src/theme/typography";
 
 export default function ScreenM23(): React.JSX.Element {
+  const { t } = useTranslation(["mobile", "common"]);
   const router = useRouter();
+  const screenTitle = t("mobile:offline.title", { defaultValue: "Mode hors ligne" });
+
   return (
     <SafeAreaView style={styles.container} edges={["bottom", "left", "right"]}>
       <AppBar
-        title="Mode hors ligne"
+        title={screenTitle}
         onBack={() => router.replace("/u-modules")}
       />
       <View style={styles.content} testID="screen-m23">
         <Text style={styles.codeText}>M23</Text>
-        <Text style={styles.titleText}>Mode hors ligne</Text>
+        <Text style={styles.titleText}>{screenTitle}</Text>
         <Text style={styles.descText}>
-          Écran de fondation (M23). L interface complète sera intégrée lors de l étape dédiée.
+          {t("mobile:offline.desc", {
+            defaultValue: "Écran de fondation (M23). L interface complète sera intégrée lors de l étape dédiée.",
+          })}
         </Text>
       </View>
     </SafeAreaView>

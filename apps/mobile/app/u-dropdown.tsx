@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { FontAwesome5 } from "@expo/vector-icons";
+import { useTranslation } from "react-i18next";
 import { colors } from "../src/theme/colors";
 import { BottomNav } from "../src/components/BottomNav";
 import { chooseStyles as styles } from "../src/features/products/chooseStyles";
@@ -17,6 +18,7 @@ import type { ProductSummary } from "../src/features/products/types";
 
 export default function DropdownScreen() {
   const router = useRouter();
+  const { t } = useTranslation(["mobile", "common"]);
   const params = useLocalSearchParams<{
     personId?: string;
     name?: string;
@@ -65,7 +67,7 @@ export default function DropdownScreen() {
       <View style={styles.appBar}>
         <TouchableOpacity
           testID="btn-back"
-          accessibilityLabel="Retour"
+          accessibilityLabel={t("common:actions.back", { defaultValue: "Retour" })}
           accessibilityRole="button"
           onPress={() => router.push({ pathname: "/u-choose", params: { personId: params.personId ?? "", name: personName, region: regionName } })}
           style={styles.touchIcon}
@@ -73,7 +75,9 @@ export default function DropdownScreen() {
           <FontAwesome5 name="arrow-left" size={24} color={colors.white} />
         </TouchableOpacity>
 
-        <Text style={styles.appBarTitle}>Choisir un produit</Text>
+        <Text style={styles.appBarTitle}>
+          {t("mobile:dropdown.title", { defaultValue: "Choisir un produit" })}
+        </Text>
         <View style={styles.touchIcon} />
       </View>
 
@@ -81,10 +85,14 @@ export default function DropdownScreen() {
         {/* Pills row */}
         <View style={styles.pillRow}>
           <View style={styles.personPill}>
-            <Text style={styles.personPillText}>Pour : {personName}</Text>
+            <Text style={styles.personPillText}>
+              {t("mobile:choose.forPerson", { name: personName, defaultValue: `Pour : ${personName}` })}
+            </Text>
           </View>
           <View style={styles.regionPill}>
-            <Text style={styles.regionPillText}>Ma région : {regionName}</Text>
+            <Text style={styles.regionPillText}>
+              {t("mobile:choose.myRegion", { region: regionName, defaultValue: `Ma région : ${regionName}` })}
+            </Text>
           </View>
         </View>
 
@@ -96,20 +104,24 @@ export default function DropdownScreen() {
           style={styles.selectTriggerOpen}
           activeOpacity={0.8}
         >
-          <Text style={styles.selectTriggerText}>Choisir un produit</Text>
+          <Text style={styles.selectTriggerText}>
+            {t("mobile:dropdown.title", { defaultValue: "Choisir un produit" })}
+          </Text>
           <Text style={styles.chevronText}>▴</Text>
         </TouchableOpacity>
 
         {/* Dropdown Card */}
         <View style={styles.dropdownCard}>
-          <Text style={styles.sectionHeader}>PRODUITS DE RÉFÉRENCE</Text>
+          <Text style={styles.sectionHeader}>
+            {t("mobile:dropdown.sectionReference", { defaultValue: "PRODUITS DE RÉFÉRENCE" })}
+          </Text>
 
           {/* Reference products */}
           {(refProducts.length > 0 ? refProducts : [
-            { id: "ref-f75", type: "reference" as const, name: "F-75", base: "100ml", usage: "Lait thérapeutique · à l'hôpital", status: "validated" },
-            { id: "ref-f100", type: "reference" as const, name: "F-100", base: "100ml", usage: "Lait thérapeutique · à l'hôpital", status: "validated" },
-            { id: "ref-plumpy-nut", type: "reference" as const, name: "Plumpy'Nut", base: "100g", usage: "Pâte prête à l'emploi (ATPE)", status: "validated" },
-            { id: "ref-plumpy-sup", type: "reference" as const, name: "Plumpy'Sup", base: "100g", usage: "Supplément prêt à l'emploi", status: "validated" },
+            { id: "ref-f75", type: "reference" as const, name: "F-75", base: "100ml", usage: t("mobile:dropdown.usageF75", { defaultValue: "Lait thérapeutique · à l'hôpital" }), status: "validated" },
+            { id: "ref-f100", type: "reference" as const, name: "F-100", base: "100ml", usage: t("mobile:dropdown.usageF100", { defaultValue: "Lait thérapeutique · à l'hôpital" }), status: "validated" },
+            { id: "ref-plumpy-nut", type: "reference" as const, name: "Plumpy'Nut", base: "100g", usage: t("mobile:dropdown.usagePlumpyNut", { defaultValue: "Pâte prête à l'emploi (ATPE)" }), status: "validated" },
+            { id: "ref-plumpy-sup", type: "reference" as const, name: "Plumpy'Sup", base: "100g", usage: t("mobile:dropdown.usagePlumpySup", { defaultValue: "Supplément prêt à l'emploi" }), status: "validated" },
           ]).map((p) => {
             const isPlumpyNut = p.name.includes("Plumpy'Nut");
             return (
@@ -121,12 +133,14 @@ export default function DropdownScreen() {
                 style={isPlumpyNut ? styles.productRowSelected : styles.productRow}
               >
                 <Text style={styles.productTitle}>{p.name}</Text>
-                <Text style={styles.productSub}>{p.usage || "Produit de référence"}</Text>
+                <Text style={styles.productSub}>{p.usage || t("mobile:dropdown.refProduct", { defaultValue: "Produit de référence" })}</Text>
               </TouchableOpacity>
             );
           })}
 
-          <Text style={styles.sectionHeader}>MES PRODUITS</Text>
+          <Text style={styles.sectionHeader}>
+            {t("mobile:dropdown.sectionMyProducts", { defaultValue: "MES PRODUITS" })}
+          </Text>
 
           {/* Custom products */}
           {(myProducts.length > 0 ? myProducts : [
@@ -141,7 +155,9 @@ export default function DropdownScreen() {
             >
               <Text style={styles.productTitle}>{p.name}</Text>
               <View style={styles.badgeVerification}>
-                <Text style={styles.badgeVerificationText}>En vérification</Text>
+                <Text style={styles.badgeVerificationText}>
+                  {t("mobile:dropdown.underReview", { defaultValue: "En vérification" })}
+                </Text>
               </View>
             </TouchableOpacity>
           ))}
@@ -153,7 +169,9 @@ export default function DropdownScreen() {
             onPress={() => router.push({ pathname: "/u-addproduct", params: { personId: params.personId ?? "", name: personName, region: regionName } })}
             style={styles.dropdownAddBtn}
           >
-            <Text style={styles.dropdownAddBtnText}>+ Ajouter mon produit</Text>
+            <Text style={styles.dropdownAddBtnText}>
+              {t("mobile:dropdown.addMyProduct", { defaultValue: "+ Ajouter mon produit" })}
+            </Text>
           </TouchableOpacity>
         </View>
       </ScrollView>

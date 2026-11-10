@@ -26,6 +26,7 @@ const DEFAULT_NAMESPACES = [
   "notifications",
   "errors",
   "medical",
+  "mobile",
 ] as const;
 
 export function flattenCatalog(

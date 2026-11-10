@@ -10,6 +10,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useTranslation } from "react-i18next";
 
 import { AppBar } from "../src/components/AppBar";
 import { loginWithEmail, registerWithEmail } from "../src/features/auth/authService";
@@ -18,6 +19,7 @@ import { colors } from "../src/theme/colors";
 
 export default function EmailAuthScreen(): React.JSX.Element {
     const router = useRouter();
+    const { t } = useTranslation("mobile");
     const [tab, setTab] = useState<"login" | "register">("login");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -27,11 +29,11 @@ export default function EmailAuthScreen(): React.JSX.Element {
 
     const handleContinue = async (): Promise<void> => {
       if (!email.trim() || !password) {
-        setErrorMessage("Veuillez renseigner votre adresse e-mail et votre mot de passe.");
+        setErrorMessage(t("email.fillBoth", { defaultValue: "Veuillez renseigner votre adresse e-mail et votre mot de passe." }));
         return;
       }
       if (password.length < 8) {
-        setErrorMessage("Le mot de passe doit comporter au moins 8 caractères.");
+        setErrorMessage(t("email.passTooShort", { defaultValue: "Le mot de passe doit comporter au moins 8 caractères." }));
         return;
       }
 
@@ -49,18 +51,18 @@ export default function EmailAuthScreen(): React.JSX.Element {
               router.replace("/u-modules");
             }
           } else {
-            setErrorMessage(res.error || "Adresse e-mail ou mot de passe incorrect.");
+            setErrorMessage(res.error || t("email.wrongCredentials", { defaultValue: "Adresse e-mail ou mot de passe incorrect." }));
           }
         } else {
           const res = await registerWithEmail(email, password);
           if (res.success) {
-            setSuccessMessage(res.message || "Compte créé. Vérifiez vos e-mails.");
+            setSuccessMessage(res.message || t("email.accountCreated", { defaultValue: "Compte créé. Vérifiez vos e-mails." }));
           } else {
-            setErrorMessage(res.error || "Impossible de créer le compte.");
+            setErrorMessage(res.error || t("email.createFailed", { defaultValue: "Impossible de créer le compte." }));
           }
         }
       } catch {
-        setErrorMessage("Erreur de connexion au serveur.");
+        setErrorMessage(t("email.serverError", { defaultValue: "Erreur de connexion au serveur." }));
       } finally {
         setLoading(false);
       }
@@ -69,7 +71,7 @@ export default function EmailAuthScreen(): React.JSX.Element {
     return (
       <SafeAreaView style={styles.safeArea} edges={["top", "bottom"]}>
         <AppBar
-          title="Mon e-mail"
+          title={t("email.title", { defaultValue: "Mon e-mail" })}
           onBack={() => router.replace("/u-welcome")}
         />
 
@@ -88,7 +90,7 @@ export default function EmailAuthScreen(): React.JSX.Element {
                 }}
               >
                 <Text style={[styles.tabText, tab === "login" ? styles.tabTextActive : styles.tabTextInactive]}>
-                  Se connecter
+                  {t("email.tabLogin", { defaultValue: "Se connecter" })}
                 </Text>
               </Pressable>
 
@@ -101,7 +103,7 @@ export default function EmailAuthScreen(): React.JSX.Element {
                 }}
               >
                 <Text style={[styles.tabText, tab === "register" ? styles.tabTextActive : styles.tabTextInactive]}>
-                  Créer un compte
+                  {t("email.tabRegister", { defaultValue: "Créer un compte" })}
                 </Text>
               </Pressable>
             </View>
@@ -124,7 +126,9 @@ export default function EmailAuthScreen(): React.JSX.Element {
 
             {/* Email Field */}
             <View style={styles.fieldBlock}>
-              <Text style={styles.fieldLabel}>Adresse e-mail</Text>
+              <Text style={styles.fieldLabel}>
+                {t("email.label", { defaultValue: "Adresse e-mail" })}
+              </Text>
               <View style={styles.inputContainer}>
                 <TextInput
                   testID="input-email"
@@ -145,7 +149,9 @@ export default function EmailAuthScreen(): React.JSX.Element {
 
             {/* Password Field */}
             <View style={styles.fieldBlock}>
-              <Text style={styles.fieldLabel}>Mot de passe</Text>
+              <Text style={styles.fieldLabel}>
+                {t("email.passwordLabel", { defaultValue: "Mot de passe" })}
+              </Text>
               <View style={styles.inputContainer}>
                 <TextInput
                   testID="input-password"
@@ -165,13 +171,17 @@ export default function EmailAuthScreen(): React.JSX.Element {
 
             {/* Hints: 8 chars min / Forgot password */}
             <View style={styles.passwordHintsRow}>
-              <Text style={styles.hintText}>8 caractères minimum</Text>
+              <Text style={styles.hintText}>
+                {t("email.minChars", { defaultValue: "8 caractères minimum" })}
+              </Text>
               {tab === "login" && (
                 <Pressable
                   testID="btn-forgot-password"
                   onPress={() => { }}
                 >
-                  <Text style={styles.forgotText}>Mot de passe oublié ?</Text>
+                  <Text style={styles.forgotText}>
+                    {t("email.forgotPassword", { defaultValue: "Mot de passe oublié ?" })}
+                  </Text>
                 </Pressable>
               )}
             </View>
@@ -189,7 +199,9 @@ export default function EmailAuthScreen(): React.JSX.Element {
               {loading ? (
                 <ActivityIndicator size="small" color={colors.white} />
               ) : (
-                <Text style={styles.continueButtonText}>Continuer</Text>
+                <Text style={styles.continueButtonText}>
+                  {t("email.submit", { defaultValue: "Continuer" })}
+                </Text>
               )}
             </Pressable>
 
@@ -202,7 +214,9 @@ export default function EmailAuthScreen(): React.JSX.Element {
               ]}
               onPress={() => router.push("/s-pending")}
             >
-              <Text style={styles.caregiverText}>Je suis soignant ›</Text>
+              <Text style={styles.caregiverText}>
+                {t("email.caregiverLink", { defaultValue: "Je suis soignant ›" })}
+              </Text>
             </Pressable>
 
             {/* Encryption note */}
@@ -211,7 +225,9 @@ export default function EmailAuthScreen(): React.JSX.Element {
                 <FontAwesome5 name="lock" size={32} color={colors.textMuted} />
               </View>
               <Text style={styles.securityText}>
-                Votre mot de passe est chiffré : personne, même notre équipe, ne peut le lire.
+                {t("email.securityNote", {
+                  defaultValue: "Votre mot de passe est chiffré : personne, même notre équipe, ne peut le lire.",
+                })}
               </Text>
             </View>
           </ScrollView>

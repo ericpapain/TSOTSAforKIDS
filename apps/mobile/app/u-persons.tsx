@@ -9,6 +9,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useTranslation } from "react-i18next";
 
 import { AppBar } from "../src/components/AppBar";
 import { BottomNav, type BottomNavTab } from "../src/components/BottomNav";
@@ -19,6 +20,7 @@ import { fontFamilies, fontSizes } from "../src/theme/typography";
 
 export default function PersonsScreen(): React.JSX.Element {
   const router = useRouter();
+  const { t } = useTranslation("mobile");
   const [persons, setPersons] = useState<PersonItem[]>([]);
 
   useEffect(() => {
@@ -69,7 +71,7 @@ export default function PersonsScreen(): React.JSX.Element {
   return (
     <SafeAreaView style={styles.safeArea} edges={["top"]}>
       <AppBar
-        title="Nutrition"
+        title={t("persons.title", { defaultValue: "Nutrition" })}
         onBack={() => router.replace("/u-modules")}
       />
 
@@ -77,15 +79,22 @@ export default function PersonsScreen(): React.JSX.Element {
         contentContainerStyle={styles.container}
         showsVerticalScrollIndicator={false}
       >
-        <Text style={styles.heading}>Pour qui ?</Text>
+        <Text style={styles.heading}>
+          {t("persons.heading", { defaultValue: "Pour qui ?" })}
+        </Text>
 
         {/* Persons list */}
         <View style={styles.personsList}>
           {persons.map((person) => {
             const isChild = person.relation === "child" || person.first_name === "Amina";
+            const isSelf = person.relation === "self" || person.first_name === "Moi-même";
+            const displayName = isSelf ? t("persons.myself", { defaultValue: person.first_name }) : person.first_name;
             const subtitle = isChild
-              ? "Suivie par le CMA de démo"
-              : "Profil à compléter";
+              ? t("persons.followedByCma", { defaultValue: "Suivie par le CMA de démo" })
+              : t("persons.profileToComplete", { defaultValue: "Profil à compléter" });
+            const ageDisplay = person.age_formatted === "adulte"
+              ? t("persons.adult", { defaultValue: "adulte" })
+              : (person.age_formatted || t("persons.child", { defaultValue: "enfant" }));
 
             return (
               <Pressable
@@ -107,14 +116,18 @@ export default function PersonsScreen(): React.JSX.Element {
 
                 <View style={styles.textCol}>
                   <Text style={styles.personTitle}>
-                    {person.first_name} · {person.age_formatted || "enfant"}
+                    {displayName} · {ageDisplay}
                   </Text>
                   <Text style={styles.personSubtitle}>{subtitle}</Text>
                 </View>
 
                 {person.status_badge && (
                   <View style={styles.badgePill}>
-                    <Text style={styles.badgeText}>{person.status_badge}</Text>
+                    <Text style={styles.badgeText}>
+                      {person.status_badge === "Démo"
+                        ? t("persons.demoBadge", { defaultValue: "Démo" })
+                        : person.status_badge}
+                    </Text>
                   </View>
                 )}
 
@@ -134,7 +147,9 @@ export default function PersonsScreen(): React.JSX.Element {
           onPress={() => router.push("/u-addperson")}
         >
           <FontAwesome5 name="plus" size={30} color={colors.primary} />
-          <Text style={styles.addPersonText}>Ajouter une personne</Text>
+          <Text style={styles.addPersonText}>
+            {t("persons.addPerson", { defaultValue: "Ajouter une personne" })}
+          </Text>
         </Pressable>
 
         {/* Explore without profile link */}
@@ -146,13 +161,19 @@ export default function PersonsScreen(): React.JSX.Element {
           ]}
           onPress={() => router.push("/u-choose")}
         >
-          <Text style={styles.exploreText}>Explorer les produits sans profil  ›</Text>
+          <Text style={styles.exploreText}>
+            {t("persons.exploreWithoutProfile", {
+              defaultValue: "Explorer les produits sans profil  ›",
+            })}
+          </Text>
         </Pressable>
 
         {/* Info box: no account needed for family members */}
         <View style={styles.infoBox}>
           <Text style={styles.infoText}>
-            Ajoutez les membres de votre famille : pas besoin de leur créer un compte.
+            {t("persons.familyNote", {
+              defaultValue: "Ajoutez les membres de votre famille : pas besoin de leur créer un compte.",
+            })}
           </Text>
         </View>
       </ScrollView>

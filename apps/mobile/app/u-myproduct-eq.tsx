@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { FontAwesome5 } from "@expo/vector-icons";
+import { useTranslation } from "react-i18next";
 import { colors } from "../src/theme/colors";
 import { myProductStyles as styles } from "../src/features/products/myProductStyles";
 import { getProductEquivalents } from "../src/features/products/productsService";
@@ -59,6 +60,7 @@ const DEFAULT_MY_EQUIVALENTS: MyProductEquivalentDisplay[] = [
 ];
 
 export default function MyProductEquivalentsScreen() {
+  const { t } = useTranslation(["mobile", "common"]);
   const router = useRouter();
   const params = useLocalSearchParams<{
     productId?: string;
@@ -103,15 +105,26 @@ export default function MyProductEquivalentsScreen() {
       <View style={styles.appBar}>
         <TouchableOpacity
           testID="btn-back"
-          accessibilityLabel="Retour"
+          accessibilityLabel={t("common:actions.back", { defaultValue: "Retour" })}
           accessibilityRole="button"
-          onPress={() => router.push({ pathname: "/u-dropdown", params: { personId: params.personId ?? "", name: personName, region: regionName } })}
+          onPress={() =>
+            router.push({
+              pathname: "/u-dropdown",
+              params: {
+                personId: params.personId ?? "",
+                name: personName,
+                region: regionName,
+              },
+            })
+          }
           style={styles.touchIcon}
         >
           <FontAwesome5 name="arrow-left" size={24} color={colors.white} />
         </TouchableOpacity>
 
-        <Text style={styles.appBarTitle}>Mon produit</Text>
+        <Text style={styles.appBarTitle}>
+          {t("mobile:myProductEq.title", { defaultValue: "Mon produit" })}
+        </Text>
         <View style={styles.touchIcon} />
       </View>
 
@@ -120,13 +133,19 @@ export default function MyProductEquivalentsScreen() {
         <View style={styles.customProductCard}>
           <Text style={styles.productName}>{productName}</Text>
           <View style={styles.badgeVerificationLarge}>
-            <Text style={styles.badgeVerificationTextLarge}>Privé · en vérification</Text>
+            <Text style={styles.badgeVerificationTextLarge}>
+              {t("mobile:myProductEq.badgePrivate", {
+                defaultValue: "Privé · en vérification",
+              })}
+            </Text>
           </View>
         </View>
 
         {/* Nutriments summary label */}
         <Text style={styles.myProductNutrientsSummary}>
-          Nutriments : protéines, fer, calcium
+          {t("mobile:myProductEq.summary", {
+            defaultValue: "Nutriments : protéines, fer, calcium",
+          })}
         </Text>
 
         {/* Equivalents List */}
@@ -173,7 +192,12 @@ export default function MyProductEquivalentsScreen() {
           }
           style={styles.btnGiveFull}
         >
-          <Text style={styles.btnGiveFullText}>Donner à {personName}</Text>
+          <Text style={styles.btnGiveFullText}>
+            {t("mobile:myProductEq.giveToPerson", {
+              name: personName,
+              defaultValue: `Donner à ${personName}`,
+            })}
+          </Text>
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>

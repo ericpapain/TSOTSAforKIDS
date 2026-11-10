@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { FontAwesome5 } from "@expo/vector-icons";
+import { useTranslation } from "react-i18next";
 import { colors } from "../src/theme/colors";
 import { BottomNav } from "../src/components/BottomNav";
 import { profileStyles as styles } from "../src/features/persons/profileStyles";
@@ -20,6 +21,7 @@ import { PersonItem } from "../src/features/persons/types";
 
 export default function ProfileScreen() {
   const router = useRouter();
+  const { t, i18n } = useTranslation(["mobile", "common"]);
   const params = useLocalSearchParams<{ personId?: string; name?: string }>();
   const personId = params.personId ?? "";
 
@@ -39,10 +41,15 @@ export default function ProfileScreen() {
     };
   }, [personId]);
 
-  const displayName = person?.first_name ?? params.name ?? "Profil";
-  const sexLabel = person?.sex === "M" ? "Garçon" : person?.sex === "F" ? "Fille" : "";
-  const ageLabel = person?.birth_date ? calculateAgeLabel(person.birth_date) : "";
-  const subtitle = [sexLabel, ageLabel].filter(Boolean).join(" · ") || "Enfant";
+  const displayName = person?.first_name ?? params.name ?? t("mobile:profile.title", { defaultValue: "Profil" });
+  const sexLabel = person?.sex === "M"
+    ? t("mobile:profile.boy", { defaultValue: "Garçon" })
+    : person?.sex === "F"
+      ? t("mobile:profile.girl", { defaultValue: "Fille" })
+      : "";
+  const localeLang = i18n.language === "en" ? "en" : "fr";
+  const ageLabel = person?.birth_date ? calculateAgeLabel(person.birth_date, localeLang) : "";
+  const subtitle = [sexLabel, ageLabel].filter(Boolean).join(" · ") || t("mobile:profile.child", { defaultValue: "Enfant" });
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -52,7 +59,7 @@ export default function ProfileScreen() {
       <View style={styles.appBar}>
         <TouchableOpacity
           testID="btn-back"
-          accessibilityLabel="Retour"
+          accessibilityLabel={t("common:actions.back", { defaultValue: "Retour" })}
           accessibilityRole="button"
           onPress={() => router.push("/u-persons")}
           style={styles.touchIcon}
@@ -90,7 +97,9 @@ export default function ProfileScreen() {
               <View style={styles.nameRow}>
                 <Text style={styles.personName}>{displayName}</Text>
                 <View style={styles.demoBadge}>
-                  <Text style={styles.demoBadgeText}>Démo</Text>
+                  <Text style={styles.demoBadgeText}>
+                    {t("mobile:profile.demo", { defaultValue: "Démo" })}
+                  </Text>
                 </View>
               </View>
               <Text style={styles.personSub}>{subtitle}</Text>
@@ -99,16 +108,29 @@ export default function ProfileScreen() {
 
           {/* Status pill */}
           <View style={styles.statusPill}>
-            <Text style={styles.statusPillText}>À surveiller</Text>
+            <Text style={styles.statusPillText}>
+              {t("mobile:profile.toMonitor", { defaultValue: "À surveiller" })}
+            </Text>
           </View>
 
           {/* Last visit */}
-          <Text style={styles.lastVisitText}>Dernière visite : 29/10 · 7,9 kg</Text>
+          <Text style={styles.lastVisitText}>
+            {t("mobile:profile.lastVisit", {
+              date: "29/10",
+              weight: "7,9 kg",
+              defaultValue: "Dernière visite : 29/10 · 7,9 kg",
+            })}
+          </Text>
         </View>
 
         {/* Appointment Box */}
         <View style={styles.appointmentBox}>
-          <Text style={styles.appointmentText}>Prochain rendez-vous : 12 novembre</Text>
+          <Text style={styles.appointmentText}>
+            {t("mobile:profile.nextAppointment", {
+              date: localeLang === "en" ? "November 12" : "12 novembre",
+              defaultValue: "Prochain rendez-vous : 12 novembre",
+            })}
+          </Text>
         </View>
 
         {/* Action: Give product */}
@@ -124,7 +146,9 @@ export default function ProfileScreen() {
           style={styles.btnGiveProduct}
           activeOpacity={0.85}
         >
-          <Text style={styles.btnGiveProductText}>Donner un produit</Text>
+          <Text style={styles.btnGiveProductText}>
+            {t("mobile:profile.giveProduct", { defaultValue: "Donner un produit" })}
+          </Text>
         </TouchableOpacity>
 
         {/* Action: Intake history */}
@@ -140,7 +164,9 @@ export default function ProfileScreen() {
           style={styles.btnHistory}
           activeOpacity={0.85}
         >
-          <Text style={styles.btnHistoryText}>Mes prises</Text>
+          <Text style={styles.btnHistoryText}>
+            {t("mobile:profile.intakes", { defaultValue: "Mes prises" })}
+          </Text>
         </TouchableOpacity>
 
         {/* Action: Reminders */}
@@ -156,7 +182,12 @@ export default function ProfileScreen() {
           style={styles.btnSchedule}
           activeOpacity={0.85}
         >
-          <Text style={styles.btnScheduleText}>Rappels : 08:00 · 12:30 · 18:00</Text>
+          <Text style={styles.btnScheduleText}>
+            {t("mobile:profile.reminders", {
+              times: "08:00 · 12:30 · 18:00",
+              defaultValue: "Rappels : 08:00 · 12:30 · 18:00",
+            })}
+          </Text>
         </TouchableOpacity>
       </ScrollView>
 

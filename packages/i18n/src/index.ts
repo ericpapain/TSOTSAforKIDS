@@ -6,6 +6,7 @@ import adminFr from "../locales/fr/admin.json";
 import notificationsFr from "../locales/fr/notifications.json";
 import errorsFr from "../locales/fr/errors.json";
 import medicalFr from "../locales/fr/medical.json";
+import mobileFr from "../locales/fr/mobile.json";
 
 import commonEn from "../locales/en/common.json";
 import authEn from "../locales/en/auth.json";
@@ -15,6 +16,7 @@ import adminEn from "../locales/en/admin.json";
 import notificationsEn from "../locales/en/notifications.json";
 import errorsEn from "../locales/en/errors.json";
 import medicalEn from "../locales/en/medical.json";
+import mobileEn from "../locales/en/mobile.json";
 
 import type { SupportedLocale, I18nNamespace, FrResources } from "./types";
 
@@ -35,6 +37,7 @@ export const I18N_NAMESPACES: readonly I18nNamespace[] = [
   "notifications",
   "errors",
   "medical",
+  "mobile",
 ] as const;
 
 export const resources: Record<SupportedLocale, FrResources> = {
@@ -47,6 +50,7 @@ export const resources: Record<SupportedLocale, FrResources> = {
     notifications: notificationsFr,
     errors: errorsFr,
     medical: medicalFr,
+    mobile: mobileFr,
   },
   en: {
     common: commonEn as typeof commonFr,
@@ -57,8 +61,11 @@ export const resources: Record<SupportedLocale, FrResources> = {
     notifications: notificationsEn as typeof notificationsFr,
     errors: errorsEn as typeof errorsFr,
     medical: medicalEn as typeof medicalFr,
+    mobile: mobileEn as typeof mobileFr,
   },
 };
+
+export const I18N_RESOURCES = resources;
 
 export function isSupportedLocale(value: unknown): value is SupportedLocale {
   return typeof value === "string" && (SUPPORTED_LOCALES as readonly string[]).includes(value);

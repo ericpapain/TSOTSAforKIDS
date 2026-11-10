@@ -9,6 +9,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useTranslation } from "react-i18next";
 
 import { authenticateWithGoogle } from "../src/features/auth/authService";
 import { colors } from "../src/theme/colors";
@@ -16,6 +17,7 @@ import { fontFamilies, fontSizes } from "../src/theme/typography";
 
 export default function GoogleAuthScreen(): React.JSX.Element {
   const router = useRouter();
+  const { t } = useTranslation("mobile");
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -32,10 +34,10 @@ export default function GoogleAuthScreen(): React.JSX.Element {
           router.replace("/u-modules");
         }
       } else {
-        setErrorMessage(result.error || "Échec de l'authentification Google.");
+        setErrorMessage(result.error || t("google.authFailed", { defaultValue: "Échec de l'authentification Google." }));
       }
     } catch {
-      setErrorMessage("Erreur de connexion. Veuillez réessayer.");
+      setErrorMessage(t("google.connError", { defaultValue: "Erreur de connexion. Veuillez réessayer." }));
     } finally {
       setLoading(false);
     }
@@ -56,8 +58,12 @@ export default function GoogleAuthScreen(): React.JSX.Element {
         </View>
 
         {/* Title & subtitle */}
-        <Text style={styles.title}>Choisir un compte</Text>
-        <Text style={styles.subtitle}>pour continuer vers TSOTSA Kids</Text>
+        <Text style={styles.title}>
+          {t("google.chooseAccount", { defaultValue: "Choisir un compte" })}
+        </Text>
+        <Text style={styles.subtitle}>
+          {t("google.toContinue", { defaultValue: "pour continuer vers TSOTSA Kids" })}
+        </Text>
 
         {/* Error message */}
         {errorMessage && (
@@ -80,7 +86,9 @@ export default function GoogleAuthScreen(): React.JSX.Element {
             <FontAwesome5 name="user-circle" size={32} color={colors.textMuted} />
           </View>
           <View style={styles.accountTextCol}>
-            <Text style={styles.accountName}>Compte Google de démo</Text>
+            <Text style={styles.accountName}>
+              {t("google.demoAccount", { defaultValue: "Compte Google de démo" })}
+            </Text>
             <Text style={styles.accountEmail}>parent.demo@gmail.com</Text>
           </View>
           {loading ? (
@@ -99,12 +107,16 @@ export default function GoogleAuthScreen(): React.JSX.Element {
           ]}
           onPress={() => router.push("/s-pending")}
         >
-          <Text style={styles.caregiverText}>Je suis soignant ›</Text>
+          <Text style={styles.caregiverText}>
+            {t("google.caregiverLink", { defaultValue: "Je suis soignant ›" })}
+          </Text>
         </Pressable>
 
         {/* Disclaimer */}
         <Text style={styles.disclaimer}>
-          Google partagera votre nom, votre adresse e-mail et votre photo avec TSOTSA Kids.
+          {t("google.disclaimer", {
+            defaultValue: "Google partagera votre nom, votre adresse e-mail et votre photo avec TSOTSA Kids.",
+          })}
         </Text>
       </View>
     </SafeAreaView>

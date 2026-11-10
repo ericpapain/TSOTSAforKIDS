@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   View,
   Text,
@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { FontAwesome5 } from "@expo/vector-icons";
+import { useTranslation } from "react-i18next";
 import { colors } from "../src/theme/colors";
 import { foodStyles as styles } from "../src/features/products/foodStyles";
 import { getFoodDetail } from "../src/features/products/productsService";
@@ -22,45 +23,8 @@ interface ComparisonRow {
   isHighlight: boolean;
 }
 
-const DEFAULT_COMPARISON: ComparisonRow[] = [
-  {
-    nutrient: "Protéines",
-    isEssential: true,
-    refValue: "≈ 13–16 g",
-    foodValue: "25,8 g",
-    isHighlight: true,
-  },
-  {
-    nutrient: "Lipides",
-    isEssential: true,
-    refValue: "≈ 26–37 g",
-    foodValue: "49,2 g",
-    isHighlight: true,
-  },
-  {
-    nutrient: "Fer",
-    isEssential: true,
-    refValue: "10–14 mg",
-    foodValue: "4,6 mg",
-    isHighlight: true,
-  },
-  {
-    nutrient: "Calcium",
-    isEssential: false,
-    refValue: "300–600 mg",
-    foodValue: "92 mg",
-    isHighlight: false,
-  },
-  {
-    nutrient: "Énergie",
-    isEssential: false,
-    refValue: "520–550 kcal",
-    foodValue: "567 kcal",
-    isHighlight: false,
-  },
-];
-
 export default function FoodDetailScreen() {
+  const { t } = useTranslation(["mobile", "common"]);
   const router = useRouter();
   const params = useLocalSearchParams<{
     foodId?: string;
@@ -91,13 +55,62 @@ export default function FoodDetailScreen() {
     };
   }, [params.foodId]);
 
+  const defaultComparison: ComparisonRow[] = useMemo(
+    () => [
+      {
+        nutrient: t("mobile:food.proteins", { defaultValue: "Protéines" }),
+        isEssential: true,
+        refValue: "≈ 13–16 g",
+        foodValue: "25,8 g",
+        isHighlight: true,
+      },
+      {
+        nutrient: t("mobile:food.lipids", { defaultValue: "Lipides" }),
+        isEssential: true,
+        refValue: "≈ 26–37 g",
+        foodValue: "49,2 g",
+        isHighlight: true,
+      },
+      {
+        nutrient: t("mobile:food.iron", { defaultValue: "Fer" }),
+        isEssential: true,
+        refValue: "10–14 mg",
+        foodValue: "4,6 mg",
+        isHighlight: true,
+      },
+      {
+        nutrient: t("mobile:food.calcium", { defaultValue: "Calcium" }),
+        isEssential: false,
+        refValue: "300–600 mg",
+        foodValue: "92 mg",
+        isHighlight: false,
+      },
+      {
+        nutrient: t("mobile:food.energy", { defaultValue: "Énergie" }),
+        isEssential: false,
+        refValue: "520–550 kcal",
+        foodValue: "567 kcal",
+        isHighlight: false,
+      },
+    ],
+    [t]
+  );
+
   const sourceCitation = foodDetail?.nutrients?.[0]?.source?.citation
     ? `Source : ${foodDetail.nutrients[0].source.citation}`
-    : "Source : article [référence] · comparaison ORKG [identifiant] · validé le [date]. Valeurs de la démo : USDA, indicatives.";
+    : t("mobile:food.sourceDemo", {
+        defaultValue:
+          "Source : article [référence] · comparaison ORKG [identifiant] · validé le [date]. Valeurs de la démo : USDA, indicatives.",
+      });
 
   const categoryLabel = foodDetail?.category
-    ? `${foodDetail.category} · pour 100 g`
-    : "Graine crue · pour 100 g";
+    ? t("mobile:food.categoryPer100g", {
+        category: foodDetail.category,
+        defaultValue: `${foodDetail.category} · pour 100 g`,
+      })
+    : t("mobile:food.rawSeedPer100g", {
+        defaultValue: "Graine crue · pour 100 g",
+      });
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -107,7 +120,7 @@ export default function FoodDetailScreen() {
       <View style={styles.appBar}>
         <TouchableOpacity
           testID="btn-back"
-          accessibilityLabel="Retour"
+          accessibilityLabel={t("common:actions.back", { defaultValue: "Retour" })}
           accessibilityRole="button"
           onPress={() =>
             router.push({
@@ -135,19 +148,27 @@ export default function FoodDetailScreen() {
         <View style={styles.subHeaderRow}>
           <Text style={styles.foodCategoryText}>{categoryLabel}</Text>
           <View style={styles.pillScore}>
-            <Text style={styles.pillScoreText}>3/3 nutriments</Text>
+            <Text style={styles.pillScoreText}>
+              {t("mobile:food.nutrientsScore", {
+                count: 3,
+                total: 3,
+                defaultValue: "3/3 nutriments",
+              })}
+            </Text>
           </View>
         </View>
 
         {/* Comparison Table Header */}
         <View style={styles.tableHeader}>
-          <Text style={styles.tableHeaderCol}>Nutriment</Text>
+          <Text style={styles.tableHeaderCol}>
+            {t("mobile:food.tableNutrient", { defaultValue: "Nutriment" })}
+          </Text>
           <Text style={styles.tableHeaderCol}>{productName}</Text>
           <Text style={styles.tableHeaderCol}>{foodName}</Text>
         </View>
 
         {/* Comparison Table Rows */}
-        {DEFAULT_COMPARISON.map((row, idx) => {
+        {defaultComparison.map((row, idx) => {
           const isEven = idx % 2 === 0;
           return (
             <View
@@ -167,7 +188,11 @@ export default function FoodDetailScreen() {
         })}
 
         {/* Legend */}
-        <Text style={styles.legendText}>★ nutriment essentiel recherché</Text>
+        <Text style={styles.legendText}>
+          {t("mobile:food.essentialLegend", {
+            defaultValue: "★ nutriment essentiel recherché",
+          })}
+        </Text>
 
         {/* Scientific Source Card */}
         <View style={styles.sourceCard}>
@@ -177,7 +202,10 @@ export default function FoodDetailScreen() {
         {/* Medical Advisory Notice */}
         <View style={styles.warningNotice}>
           <Text style={styles.warningNoticeText}>
-            Équivalence nutritionnelle indicative. Ne remplace pas un traitement prescrit : demandez l'avis de votre soignant.
+            {t("mobile:food.advisory", {
+              defaultValue:
+                "Équivalence nutritionnelle indicative. Ne remplace pas un traitement prescrit : demandez l'avis de votre soignant.",
+            })}
           </Text>
         </View>
 
@@ -197,7 +225,12 @@ export default function FoodDetailScreen() {
           }
           style={styles.btnGiveFood}
         >
-          <Text style={styles.btnGiveFoodText}>Donner à {personName}</Text>
+          <Text style={styles.btnGiveFoodText}>
+            {t("mobile:food.giveToPerson", {
+              name: personName,
+              defaultValue: `Donner à ${personName}`,
+            })}
+          </Text>
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>

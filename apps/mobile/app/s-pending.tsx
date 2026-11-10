@@ -9,18 +9,20 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useTranslation } from "react-i18next";
 
 import { AppBar } from "../src/components/AppBar";
 import { colors } from "../src/theme/colors";
 import { fontFamilies, fontSizes } from "../src/theme/typography";
 
 export default function CaregiverPendingScreen(): React.JSX.Element {
+  const { t } = useTranslation(["mobile", "common"]);
   const router = useRouter();
 
   return (
     <SafeAreaView style={styles.safeArea} edges={["top", "bottom"]}>
       <AppBar
-        title="Compte soignant"
+        title={t("mobile:pending.title", { defaultValue: "Compte soignant" })}
         backgroundColor={colors.care}
         onBack={() => router.replace("/u-signup")}
       />
@@ -35,29 +37,46 @@ export default function CaregiverPendingScreen(): React.JSX.Element {
         </View>
 
         {/* Title & subtitle */}
-        <Text style={styles.title}>Vérification en cours</Text>
+        <Text style={styles.title}>
+          {t("mobile:pending.heading", { defaultValue: "Vérification en cours" })}
+        </Text>
         <Text style={styles.subtitle}>
-          Notre équipe vérifie votre identité professionnelle. Vous serez prévenu par SMS.
+          {t("mobile:pending.subtitle", {
+            defaultValue:
+              "Notre équipe vérifie votre identité professionnelle. Vous serez prévenu par SMS.",
+          })}
         </Text>
 
         {/* Status items */}
         <View style={styles.statusList}>
           {/* Item 1 */}
           <View style={styles.statusRow}>
-            <Text style={styles.statusLabel}>Carte professionnelle</Text>
-            <Text style={styles.statusValue}>envoyée ✓</Text>
+            <Text style={styles.statusLabel}>
+              {t("mobile:pending.proCard", { defaultValue: "Carte professionnelle" })}
+            </Text>
+            <Text style={styles.statusValue}>
+              {t("mobile:pending.sentStatus", { defaultValue: "envoyée ✓" })}
+            </Text>
           </View>
 
           {/* Item 2 */}
           <View style={styles.statusRow}>
-            <Text style={styles.statusLabel}>Établissement</Text>
-            <Text style={styles.statusValue}>CMA de démo ✓</Text>
+            <Text style={styles.statusLabel}>
+              {t("mobile:pending.facility", { defaultValue: "Établissement" })}
+            </Text>
+            <Text style={styles.statusValue}>
+              {t("mobile:pending.demoFacilityStatus", { defaultValue: "CMA de démo ✓" })}
+            </Text>
           </View>
 
           {/* Item 3 */}
           <View style={styles.statusRow}>
-            <Text style={styles.statusLabel}>Numéro d'ordre</Text>
-            <Text style={styles.statusValue}>envoyé ✓</Text>
+            <Text style={styles.statusLabel}>
+              {t("mobile:pending.registrationNumber", { defaultValue: "Numéro d'ordre" })}
+            </Text>
+            <Text style={styles.statusValue}>
+              {t("mobile:pending.sentStatusMasc", { defaultValue: "envoyé ✓" })}
+            </Text>
           </View>
         </View>
 
@@ -70,7 +89,9 @@ export default function CaregiverPendingScreen(): React.JSX.Element {
           ]}
           onPress={() => router.replace("/u-modules")}
         >
-          <Text style={styles.adminButtonText}>Voir côté administration →</Text>
+          <Text style={styles.adminButtonText}>
+            {t("mobile:pending.viewAdmin", { defaultValue: "Voir côté administration →" })}
+          </Text>
         </Pressable>
 
         {/* Understood text link */}
@@ -82,7 +103,9 @@ export default function CaregiverPendingScreen(): React.JSX.Element {
           ]}
           onPress={() => router.replace("/u-welcome")}
         >
-          <Text style={styles.understoodText}>Compris</Text>
+          <Text style={styles.understoodText}>
+            {t("mobile:pending.understood", { defaultValue: "Compris" })}
+          </Text>
         </Pressable>
       </ScrollView>
     </SafeAreaView>

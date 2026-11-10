@@ -6,6 +6,7 @@ import type adminFr from "../locales/fr/admin.json";
 import type notificationsFr from "../locales/fr/notifications.json";
 import type errorsFr from "../locales/fr/errors.json";
 import type medicalFr from "../locales/fr/medical.json";
+import type mobileFr from "../locales/fr/mobile.json";
 
 export type SupportedLocale = "fr" | "en";
 
@@ -17,7 +18,8 @@ export type I18nNamespace =
   | "admin"
   | "notifications"
   | "errors"
-  | "medical";
+  | "medical"
+  | "mobile";
 
 export type FrResources = {
   common: typeof commonFr;
@@ -28,6 +30,7 @@ export type FrResources = {
   notifications: typeof notificationsFr;
   errors: typeof errorsFr;
   medical: typeof medicalFr;
+  mobile: typeof mobileFr;
 };
 
 type StripPluralSuffix<K extends string> = K extends `${infer Base}_one`

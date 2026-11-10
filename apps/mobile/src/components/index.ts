@@ -8,4 +8,5 @@ export * from "./Field";
 export * from "./ListItem";
 export * from "./Notice";
 export * from "./Toggle";
+export * from "./LanguageSelector";
 
