@@ -11,7 +11,7 @@ import sqlalchemy as sa
 from alembic import op
 from sqlalchemy.dialects import mysql
 
-revision: str = "20261106_0007"
+revision: str = "20261106_0007_domain_c_persons_consents_audit"
 down_revision: str | None = "20261105_0006"
 branch_labels: str | Sequence[str] | None = None
 depends_on: str | Sequence[str] | None = None
