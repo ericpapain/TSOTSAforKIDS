@@ -116,31 +116,34 @@ def upgrade() -> None:
         "ix_consents_person_withdrawn", "consents", ["person_id", "withdrawn_at"]
     )
 
-    op.create_table(
-        "audit_log",
-        sa.Column("id", sa.BINARY(16), primary_key=True),
-        sa.Column(
-            "actor_user_id",
-            sa.BINARY(16),
-            sa.ForeignKey("users.id"),
-            nullable=True,
-        ),
-        sa.Column("action", sa.String(50), nullable=False),
-        sa.Column("entity", sa.String(50), nullable=False),
-        sa.Column("entity_id", sa.String(64), nullable=True),
-        sa.Column(
-            "organization_id",
-            sa.BINARY(16),
-            sa.ForeignKey("organizations.id"),
-            nullable=True,
-        ),
-        sa.Column("at", mysql.DATETIME(fsp=3), nullable=False),
-        sa.Column("ip", sa.String(50), nullable=True),
-        sa.Column("details", sa.JSON(), nullable=True),
-    )
-    op.create_index("ix_audit_log_actor_at", "audit_log", ["actor_user_id", "at"])
-    op.create_index("ix_audit_log_entity_id", "audit_log", ["entity", "entity_id"])
-    op.create_index("ix_audit_log_org_at", "audit_log", ["organization_id", "at"])
+    bind = op.get_bind()
+    inspector = sa.inspect(bind)
+    if not inspector.has_table("audit_log"):
+        op.create_table(
+            "audit_log",
+            sa.Column("id", sa.BINARY(16), primary_key=True),
+            sa.Column(
+                "actor_user_id",
+                sa.BINARY(16),
+                sa.ForeignKey("users.id"),
+                nullable=True,
+            ),
+            sa.Column("action", sa.String(50), nullable=False),
+            sa.Column("entity", sa.String(50), nullable=False),
+            sa.Column("entity_id", sa.String(64), nullable=True),
+            sa.Column(
+                "organization_id",
+                sa.BINARY(16),
+                sa.ForeignKey("organizations.id"),
+                nullable=True,
+            ),
+            sa.Column("at", mysql.DATETIME(fsp=3), nullable=False),
+            sa.Column("ip", sa.String(50), nullable=True),
+            sa.Column("details", sa.JSON(), nullable=True),
+        )
+        op.create_index("ix_audit_log_actor_at", "audit_log", ["actor_user_id", "at"])
+        op.create_index("ix_audit_log_entity_id", "audit_log", ["entity", "entity_id"])
+        op.create_index("ix_audit_log_org_at", "audit_log", ["organization_id", "at"])
 
 
 def downgrade() -> None:
