@@ -8,6 +8,7 @@ import { parseFrenchDate } from "../../features/caregiver/evaluationCalculator";
 import type { FollowedPerson } from "../../features/caregiver/types";
 import { useCaregiverStore } from "../../features/caregiver/useCaregiverStore";
 import { ReassignDoctorModal } from "./ReassignDoctorModal";
+import { NewAdmissionModal } from "./NewAdmissionModal";
 import { SuperCaregiverBar } from "./SuperCaregiverBar";
 import { ClinicalStatusGuide } from "./ClinicalStatusGuide";
 
@@ -23,11 +24,13 @@ export function FollowedPersonsPage(): React.JSX.Element {
     isSuperCaregiver,
     setSuperCaregiver,
     reassignPatient,
+    addPatient,
   } = useCaregiverStore();
 
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [selectedPersonForReassign, setSelectedPersonForReassign] = useState<FollowedPerson | null>(null);
+  const [isAdmissionModalOpen, setIsAdmissionModalOpen] = useState(false);
   const [successToast, setSuccessToast] = useState<string | null>(null);
 
   useEffect(() => {
@@ -84,6 +87,12 @@ export function FollowedPersonsPage(): React.JSX.Element {
       );
       setTimeout(() => setSuccessToast(null), 4000);
     }
+  };
+
+  const handleAdmissionConfirm = (data: Partial<FollowedPerson> & { name: string; age: string; gender: "F" | "M" }) => {
+    const newPerson = addPatient(data);
+    setSuccessToast(`Nouvelle admission enregistrée : ${newPerson.name} (${newPerson.code}).`);
+    setTimeout(() => setSuccessToast(null), 5000);
   };
 
   const columns: DataTableColumn<FollowedPerson>[] = [
@@ -204,7 +213,13 @@ export function FollowedPersonsPage(): React.JSX.Element {
           </h1>
           <p className="text-14 text-text-muted mt-1">{t("persons.subtitle")}</p>
         </div>
-        <Button variant="primary" space="care" size="md">
+        <Button
+          variant="primary"
+          space="care"
+          size="md"
+          data-testid="new-admission-btn"
+          onClick={() => setIsAdmissionModalOpen(true)}
+        >
           {t("persons.newAdmissionBtn")}
         </Button>
       </div>
@@ -266,6 +281,13 @@ export function FollowedPersonsPage(): React.JSX.Element {
         doctors={doctors}
         onClose={() => setSelectedPersonForReassign(null)}
         onConfirm={handleConfirmReassign}
+      />
+
+      <NewAdmissionModal
+        isOpen={isAdmissionModalOpen}
+        doctors={doctors}
+        onClose={() => setIsAdmissionModalOpen(false)}
+        onConfirm={handleAdmissionConfirm}
       />
     </div>
   );

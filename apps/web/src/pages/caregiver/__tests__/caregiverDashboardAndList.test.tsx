@@ -115,5 +115,30 @@ describe("FollowedPersonsPage (W03)", () => {
     fireEvent.click(btn);
     expect(mockNavigate).toHaveBeenCalledWith("/soignant/personnes/A-014");
   });
+
+  it("opens new admission modal and creates a new patient", () => {
+    render(
+      <MemoryRouter>
+        <FollowedPersonsPage />
+      </MemoryRouter>
+    );
+
+    const newBtn = screen.getByTestId("new-admission-btn");
+    fireEvent.click(newBtn);
+
+    expect(screen.getByTestId("new-admission-modal")).toBeInTheDocument();
+
+    const nameInput = screen.getByTestId("admission-name-input");
+    const ageInput = screen.getByTestId("admission-age-input");
+
+    fireEvent.change(nameInput, { target: { value: "Aissatou" } });
+    fireEvent.change(ageInput, { target: { value: "2 a 1 m" } });
+
+    const submitBtn = screen.getByTestId("confirm-admission-btn");
+    fireEvent.click(submitBtn);
+
+    expect(screen.queryByTestId("new-admission-modal")).not.toBeInTheDocument();
+    expect(screen.getByText("Aissatou")).toBeInTheDocument();
+  });
 });
 
