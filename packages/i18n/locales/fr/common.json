@@ -36,12 +36,12 @@
   "dev": {
     "placeholder": {
       "screenLabel": "Écran {{screenId}} · {{routePath}}",
-      "message": "Cet écran sera implémenté lors de son étape dédiée dans TSOTSA Kids.",
+      "message": "Cet écran sera implémenté lors de son étape dédiée dans TSOTSA4Kids.",
       "userNavLabel": "Produits & Équivalents"
     },
     "catalog": {
       "title": "Catalogue des composants partagés (Dev)",
-      "subtitle": "Présentation des composants du système de design TSOTSA Kids.",
+      "subtitle": "Présentation des composants du système de design TSOTSA4Kids.",
       "spaceBtn": "Espace {{space}}",
       "sec1": "1. Logos",
       "sec2": "2. Boutons",

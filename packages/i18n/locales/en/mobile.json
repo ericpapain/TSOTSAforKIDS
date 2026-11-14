@@ -20,10 +20,10 @@
     "button": "Sign in with Google",
     "orOther": "Or choose another sign-in method",
     "chooseAccount": "Choose an account",
-    "toContinue": "to continue to TSOTSA Kids",
+    "toContinue": "to continue to TSOTSA4Kids",
     "demoAccount": "Demo Google account",
     "caregiverLink": "I am a caregiver ›",
-    "disclaimer": "Google will share your name, email address, and photo with TSOTSA Kids.",
+    "disclaimer": "Google will share your name, email address, and photo with TSOTSA4Kids.",
     "authFailed": "Google authentication failed.",
     "connError": "Connection error. Please try again."
   },

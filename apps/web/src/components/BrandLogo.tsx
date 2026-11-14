@@ -53,7 +53,7 @@ export function BrandLogo({
       data-testid={testID}
       className={`inline-flex items-center select-none ${className}`}
       role="img"
-      aria-label="TSOTSA Kids Logo"
+      aria-label="TSOTSA4Kids Logo"
     >
       {/* Symbol */}
       {showSymbol && (
@@ -128,7 +128,7 @@ export function BrandLogo({
               lineHeight: 1,
             }}
           >
-            KIDS
+            4KIDS
           </span>
         </div>
       )}

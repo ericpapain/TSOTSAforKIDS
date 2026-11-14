@@ -10,12 +10,12 @@ describe("GoogleAuthScreen (M02)", () => {
     const { getByText, getByTestId } = render(<GoogleAuthScreen />);
 
     expect(getByText("Choisir un compte")).toBeTruthy();
-    expect(getByText("pour continuer vers TSOTSA Kids")).toBeTruthy();
+    expect(getByText("pour continuer vers TSOTSA4Kids")).toBeTruthy();
     expect(getByText("Compte Google de démo")).toBeTruthy();
     expect(getByText("parent.demo@gmail.com")).toBeTruthy();
     expect(getByText("Je suis soignant ›")).toBeTruthy();
     expect(
-      getByText("Google partagera votre nom, votre adresse e-mail et votre photo avec TSOTSA Kids.")
+      getByText("Google partagera votre nom, votre adresse e-mail et votre photo avec TSOTSA4Kids.")
     ).toBeTruthy();
     expect(getByTestId("btn-google-account-demo")).toBeTruthy();
   });

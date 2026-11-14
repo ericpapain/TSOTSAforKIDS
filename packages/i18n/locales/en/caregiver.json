@@ -6,7 +6,7 @@
     "settings": "Settings"
   },
   "dashboard": {
-    "pageTitle": "Dashboard — Caregiver portal | TSOTSA Kids",
+    "pageTitle": "Dashboard — Caregiver portal | TSOTSA4Kids",
     "title": "Dashboard — Caregiver portal",
     "subtitle": "Kousséri Medical Center · {{count}} active followed persons",
     "kpi": {
@@ -42,7 +42,7 @@
     }
   },
   "persons": {
-    "pageTitle": "Followed persons — Caregiver portal | TSOTSA Kids",
+    "pageTitle": "Followed persons — Caregiver portal | TSOTSA4Kids",
     "title": "Followed persons ({{count}})",
     "subtitle": "Active registry of children monitored for malnutrition",
     "newAdmissionBtn": "+ New admission",
@@ -124,7 +124,7 @@
     }
   },
   "record": {
-    "pageTitle": "Record {{name}} (#{{id}}) — Caregiver portal | TSOTSA Kids",
+    "pageTitle": "Record {{name}} (#{{id}}) — Caregiver portal | TSOTSA4Kids",
     "girlAge": "Girl · {{months}} months",
     "backToDashboardBtn": "Back to dashboard",
     "finishDemoBtn": "Finish demo ›",
@@ -167,7 +167,7 @@
     }
   },
   "assessment": {
-    "pageTitle": "New assessment — {{name}} (#{{id}}) | TSOTSA Kids",
+    "pageTitle": "New assessment — {{name}} (#{{id}}) | TSOTSA4Kids",
     "breadcrumbNew": "New assessment",
     "title": "New clinical assessment — {{name}} (#{{id}})",
     "subtitle": "Girl · Born {{birthDate}}",
@@ -198,7 +198,7 @@
     "dailyGainLabel": "Daily weight gain"
   },
   "plan": {
-    "pageTitle": "Intake plan — {{name}} (#{{id}}) | TSOTSA Kids",
+    "pageTitle": "Intake plan — {{name}} (#{{id}}) | TSOTSA4Kids",
     "breadcrumb": "Intake plan",
     "title": "Intake plan and reminders — {{name}} (#{{id}})",
     "subtitle": "Active prescription · {{count}} daily intakes",

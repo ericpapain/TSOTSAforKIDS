@@ -6,7 +6,7 @@ describe('BrandLogo', () => {
   it('renders the brand logo with TSOTSA and KIDS text', () => {
     render(<BrandLogo variant="light" size={34} />);
     expect(screen.getByText('TSOTSA')).toBeInTheDocument();
-    expect(screen.getByText('KIDS')).toBeInTheDocument();
+    expect(screen.getByText('4KIDS')).toBeInTheDocument();
   });
 
   it('renders in dark variant', () => {
@@ -24,7 +24,7 @@ describe('BrandLogo', () => {
   it('renders wordmark only', () => {
     render(<BrandLogo variant="light" mode="word" />);
     expect(screen.getByText('TSOTSA')).toBeInTheDocument();
-    expect(screen.getByText('KIDS')).toBeInTheDocument();
+    expect(screen.getByText('4KIDS')).toBeInTheDocument();
     expect(screen.queryByTestId('brand-logo-symbol')).toBeNull();
   });
 });

@@ -1,6 +1,6 @@
 {
   "caregiverPage": {
-    "pageTitle": "Notifications soignant | TSOTSA Kids",
+    "pageTitle": "Notifications soignant | TSOTSA4Kids",
     "title": "Notifications soignant",
     "subtitle": "Centre d'alertes cliniques et de suivi des prises",
     "markAllReadBtn": "Tout marquer comme lu",
@@ -28,7 +28,7 @@
     }
   },
   "settingsPage": {
-    "pageTitle": "Réglages des notifications soignant | TSOTSA Kids",
+    "pageTitle": "Réglages des notifications soignant | TSOTSA4Kids",
     "breadcrumbNotifications": "Notifications",
     "breadcrumbSettings": "Réglages",
     "title": "Réglages des notifications soignant",
