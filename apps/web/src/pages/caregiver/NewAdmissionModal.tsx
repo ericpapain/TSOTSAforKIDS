@@ -172,7 +172,7 @@ export const NewAdmissionModal: React.FC<NewAdmissionModalProps> = ({
                     gender === "F" ? "bg-care text-white border-care" : "bg-white text-[#17302A] border-[#D5DEDA]"
                   }`}
                 >
-                  Fille (F)
+                  {t("caregiver:persons.admissionModal.genderFemale", "Fille (F)")}
                 </button>
                 <button
                   type="button"
@@ -181,7 +181,7 @@ export const NewAdmissionModal: React.FC<NewAdmissionModalProps> = ({
                     gender === "M" ? "bg-care text-white border-care" : "bg-white text-[#17302A] border-[#D5DEDA]"
                   }`}
                 >
-                  Garçon (M)
+                  {t("caregiver:persons.admissionModal.genderMale", "Garçon (M)")}
                 </button>
               </div>
             </div>
@@ -210,7 +210,9 @@ export const NewAdmissionModal: React.FC<NewAdmissionModalProps> = ({
             </div>
             <div className="grid grid-cols-3 gap-2">
               <div>
-                <label className="block text-[11px] text-[#5B6B66] mb-0.5">Poids (kg)</label>
+                <label className="block text-[11px] text-[#5B6B66] mb-0.5">
+                  {t("caregiver:persons.admissionModal.weightLabel", "Poids (kg)")}
+                </label>
                 <input
                   type="number"
                   step="0.1"
@@ -220,7 +222,9 @@ export const NewAdmissionModal: React.FC<NewAdmissionModalProps> = ({
                 />
               </div>
               <div>
-                <label className="block text-[11px] text-[#5B6B66] mb-0.5">Taille (cm)</label>
+                <label className="block text-[11px] text-[#5B6B66] mb-0.5">
+                  {t("caregiver:persons.admissionModal.heightLabel", "Taille (cm)")}
+                </label>
                 <input
                   type="number"
                   step="0.5"
@@ -230,7 +234,9 @@ export const NewAdmissionModal: React.FC<NewAdmissionModalProps> = ({
                 />
               </div>
               <div>
-                <label className="block text-[11px] text-[#5B6B66] mb-0.5">PB (mm) *</label>
+                <label className="block text-[11px] text-[#5B6B66] mb-0.5">
+                  {t("caregiver:persons.admissionModal.pbLabel", "PB (mm) *")}
+                </label>
                 <input
                   type="number"
                   value={pb}
@@ -247,7 +253,7 @@ export const NewAdmissionModal: React.FC<NewAdmissionModalProps> = ({
                 className="w-4 h-4 text-danger rounded border-[#D5DEDA] focus:ring-danger"
               />
               <span className="text-[13px] text-danger font-bold">
-                Présence d'œdèmes bilatéraux (signe de MAS)
+                {t("caregiver:persons.admissionModal.edemaLabel", "Présence d'œdèmes bilatéraux (signe de MAS)")}
               </span>
             </label>
           </div>
@@ -264,7 +270,7 @@ export const NewAdmissionModal: React.FC<NewAdmissionModalProps> = ({
             >
               {doctors.map((doc) => (
                 <option key={doc.id} value={doc.id}>
-                  {doc.name} — {doc.facility} ({doc.patientCount} patients)
+                  {`${doc.name} — ${doc.facility} (${doc.patientCount})`}
                 </option>
               ))}
             </select>

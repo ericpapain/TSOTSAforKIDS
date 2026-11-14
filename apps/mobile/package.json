@@ -15,6 +15,7 @@
     "check": "tsc --noEmit && eslint src app --ext .ts,.tsx && jest --coverage --passWithNoTests"
   },
   "dependencies": {
+    "@babel/runtime": "^7.26.0",
     "@expo-google-fonts/carlito": "^0.4.1",
     "@expo/vector-icons": "^14.0.4",
     "@react-native-google-signin/google-signin": "^13.1.0",
@@ -31,6 +32,7 @@
     "expo-sqlite": "~15.0.6",
     "expo-status-bar": "~2.0.1",
     "i18next": "^24.2.2",
+    "query-string": "^10.0.0",
     "react": "18.3.1",
     "react-i18next": "^15.4.0",
     "react-native": "0.76.7",
