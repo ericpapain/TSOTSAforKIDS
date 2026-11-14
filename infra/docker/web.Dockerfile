@@ -7,6 +7,7 @@ RUN corepack enable && corepack prepare pnpm@latest --activate
 # Workspace declarations and root manifests
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY packages/api-client ./packages/api-client
+COPY packages/i18n ./packages/i18n
 COPY apps/web ./apps/web
 
 RUN pnpm install --frozen-lockfile
