@@ -37,3 +37,4 @@ flowchart TD
 ### Prochaine étape immédiate recommandée :
 Vous n'avez **aucun besoin de VPS** pour avoir votre application sur votre téléphone dès aujourd'hui.  
 Nous pouvons lancer la configuration **EAS Build** pour générer le premier fichier **`.apk` installable** de TSOTSA Kids.
+

@@ -17,16 +17,8 @@ RUN pnpm --filter @tsotsa/web build
 # Stage 2: Serve with lightweight Nginx
 FROM nginx:alpine
 
-RUN addgroup -g 1001 -S tsotsa && adduser -u 1001 -S tsotsa -G tsotsa
-
 COPY infra/docker/nginx-web.conf /etc/nginx/conf.d/default.conf
 COPY --from=builder /app/apps/web/dist /usr/share/nginx/html
-
-RUN chown -R tsotsa:tsotsa /usr/share/nginx/html /var/cache/nginx /var/log/nginx /etc/nginx/conf.d \
-    && touch /var/run/nginx.pid \
-    && chown -R tsotsa:tsotsa /var/run/nginx.pid
-
-USER tsotsa
 
 EXPOSE 80
 

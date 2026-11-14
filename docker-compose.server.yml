@@ -1,0 +1,51 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: tsotsa-mysql-prod
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: TsotsaKidsMySQL2026Root
+      MYSQL_DATABASE: tsotsa_prod
+      MYSQL_USER: tsotsa_app
+      MYSQL_PASSWORD: TsotsaApp2026SecurePass
+    volumes:
+      - /opt/tsotsa-kids/data/mysql:/var/lib/mysql
+    command: >
+      --default-authentication-plugin=mysql_native_password
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_0900_ai_ci
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pTsotsaKidsMySQL2026Root"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: .
+      dockerfile: infra/docker/api.Dockerfile
+    container_name: tsotsa-api-prod
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8000:8000"
+    environment:
+      APP_ENV: development
+      APP_TIMEZONE_DEFAULT: Africa/Douala
+      DATABASE_URL: mysql+asyncmy://tsotsa_app:TsotsaApp2026SecurePass@mysql:3306/tsotsa_prod
+      DATABASE_MIGRATIONS_URL: mysql+asyncmy://root:TsotsaKidsMySQL2026Root@mysql:3306/tsotsa_prod
+      CORS_ALLOWED_ORIGINS: "*"
+      LOG_LEVEL: INFO
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  web:
+    build:
+      context: .
+      dockerfile: infra/docker/web.Dockerfile
+    container_name: tsotsa-web-prod
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3000:80"
