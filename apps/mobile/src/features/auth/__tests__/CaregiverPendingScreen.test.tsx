@@ -17,7 +17,7 @@ describe("CaregiverPendingScreen (M31)", () => {
     expect(getByText("Carte professionnelle")).toBeTruthy();
     expect(getByText("envoyée ✓")).toBeTruthy();
     expect(getByText("Établissement")).toBeTruthy();
-    expect(getByText("CMA de démo ✓")).toBeTruthy();
+    expect(getByText("Structure de rattachement ✓")).toBeTruthy();
     expect(getByText("Numéro d'ordre")).toBeTruthy();
     expect(getByText("envoyé ✓")).toBeTruthy();
 

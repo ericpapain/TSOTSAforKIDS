@@ -5,14 +5,27 @@ import React from "react";
 import GoogleAuthScreen from "../../../../app/u-google";
 import * as authService from "../authService";
 
+process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID = "test-client-id";
+
+jest.mock("@react-native-google-signin/google-signin", () => ({
+  GoogleSignin: {
+    configure: jest.fn(),
+    hasPlayServices: jest.fn(async () => true),
+    signIn: jest.fn(async () => ({
+      data: { idToken: "test-token" },
+      idToken: "test-token",
+    })),
+  },
+}));
+
 describe("GoogleAuthScreen (M02)", () => {
   it("renders Google account chooser according to M02 specification", () => {
     const { getByText, getByTestId } = render(<GoogleAuthScreen />);
 
     expect(getByText("Choisir un compte")).toBeTruthy();
     expect(getByText("pour continuer vers TSOTSA4Kids")).toBeTruthy();
-    expect(getByText("Compte Google de démo")).toBeTruthy();
-    expect(getByText("parent.demo@gmail.com")).toBeTruthy();
+    expect(getByText("Se connecter avec Google")).toBeTruthy();
+    expect(getByText("Compte Google personnel")).toBeTruthy();
     expect(getByText("Je suis soignant ›")).toBeTruthy();
     expect(
       getByText("Google partagera votre nom, votre adresse e-mail et votre photo avec TSOTSA4Kids.")

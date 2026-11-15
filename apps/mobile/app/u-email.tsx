@@ -21,6 +21,7 @@ export default function EmailAuthScreen(): React.JSX.Element {
     const router = useRouter();
     const { t } = useTranslation("mobile");
     const [tab, setTab] = useState<"login" | "register">("login");
+    const [displayName, setDisplayName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
@@ -54,9 +55,21 @@ export default function EmailAuthScreen(): React.JSX.Element {
             setErrorMessage(res.error || t("email.wrongCredentials", { defaultValue: "Adresse e-mail ou mot de passe incorrect." }));
           }
         } else {
-          const res = await registerWithEmail(email, password);
+          const finalName = displayName.trim() || email.split("@")[0] || "Utilisateur";
+          const res = await registerWithEmail(email, password, finalName);
           if (res.success) {
-            setSuccessMessage(res.message || t("email.accountCreated", { defaultValue: "Compte créé. Vérifiez vos e-mails." }));
+            // Tentative de connexion automatique après inscription réussie
+            const loginRes = await loginWithEmail(email, password);
+            if (loginRes.success) {
+              if (loginRes.role === "caregiver") {
+                router.replace("/s-pending");
+              } else {
+                router.replace("/u-modules");
+              }
+              return;
+            }
+            setSuccessMessage(res.message || t("email.accountCreated", { defaultValue: "Compte créé avec succès. Vous pouvez maintenant vous connecter." }));
+            setTab("login");
           } else {
             setErrorMessage(res.error || t("email.createFailed", { defaultValue: "Impossible de créer le compte." }));
           }
@@ -121,6 +134,30 @@ export default function EmailAuthScreen(): React.JSX.Element {
                 <Text testID="email-error-text" style={styles.errorText}>
                   {errorMessage}
                 </Text>
+              </View>
+            )}
+
+            {/* Display Name Field (uniquement pour l'inscription) */}
+            {tab === "register" && (
+              <View style={styles.fieldBlock}>
+                <Text style={styles.fieldLabel}>
+                  {t("email.displayNameLabel", { defaultValue: "Nom complet" })}
+                </Text>
+                <View style={styles.inputContainer}>
+                  <TextInput
+                    testID="input-display-name"
+                    style={styles.input}
+                    value={displayName}
+                    onChangeText={(text) => {
+                      setDisplayName(text);
+                      if (errorMessage) setErrorMessage(null);
+                    }}
+                    placeholder="ex. Eric Papain"
+                    placeholderTextColor={colors.textSubtle}
+                    autoCapitalize="words"
+                    autoCorrect={false}
+                  />
+                </View>
               </View>
             )}
 

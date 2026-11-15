@@ -65,7 +65,7 @@ export default function CaregiverPendingScreen(): React.JSX.Element {
               {t("mobile:pending.facility", { defaultValue: "Établissement" })}
             </Text>
             <Text style={styles.statusValue}>
-              {t("mobile:pending.demoFacilityStatus", { defaultValue: "CMA de démo ✓" })}
+              {t("mobile:pending.facilityStatus", { defaultValue: "Structure de rattachement ✓" })}
             </Text>
           </View>
 

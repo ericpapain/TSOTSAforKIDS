@@ -70,6 +70,16 @@ jest.mock("@expo/vector-icons", () => {
   };
 });
 
+// Google Sign-In
+process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID = "test-web-client-id";
+jest.mock("@react-native-google-signin/google-signin", () => ({
+  GoogleSignin: {
+    configure: jest.fn(),
+    hasPlayServices: jest.fn(async () => true),
+    signIn: jest.fn(async () => ({ data: { idToken: "test-google-id-token" }, idToken: "test-google-id-token" })),
+  },
+}));
+
 // Expo Localization
 jest.mock("expo-localization", () => ({
   getLocales: () => [{ languageCode: "fr", languageTag: "fr-FR" }],

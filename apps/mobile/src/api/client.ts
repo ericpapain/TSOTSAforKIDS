@@ -12,7 +12,7 @@ import {
 import { clearStoredTokens, getStoredTokens, saveStoredTokens } from "./storage";
 
 const API_BASE_URL =
-  process.env.EXPO_PUBLIC_API_URL || "https://api.tsotsa-for-kids.com";
+  process.env.EXPO_PUBLIC_API_URL || "https://www.tsotsa-for-kids.com/api";
 
 let apiClientInstance: TsotsaApiClient | null = null;
 

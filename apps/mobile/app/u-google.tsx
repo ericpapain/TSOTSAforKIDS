@@ -21,12 +21,32 @@ export default function GoogleAuthScreen(): React.JSX.Element {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const handleSelectDemoAccount = async (): Promise<void> => {
+  const handleGoogleSignIn = async (): Promise<void> => {
     if (loading) return;
     setLoading(true);
     setErrorMessage(null);
     try {
-      const result = await authenticateWithGoogle("demo-google-id-token");
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const { GoogleSignin } = require("@react-native-google-signin/google-signin");
+      const webClientId = process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID || (process.env.NODE_ENV === "test" ? "test-client-id" : undefined);
+      if (!webClientId) {
+        setErrorMessage(
+          t("google.notConfigured", {
+            defaultValue:
+              "La connexion Google nécessite la configuration Google Cloud en production. Veuillez utiliser la connexion par e-mail ou téléphone.",
+          })
+        );
+        return;
+      }
+      GoogleSignin.configure({ webClientId });
+      await GoogleSignin.hasPlayServices();
+      const userInfo = await GoogleSignin.signIn();
+      const idToken = userInfo.data?.idToken || userInfo.idToken;
+      if (!idToken) {
+        setErrorMessage(t("google.tokenMissing", { defaultValue: "Jeton Google introuvable." }));
+        return;
+      }
+      const result = await authenticateWithGoogle(idToken);
       if (result.success) {
         if (result.role === "caregiver") {
           router.replace("/s-pending");
@@ -36,8 +56,18 @@ export default function GoogleAuthScreen(): React.JSX.Element {
       } else {
         setErrorMessage(result.error || t("google.authFailed", { defaultValue: "Échec de l'authentification Google." }));
       }
-    } catch {
-      setErrorMessage(t("google.connError", { defaultValue: "Erreur de connexion. Veuillez réessayer." }));
+    } catch (err: unknown) {
+      const e = err as { code?: string; message?: string };
+      if (e?.code === "SIGN_IN_CANCELLED" || e?.code === "12501") {
+        // Annulé par l'utilisateur, ne pas afficher d'erreur rouge
+        return;
+      }
+      setErrorMessage(
+        t("google.notConfigured", {
+          defaultValue:
+            "La connexion Google nécessite la configuration Google Cloud en production. Veuillez utiliser la connexion par e-mail ou téléphone.",
+        })
+      );
     } finally {
       setLoading(false);
     }
@@ -72,30 +102,50 @@ export default function GoogleAuthScreen(): React.JSX.Element {
           </Text>
         )}
 
-        {/* Demo Account card */}
+        {/* Google Account Sign-In Card */}
         <Pressable
           testID="btn-google-account-demo"
           style={({ pressed }) => [
             styles.accountCard,
             pressed && styles.pressed,
           ]}
-          onPress={handleSelectDemoAccount}
+          onPress={handleGoogleSignIn}
           disabled={loading}
         >
           <View style={styles.userIconWrapper}>
-            <FontAwesome5 name="user-circle" size={32} color={colors.textMuted} />
+            <FontAwesome5 name="google" size={24} color="#4285F4" />
           </View>
           <View style={styles.accountTextCol}>
             <Text style={styles.accountName}>
-              {t("google.demoAccount", { defaultValue: "Compte Google de démo" })}
+              {t("google.signInTitle", { defaultValue: "Se connecter avec Google" })}
             </Text>
-            <Text style={styles.accountEmail}>parent.demo@gmail.com</Text>
+            <Text style={styles.accountEmail}>
+              {t("google.signInSubtitle", { defaultValue: "Compte Google personnel" })}
+            </Text>
           </View>
           {loading ? (
             <ActivityIndicator size="small" color={colors.primary} />
           ) : (
             <Text style={styles.chevron}>›</Text>
           )}
+        </Pressable>
+
+        {/* Fallback Email button */}
+        <Pressable
+          testID="btn-google-fallback-email"
+          style={({ pressed }) => [
+            {
+              marginTop: 12,
+              paddingVertical: 10,
+              alignItems: "center",
+            },
+            pressed && styles.pressed,
+          ]}
+          onPress={() => router.push("/u-email")}
+        >
+          <Text style={{ fontFamily: fontFamilies.bold, color: colors.primary, fontSize: fontSizes.sm14 }}>
+            {t("google.useEmailInstead", { defaultValue: "Utiliser plutôt mon adresse e-mail →" })}
+          </Text>
         </Pressable>
 
         {/* Caregiver option */}

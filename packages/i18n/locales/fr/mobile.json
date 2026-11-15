@@ -21,6 +21,9 @@
     "orOther": "Ou changer de mode de connexion",
     "chooseAccount": "Choisir un compte",
     "toContinue": "pour continuer vers TSOTSA4Kids",
+    "signInTitle": "Se connecter avec Google",
+    "signInSubtitle": "Compte Google personnel",
+    "useEmailInstead": "Utiliser plutôt mon adresse e-mail →",
     "demoAccount": "Compte Google de démo",
     "caregiverLink": "Je suis soignant ›",
     "disclaimer": "Google partagera votre nom, votre adresse e-mail et votre photo avec TSOTSA4Kids.",
@@ -111,6 +114,7 @@
     "adult": "adulte",
     "child": "enfant",
     "profileToComplete": "Profil à compléter",
+    "followedByPrefix": "Suivi(e) par",
     "followedByCma": "Suivie par le CMA de démo"
   },
   "addPerson": {

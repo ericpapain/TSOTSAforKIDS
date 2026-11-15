@@ -35,7 +35,7 @@ describe("Mobile screens M01–M11 (English)", () => {
   it("M02 renders in English", () => {
     const { getByText, queryByText } = render(<GoogleScreen />);
     expect(getByText("Choose an account")).toBeTruthy();
-    expect(getByText("Demo Google account")).toBeTruthy();
+    expect(getByText("Sign in with Google")).toBeTruthy();
     expect(queryByText("Choisir un compte")).toBeNull();
   });
 

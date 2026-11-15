@@ -125,27 +125,7 @@ export async function fetchFamilyMembers(): Promise<PersonItem[]> {
       age_formatted: calculateAgeLabel(p.birth_date),
     }));
   }
-  // Fallback matching prompt M08 reference
-  return [
-    {
-      id: "demo-amina",
-      first_name: "Amina",
-      sex: "F",
-      birth_date: "2024-12-12",
-      age_formatted: "1 an 11 mois",
-      status_badge: "Démo",
-      facility_name: "CMA de démo",
-      relation: "child",
-    },
-    {
-      id: "demo-myself",
-      first_name: "Moi-même",
-      sex: "M",
-      birth_date: "1990-01-01",
-      age_formatted: "adulte",
-      relation: "self",
-    },
-  ];
+  return [];
 }
 
 export async function createFamilyMember(
