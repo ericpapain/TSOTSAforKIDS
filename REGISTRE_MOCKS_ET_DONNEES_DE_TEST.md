@@ -35,3 +35,4 @@ Les seules données de test subsistantes sont confinées dans les suites de test
 1. La base MySQL `tsotsa_prod` hébergée sur le VPS `51.89.148.92` contient **0 utilisateur mocké**.
 2. Tout compte créé depuis l'application Android est persisté directement dans la table MySQL `users` (avec son `id` UUID v7, son `display_name`, sa date de création UTC) et dans la table `user_identities` (avec son mot de passe haché par Bcrypt).
 3. L'administrateur peut visualiser et vérifier immédiatement chaque enregistrement en temps réel sur `https://www.tsotsa-for-kids.com/db-admin/`.
+
