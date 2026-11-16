@@ -8,6 +8,7 @@ import { UserNavTabs } from "./UserNavTabs";
 import { AddChildModal } from "./AddChildModal";
 import { InviteParentModal } from "./InviteParentModal";
 import { ChildProfileModal } from "./ChildProfileModal";
+import { ChildHealthReportModal } from "../health/ChildHealthReportModal";
 import { useUserStore } from "../../features/user/useUserStore";
 import type { ChildMember } from "../../features/user/types";
 import { useOptionalAuth } from "../../api/authContext";
@@ -21,6 +22,7 @@ export const FamilyPersonsPage: React.FC = () => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [selectedChildForProfile, setSelectedChildForProfile] = useState<ChildMember | null>(null);
   const [selectedChildForInvite, setSelectedChildForInvite] = useState<ChildMember | null>(null);
+  const [selectedChildForHealth, setSelectedChildForHealth] = useState<ChildMember | null>(null);
 
   const handleLogout = () => {
     authContext?.logout();
@@ -187,6 +189,16 @@ export const FamilyPersonsPage: React.FC = () => {
                     </button>
                   </div>
 
+                  <button
+                    type="button"
+                    data-testid={`health-report-btn-${child.id}`}
+                    onClick={() => setSelectedChildForHealth(child)}
+                    className="w-full py-1.5 px-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-[11px] font-bold rounded-lg border border-emerald-200 flex items-center justify-center gap-1.5 transition-colors"
+                  >
+                    <span aria-hidden="true">💚</span>
+                    <span>{t("mobile:health.entryButton", "Santé et bien-être de mon enfant")}</span>
+                  </button>
+
                   <div className="flex items-center justify-between text-[11px] pt-1">
                     {!isActive ? (
                       <button
@@ -242,6 +254,13 @@ export const FamilyPersonsPage: React.FC = () => {
         childName={selectedChildForInvite?.firstName || ""}
         isOpen={selectedChildForInvite !== null}
         onClose={() => setSelectedChildForInvite(null)}
+      />
+
+      <ChildHealthReportModal
+        isOpen={selectedChildForHealth !== null}
+        onClose={() => setSelectedChildForHealth(null)}
+        personId={selectedChildForHealth?.id || ""}
+        personName={selectedChildForHealth?.firstName || ""}
       />
     </div>
   );

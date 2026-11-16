@@ -11,6 +11,7 @@ import {
 } from "../../features/caregiver/caregiverData";
 import { useCaregiverStore } from "../../features/caregiver/useCaregiverStore";
 import { ReassignDoctorModal } from "./ReassignDoctorModal";
+import { ChildHealthCaregiverTimeline } from "../health/ChildHealthCaregiverTimeline";
 import { PersonHistoryTable } from "./PersonHistoryTable";
 import type { ZScorePoint } from "../../types";
 
@@ -272,6 +273,13 @@ export function PersonFilePage(): React.JSX.Element {
             </div>
           </Card>
         </div>
+      </div>
+
+      {/* Santé et événements de santé signalés */}
+      <div className="mt-6">
+        <Card title={t("record.healthEventsTitle", "Santé et événements signalés")}>
+          <ChildHealthCaregiverTimeline personId={personId || ""} />
+        </Card>
       </div>
 
       <ReassignDoctorModal

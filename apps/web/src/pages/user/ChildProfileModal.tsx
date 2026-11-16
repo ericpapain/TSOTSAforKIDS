@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FaTimes, FaWeight, FaRulerVertical, FaHeartbeat, FaUserFriends, FaCheckCircle, FaUserMd, FaFileMedical } from "react-icons/fa";
 import type { ChildMember } from "../../features/user/types";
 import { useUserStore } from "../../features/user/useUserStore";
+import { ChildHealthReportModal } from "../health/ChildHealthReportModal";
 
 export interface ChildProfileModalProps {
   child: ChildMember | null;
@@ -19,6 +20,7 @@ export const ChildProfileModal: React.FC<ChildProfileModalProps> = ({
 }) => {
   const { t } = useTranslation(["mobile", "common", "medical"]);
   const { activeChildId, setActiveChild } = useUserStore();
+  const [isHealthOpen, setIsHealthOpen] = useState(false);
 
   if (!isOpen || !child) return null;
 
@@ -200,6 +202,19 @@ export const ChildProfileModal: React.FC<ChildProfileModalProps> = ({
             )}
           </div>
 
+          {/* Health & Well-being entry button */}
+          <div className="pt-1">
+            <button
+              type="button"
+              data-testid="profile-health-report-btn"
+              onClick={() => setIsHealthOpen(true)}
+              className="w-full py-2.5 px-3 rounded-xl bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 text-emerald-900 text-[13px] font-bold flex items-center justify-center gap-2 transition-colors cursor-pointer"
+            >
+              <FaHeartbeat className="text-emerald-700" size={15} />
+              <span>{t("mobile:health.entryButton", "Santé et bien-être de mon enfant")}</span>
+            </button>
+          </div>
+
           {/* Action buttons */}
           <div className="pt-3 border-t border-[#E5ECE9] flex items-center justify-between gap-3">
             {!isActive ? (
@@ -232,6 +247,13 @@ export const ChildProfileModal: React.FC<ChildProfileModalProps> = ({
           </div>
         </div>
       </div>
+
+      <ChildHealthReportModal
+        isOpen={isHealthOpen}
+        onClose={() => setIsHealthOpen(false)}
+        personId={child.id}
+        personName={child.firstName}
+      />
     </div>
   );
 };

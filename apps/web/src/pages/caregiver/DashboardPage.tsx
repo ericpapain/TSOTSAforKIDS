@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { formatNumber, normalizeLocale, DEFAULT_LOCALE } from "@tsotsa/i18n";
 import "../../i18n/setup";
 import { Card, KpiCard, Button, Chip } from "../../components";
+import { CaregiverHealthAlertsWidget } from "../health/CaregiverHealthAlertsWidget";
 import { initialAlerts, initialScheduledEvals } from "../../features/caregiver/caregiverData";
 import type { AlertItem, AlertPriority } from "../../features/caregiver/types";
 
@@ -100,6 +101,8 @@ export function DashboardPage(): React.JSX.Element {
           testID="kpi-adherence"
         />
       </div>
+
+      <CaregiverHealthAlertsWidget />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Alerts Section */}

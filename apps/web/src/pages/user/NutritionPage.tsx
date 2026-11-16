@@ -14,6 +14,7 @@ import { EquivalentsTable } from "./EquivalentsTable";
 import { ConfirmIntakeModal } from "./ConfirmIntakeModal";
 import { UserNavTabs } from "./UserNavTabs";
 import { AddChildModal } from "./AddChildModal";
+import { ChildHealthReportModal } from "../health/ChildHealthReportModal";
 import { useUserStore } from "../../features/user/useUserStore";
 
 export const NutritionPage: React.FC = () => {
@@ -28,6 +29,7 @@ export const NutritionPage: React.FC = () => {
   const [isRegionMenuOpen, setIsRegionMenuOpen] = useState(false);
   const [selectedFoodId, setSelectedFoodId] = useState<string | null>(null);
   const [giveModalItem, setGiveModalItem] = useState<{ name: string; unit: string } | null>(null);
+  const [isMealHealthModalOpen, setIsMealHealthModalOpen] = useState(false);
   const [mobileMessage, setMobileMessage] = useState<string | null>(null);
   const [isAddChildOpen, setIsAddChildOpen] = useState(false);
 
@@ -272,6 +274,10 @@ export const NutritionPage: React.FC = () => {
         defaultUnit={giveModalItem?.unit ?? "sachet"}
         onClose={() => setGiveModalItem(null)}
         onViewCaregiverSide={handleViewCaregiverSide}
+        onReportIncident={() => {
+          setGiveModalItem(null);
+          setIsMealHealthModalOpen(true);
+        }}
         onConfirmIntake={(details) => {
           if (activeChild) {
             addIntake({
@@ -287,6 +293,14 @@ export const NutritionPage: React.FC = () => {
             });
           }
         }}
+      />
+
+      <ChildHealthReportModal
+        isOpen={isMealHealthModalOpen}
+        onClose={() => setIsMealHealthModalOpen(false)}
+        personId={activeChild?.id || ""}
+        personName={activeChild?.firstName || "Hamadou"}
+        declarationContext="during_meal"
       />
 
       <AddChildModal
