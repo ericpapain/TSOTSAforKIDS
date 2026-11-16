@@ -151,6 +151,24 @@ export default function ProfileScreen() {
           </Text>
         </TouchableOpacity>
 
+        {/* Action: Child Health & Well-being */}
+        <TouchableOpacity
+          testID="btn-health-hub"
+          accessibilityRole="button"
+          onPress={() =>
+            router.push({
+              pathname: "/u-health-hub" as never,
+              params: { personId, name: displayName },
+            })
+          }
+          style={[styles.btnSchedule, { backgroundColor: "#ECFDF5", borderColor: "#A7F3D0", borderWidth: 1 }]}
+          activeOpacity={0.85}
+        >
+          <Text style={[styles.btnScheduleText, { color: "#065F46" }]}>
+            💚 {t("mobile:health.entryButton", { defaultValue: "Santé et bien-être de mon enfant" })}
+          </Text>
+        </TouchableOpacity>
+
         {/* Action: Intake history */}
         <TouchableOpacity
           testID="btn-history"
