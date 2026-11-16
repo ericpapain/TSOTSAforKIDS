@@ -11,7 +11,16 @@
     "phone": "Continue with my phone",
     "email": "Continue with my email",
     "familyNote": "A single account for the whole family.",
+    "proNote": "Secure email + password sign in.",
     "language": "English ▾"
+  },
+  "roles": {
+    "selectorPrompt": "I am…",
+    "parent": "Parent",
+    "field_agent": "Field Agent",
+    "caregiver": "Caregiver",
+    "super_caregiver": "Super Caregiver",
+    "admin": "Administrator"
   },
   "google": {
     "title": "Google Sign-in",
@@ -68,7 +77,30 @@
     "wrongCredentials": "Incorrect email address or password.",
     "accountCreated": "Account created. Check your emails.",
     "createFailed": "Unable to create account.",
-    "serverError": "Server connection error."
+    "serverError": "Server connection error.",
+    "firstName": "First name *",
+    "lastName": "Last name *",
+    "confirmPassword": "Confirmation *",
+    "regionLabel": "Location (region) *",
+    "localityLabel": "Locality (optional)",
+    "phoneRequired": "Phone *",
+    "phoneOptional": "Phone (optional)",
+    "facilityRequired": "Health Facility *",
+    "facilityPlaceholder": "Hospital or health center name",
+    "specialtyRequired": "Role / Specialty *",
+    "specialtyPlaceholder": "E.g.: Pediatrician, Nurse...",
+    "orderNumberOptional": "Order Number (optional)",
+    "orderNumberPlaceholder": "E.g.: ONMC-12345",
+    "organizationOptional": "Organization (optional)",
+    "fillNames": "Please enter your first and last name.",
+    "passwordMismatch": "Passwords do not match.",
+    "fillCaregiverDetails": "Please enter your health facility and specialty."
+  },
+  "proRedirect": {
+    "heading": "Professional Space",
+    "message": "The TSOTSA Kids mobile app is reserved for tracking families in the field. Your full professional space is available on our secure web portal.",
+    "openWeb": "Open app.tsotsa-for-kids.com",
+    "disconnect": "Sign out / Change role"
   },
   "otp": {
     "title": "Verification",
@@ -356,7 +388,9 @@
     "demoFacilityStatus": "Demo CMA ✓",
     "viewAdmin": "View administration side →",
     "understood": "Understood",
-    "backToWelcome": "Back to home"
+    "backToWelcome": "Back to home",
+    "notice": "Your account is being validated by the TSOTSA team. You will receive a notification as soon as it is activated.",
+    "logout": "Sign out"
   },
   "notifications": {
     "intakeReminderTitle": "TSOTSA KIDS • now",

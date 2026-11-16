@@ -10,6 +10,8 @@ const ACCESS_TOKEN_KEY = "tsotsa_access_token";
 const REFRESH_TOKEN_KEY = "tsotsa_refresh_token";
 const ROLE_KEY = "tsotsa_user_role";
 
+const PROFESSIONAL_ROLES = ["admin", "super_caregiver", "caregiver", "field_agent"];
+
 export async function getStoredTokens(): Promise<TokenPair | null> {
   try {
     const accessToken = await SecureStore.getItemAsync(ACCESS_TOKEN_KEY);
@@ -57,5 +59,18 @@ export async function clearStoredTokens(): Promise<void> {
     await SecureStore.deleteItemAsync(ROLE_KEY);
   } catch {
     // Gracefully handle removal errors
+  }
+}
+
+export async function clearProfessionalSessionOnLaunch(): Promise<boolean> {
+  try {
+    const role = await getStoredRole();
+    if (role && PROFESSIONAL_ROLES.includes(role)) {
+      await clearStoredTokens();
+      return true;
+    }
+    return false;
+  } catch {
+    return false;
   }
 }

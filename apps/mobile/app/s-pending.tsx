@@ -12,6 +12,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 
 import { AppBar } from "../src/components/AppBar";
+import { logout } from "../src/features/auth/authService";
 import { colors } from "../src/theme/colors";
 import { fontFamilies, fontSizes } from "../src/theme/typography";
 
@@ -19,12 +20,21 @@ export default function CaregiverPendingScreen(): React.JSX.Element {
   const { t } = useTranslation(["mobile", "common"]);
   const router = useRouter();
 
+  const handleUnderstood = (): void => {
+    router.replace("/u-welcome");
+    void logout();
+  };
+
+  const handleAdminLink = (): void => {
+    router.replace("/u-modules");
+  };
+
   return (
     <SafeAreaView style={styles.safeArea} edges={["top", "bottom"]}>
       <AppBar
         title={t("mobile:pending.title", { defaultValue: "Compte soignant" })}
         backgroundColor={colors.care}
-        onBack={() => router.replace("/u-signup")}
+        onBack={() => router.replace("/u-welcome")}
       />
 
       <ScrollView
@@ -32,12 +42,12 @@ export default function CaregiverPendingScreen(): React.JSX.Element {
         showsVerticalScrollIndicator={false}
       >
         {/* User clock circle */}
-        <View style={styles.circleContainer}>
+        <View style={styles.circleContainer} testID="pending-icon">
           <FontAwesome5 name="user-clock" size={80} color={colors.care} />
         </View>
 
         {/* Title & subtitle */}
-        <Text style={styles.title}>
+        <Text style={styles.title} testID="pending-title">
           {t("mobile:pending.heading", { defaultValue: "Vérification en cours" })}
         </Text>
         <Text style={styles.subtitle}>
@@ -46,6 +56,16 @@ export default function CaregiverPendingScreen(): React.JSX.Element {
               "Notre équipe vérifie votre identité professionnelle. Vous serez prévenu par SMS.",
           })}
         </Text>
+
+        {/* Official validation notice banner */}
+        <View style={styles.noticeBox} testID="pending-notice-box">
+          <Text style={styles.noticeText} testID="pending-notice-text">
+            {t("mobile:pending.notice", {
+              defaultValue:
+                "Votre compte est en cours de validation par l'équipe TSOTSA. Vous recevrez une notification dès qu'il sera activé.",
+            })}
+          </Text>
+        </View>
 
         {/* Status items */}
         <View style={styles.statusList}>
@@ -87,7 +107,7 @@ export default function CaregiverPendingScreen(): React.JSX.Element {
             styles.adminButton,
             pressed && styles.pressed,
           ]}
-          onPress={() => router.replace("/u-modules")}
+          onPress={handleAdminLink}
         >
           <Text style={styles.adminButtonText}>
             {t("mobile:pending.viewAdmin", { defaultValue: "Voir côté administration →" })}
@@ -101,7 +121,7 @@ export default function CaregiverPendingScreen(): React.JSX.Element {
             styles.understoodButton,
             pressed && styles.pressed,
           ]}
-          onPress={() => router.replace("/u-welcome")}
+          onPress={handleUnderstood}
         >
           <Text style={styles.understoodText}>
             {t("mobile:pending.understood", { defaultValue: "Compris" })}
@@ -118,10 +138,10 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
   },
   container: {
-    paddingHorizontal: 17,
-    paddingTop: 24,
-    paddingBottom: 32,
     alignItems: "center",
+    paddingHorizontal: 24,
+    paddingTop: 32,
+    paddingBottom: 40,
   },
   circleContainer: {
     width: 149,
@@ -130,69 +150,89 @@ const styles = StyleSheet.create({
     backgroundColor: colors.care50,
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 23,
+    marginBottom: 24,
   },
   title: {
     fontFamily: fontFamilies.bold,
-    fontSize: fontSizes.h3_27,
+    fontSize: fontSizes.xl24,
     color: colors.text,
     textAlign: "center",
-    marginBottom: 5,
+    marginBottom: 8,
   },
   subtitle: {
     fontFamily: fontFamilies.regular,
-    fontSize: fontSizes.md18,
+    fontSize: fontSizes.base16,
     color: colors.textMuted,
     textAlign: "center",
-    lineHeight: 24,
-    paddingHorizontal: 12,
-    marginBottom: 28,
+    lineHeight: 22,
+    marginBottom: 20,
+  },
+  noticeBox: {
+    width: "100%",
+    backgroundColor: colors.warning50,
+    borderWidth: 1,
+    borderColor: colors.warning,
+    borderRadius: 8,
+    padding: 14,
+    marginBottom: 24,
+  },
+  noticeText: {
+    fontFamily: fontFamilies.bold,
+    fontSize: fontSizes.sm13,
+    color: colors.text,
+    textAlign: "center",
+    lineHeight: 18,
   },
   statusList: {
     width: "100%",
-    paddingHorizontal: 12,
-    gap: 4,
-    marginBottom: 22,
+    backgroundColor: colors.canvas,
+    borderRadius: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    marginBottom: 24,
+    gap: 12,
   },
   statusRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    height: 41,
   },
   statusLabel: {
-    fontFamily: fontFamilies.regular,
-    fontSize: fontSizes.base16,
+    fontFamily: fontFamilies.bold,
+    fontSize: fontSizes.sm13,
     color: colors.text,
   },
   statusValue: {
-    fontFamily: fontFamilies.bold,
-    fontSize: fontSizes.base16,
+    fontFamily: fontFamilies.regular,
+    fontSize: fontSizes.sm13,
     color: colors.primary,
   },
   adminButton: {
     width: "100%",
-    height: 57,
-    backgroundColor: colors.admin,
-    borderRadius: 11,
-    justifyContent: "center",
+    paddingVertical: 14,
+    borderRadius: 8,
+    backgroundColor: colors.canvas,
+    borderWidth: 1,
+    borderColor: colors.border,
     alignItems: "center",
-    marginBottom: 16,
+    justifyContent: "center",
+    marginBottom: 12,
   },
   adminButtonText: {
     fontFamily: fontFamilies.bold,
-    fontSize: fontSizes.md19,
-    color: colors.white,
+    fontSize: fontSizes.sm13,
+    color: colors.care,
   },
   understoodButton: {
     paddingVertical: 10,
-    paddingHorizontal: 24,
+    paddingHorizontal: 20,
+    alignItems: "center",
+    justifyContent: "center",
   },
   understoodText: {
     fontFamily: fontFamilies.bold,
-    fontSize: fontSizes.md18,
-    color: colors.care,
-    textAlign: "center",
+    fontSize: fontSizes.base16,
+    color: colors.textMuted,
   },
   pressed: {
     opacity: 0.85,

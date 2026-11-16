@@ -11,7 +11,16 @@
     "phone": "Continuer avec mon téléphone",
     "email": "Continuer avec mon e-mail",
     "familyNote": "Un seul compte pour toute la famille.",
+    "proNote": "Connexion sécurisée e-mail + mot de passe.",
     "language": "Français ▾"
+  },
+  "roles": {
+    "selectorPrompt": "Je suis…",
+    "parent": "Parent",
+    "field_agent": "Agent de terrain",
+    "caregiver": "Soignant",
+    "super_caregiver": "Super soignant",
+    "admin": "Administrateur"
   },
   "google": {
     "title": "Connexion Google",
@@ -68,7 +77,30 @@
     "wrongCredentials": "Adresse e-mail ou mot de passe incorrect.",
     "accountCreated": "Compte créé. Vérifiez vos e-mails.",
     "createFailed": "Impossible de créer le compte.",
-    "serverError": "Erreur de connexion au serveur."
+    "serverError": "Erreur de connexion au serveur.",
+    "firstName": "Prénom *",
+    "lastName": "Nom *",
+    "confirmPassword": "Confirmation *",
+    "regionLabel": "Localisation (région) *",
+    "localityLabel": "Localité (facultatif)",
+    "phoneRequired": "Téléphone *",
+    "phoneOptional": "Téléphone (facultatif)",
+    "facilityRequired": "Établissement de santé *",
+    "facilityPlaceholder": "Nom de l'hôpital ou du centre de santé",
+    "specialtyRequired": "Fonction / Spécialité *",
+    "specialtyPlaceholder": "Ex : Médecin pédiatre, Infirmier(ère)...",
+    "orderNumberOptional": "Numéro d'Ordre (facultatif)",
+    "orderNumberPlaceholder": "Ex : ONMC-12345",
+    "organizationOptional": "Structure / Organisation (facultatif)",
+    "fillNames": "Veuillez renseigner votre prénom et nom.",
+    "passwordMismatch": "Les mots de passe ne correspondent pas.",
+    "fillCaregiverDetails": "Veuillez renseigner l'établissement et votre spécialité."
+  },
+  "proRedirect": {
+    "heading": "Espace professionnel",
+    "message": "L'application mobile TSOTSA Kids est réservée au suivi des familles sur le terrain. Votre espace professionnel complet est disponible sur notre portail web sécurisé.",
+    "openWeb": "Ouvrir app.tsotsa-for-kids.com",
+    "disconnect": "Se déconnecter / Changer de rôle"
   },
   "otp": {
     "title": "Vérification",
@@ -356,7 +388,9 @@
     "demoFacilityStatus": "CMA de démo ✓",
     "viewAdmin": "Voir côté administration →",
     "understood": "Compris",
-    "backToWelcome": "Retour à l'accueil"
+    "backToWelcome": "Retour à l'accueil",
+    "notice": "Votre compte est en cours de validation par l'équipe TSOTSA. Vous recevrez une notification dès qu'il sera activé.",
+    "logout": "Se déconnecter"
   },
   "notifications": {
     "intakeReminderTitle": "TSOTSA KIDS • maintenant",

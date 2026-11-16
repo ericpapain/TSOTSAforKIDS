@@ -5,7 +5,13 @@
 
 import { API_BASE_URL, getApiClient } from "../../api/client";
 import { clearStoredTokens, saveStoredTokens } from "../../api/storage";
-import type { AuthResult, PhoneOtpResult, UserRole } from "./types";
+import type {
+  AccountStatus,
+  AuthResult,
+  PhoneOtpResult,
+  RegisterPayload,
+  UserRole,
+} from "./types";
 
 interface ApiErrorResponse {
   detail?: string | Array<{ msg?: string }>;
@@ -58,10 +64,14 @@ interface RawTokenResponse {
   access_token: string;
   refresh_token?: string;
   role?: string;
+  account_status?: AccountStatus;
+  status?: AccountStatus;
 }
 
 async function handleTokenSuccess(raw: RawTokenResponse): Promise<AuthResult> {
-  const role = (raw.role || "user") as UserRole;
+  const role = (raw.role || "parent") as UserRole;
+  const status: AccountStatus = raw.account_status || raw.status || "active";
+
   await saveStoredTokens(
     {
       accessToken: raw.access_token,
@@ -73,7 +83,7 @@ async function handleTokenSuccess(raw: RawTokenResponse): Promise<AuthResult> {
     accessToken: raw.access_token,
     refreshToken: raw.refresh_token,
   });
-  return { success: true, role };
+  return { success: true, role, status };
 }
 
 export async function requestPhoneOtp(phone: string): Promise<PhoneOtpResult> {
@@ -108,10 +118,15 @@ export async function verifyPhoneOtp(phone: string, code: string): Promise<AuthR
   return handleTokenSuccess(res.data);
 }
 
-export async function loginWithEmail(email: string, password: string): Promise<AuthResult> {
+export async function loginWithEmail(
+  email: string,
+  password: string,
+  requestedRole?: string
+): Promise<AuthResult> {
   const res = await postAuthRequest<RawTokenResponse>("/v1/auth/email/login", {
     email: email.trim().toLowerCase(),
     password,
+    requested_role: requestedRole,
   });
 
   if (res.error) {
@@ -124,21 +139,33 @@ export async function loginWithEmail(email: string, password: string): Promise<A
 }
 
 export async function registerWithEmail(
-  email: string,
-  password: string,
+  payloadOrEmail: RegisterPayload | string,
+  password?: string,
   displayName?: string
 ): Promise<AuthResult> {
-  const res = await postAuthRequest<{ message?: string }>("/v1/auth/email/register", {
-    email: email.trim().toLowerCase(),
-    password,
-    display_name: displayName,
-  });
+  let body: Record<string, unknown>;
+  if (typeof payloadOrEmail === "string") {
+    body = {
+      email: payloadOrEmail.trim().toLowerCase(),
+      password,
+      display_name: displayName,
+      role: "parent",
+    };
+  } else {
+    body = {
+      ...payloadOrEmail,
+      email: payloadOrEmail.email.trim().toLowerCase(),
+    };
+  }
+
+  const res = await postAuthRequest<{ message?: string; status?: AccountStatus }>("/v1/auth/email/register", body);
 
   if (res.error) {
     return { success: false, error: res.error };
   }
   return {
     success: true,
+    status: res.data?.status || "active",
     message: res.data?.message || "Compte créé avec succès. Vérifiez vos e-mails.",
   };
 }
@@ -161,4 +188,3 @@ export async function logout(): Promise<void> {
   await clearStoredTokens();
   getApiClient().clearTokens();
 }
-
