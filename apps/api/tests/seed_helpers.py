@@ -91,3 +91,38 @@ async def seed_test_catalog(session: AsyncSession) -> dict[str, Role]:
 
     await session.flush()
     return role_map
+
+
+async def seed_symptom_catalog(session: AsyncSession) -> dict[str, str]:
+    """Seed standard symptom catalog items for test suites."""
+    from tsotsa_api.modules.health.models import SymptomCatalog
+
+    items = [
+        ("convulsions", "danger_sign", "Convulsions ou spasmes", True, 1),
+        ("unconscious_lethargic", "danger_sign", "Inconscient ou somnolent", True, 2),
+        ("unable_drink_breastfeed", "danger_sign", "Incapable de boire", True, 3),
+        ("vomits_everything", "danger_sign", "Vomit tout", True, 4),
+        ("severe_respiratory_distress", "danger_sign", "Difficulté respiratoire", True, 5),
+        ("fever", "general", "Fièvre", False, 10),
+        ("cough", "respiratory", "Toux", False, 11),
+        ("rapid_breathing", "respiratory", "Respiration rapide", False, 12),
+        ("diarrhea", "digestive", "Diarrhée", False, 13),
+        ("vomiting", "digestive", "Vomissements", False, 14),
+        ("reduced_eating", "digestive", "Mange moins", False, 15),
+        ("skin_rash", "skin", "Éruption cutanée", False, 21),
+    ]
+    catalog_map = {}
+    for code, cat, label, is_danger, order in items:
+        sc = SymptomCatalog(
+            code=code,
+            category=cat,
+            label_fr=label,
+            label_en=code,
+            is_danger_sign=is_danger,
+            display_order=order,
+            is_active=True,
+        )
+        session.add(sc)
+        catalog_map[code] = code
+    await session.flush()
+    return catalog_map

@@ -15,6 +15,7 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
+import tsotsa_api.modules.health.models  # noqa: F401
 from tsotsa_api.core.config import Settings
 from tsotsa_api.core.database import Base, get_db_session
 from tsotsa_api.main import create_app
