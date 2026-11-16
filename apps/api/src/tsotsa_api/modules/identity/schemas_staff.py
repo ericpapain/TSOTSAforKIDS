@@ -59,3 +59,4 @@ class PatientAssignRequest(BaseModel):
     caregiver_id: str
     organization_id: str
     reason: Annotated[str | None, Field(max_length=255, default=None)] = None
+

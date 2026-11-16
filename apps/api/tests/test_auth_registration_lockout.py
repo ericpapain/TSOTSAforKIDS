@@ -7,7 +7,10 @@ from httpx import AsyncClient
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from tests.seed_helpers import seed_test_catalog
+try:
+    from tests.seed_helpers import seed_test_catalog
+except ImportError:
+    from seed_helpers import seed_test_catalog
 from tsotsa_api.modules.food_database.models import Region
 from tsotsa_api.modules.identity.models import CaregiverProfile, FieldAgentProfile, User
 from tsotsa_api.modules.organizations.models import Organization
