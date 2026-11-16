@@ -36,6 +36,7 @@ from tsotsa_api.modules.custom_products import (
 )
 from tsotsa_api.modules.equivalence import equivalence_router
 from tsotsa_api.modules.food_database import food_admin_router, foods_router
+from tsotsa_api.modules.health import health_router
 from tsotsa_api.modules.identity import (
     auth_router,
     permissions_router,
@@ -119,6 +120,7 @@ def _build_v1_router() -> APIRouter:
     v1_router.include_router(pricing_router)
     v1_router.include_router(admin_pricing_router)
     v1_router.include_router(intakes_router)
+    v1_router.include_router(health_router)
     v1_router.include_router(clinical_router)
     v1_router.include_router(dashboard_router)
     v1_router.include_router(alerts_router)

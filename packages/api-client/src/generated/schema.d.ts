@@ -1758,6 +1758,146 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/health/symptoms/catalog": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Symptom Catalog
+         * @description Return active symptom catalog entries with conditional questions and priority indicators.
+         */
+        get: operations["get_symptom_catalog_v1_health_symptoms_catalog_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/health/events": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Declare Health Event
+         * @description Report a health event for a child either standalone or during a meal.
+         */
+        post: operations["declare_health_event_v1_health_events_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/health/events/person/{person_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Health Events By Person
+         * @description Retrieve chronological longitudinal health event history for an authorized child.
+         */
+        get: operations["list_health_events_by_person_v1_health_events_person__person_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/health/events/{event_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Health Event Detail
+         * @description Fetch health event detail with role-appropriate visibility filtering.
+         */
+        get: operations["get_health_event_detail_v1_health_events__event_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/health/events/{event_id}/assessments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Add Clinical Assessment
+         * @description Record a clinical doctor assessment on a reported health event.
+         */
+        post: operations["add_clinical_assessment_v1_health_events__event_id__assessments_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/health/events/{event_id}/actions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Add Health Action
+         * @description Record a medical action (transfer, clarification, follow-up, closure).
+         */
+        post: operations["add_health_action_v1_health_events__event_id__actions_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/health/alerts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Health Alerts
+         * @description Retrieve open alerts for healthcare professionals and coordinators.
+         */
+        get: operations["list_health_alerts_v1_health_alerts_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/persons/{person_id}/evaluations": {
         parameters: {
             query?: never;
@@ -2807,6 +2947,46 @@ export interface components {
             has_active_consent: boolean;
         };
         /**
+         * ClinicalAssessmentCreate
+         * @description Medical assessment submitted by an authorized caregiver.
+         */
+        ClinicalAssessmentCreate: {
+            /** Clinical Notes */
+            clinical_notes: string;
+            /** Suspected Condition */
+            suspected_condition?: string | null;
+            /**
+             * Requires Investigation
+             * @default false
+             */
+            requires_investigation: boolean;
+            /** Investigation Type */
+            investigation_type?: string | null;
+        };
+        /**
+         * ClinicalAssessmentOut
+         * @description Caregiver assessment view.
+         */
+        ClinicalAssessmentOut: {
+            /** Id */
+            id: string;
+            /** Caregiver Id */
+            caregiver_id: string;
+            /** Clinical Notes */
+            clinical_notes: string;
+            /** Suspected Condition */
+            suspected_condition?: string | null;
+            /** Requires Investigation */
+            requires_investigation: boolean;
+            /** Investigation Type */
+            investigation_type?: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
+        /**
          * ColumnMappingUpdate
          * @description Admin column mapping correction.
          */
@@ -3476,6 +3656,220 @@ export interface components {
         HTTPValidationError: {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
+        };
+        /**
+         * HealthAlertSummary
+         * @description Summary item displayed in the central Alerts & Notifications center.
+         */
+        HealthAlertSummary: {
+            /** Event Id */
+            event_id: string;
+            /** Person Id */
+            person_id: string;
+            /** Person Code */
+            person_code?: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Priority */
+            priority: string;
+            /** Status */
+            status: string;
+            /** Symptoms Summary */
+            symptoms_summary?: string[];
+            /** Has Danger Sign */
+            has_danger_sign: boolean;
+            /** Requires Urgent Transfer */
+            requires_urgent_transfer: boolean;
+        };
+        /**
+         * HealthEventActionCreate
+         * @description Action recorded by a healthcare professional.
+         */
+        HealthEventActionCreate: {
+            /** Action Type */
+            action_type: string;
+            /** Details */
+            details: string;
+        };
+        /**
+         * HealthEventActionOut
+         * @description Medical action output.
+         */
+        HealthEventActionOut: {
+            /** Id */
+            id: string;
+            /** Actor Id */
+            actor_id: string;
+            /** Action Type */
+            action_type: string;
+            /** Details */
+            details: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
+        /**
+         * HealthEventCaregiverOut
+         * @description Comprehensive clinical view reserved for authorized caregivers.
+         */
+        HealthEventCaregiverOut: {
+            /** Id */
+            id: string;
+            /** Person Id */
+            person_id: string;
+            /** Reported By */
+            reported_by: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Declaration Context */
+            declaration_context: string;
+            /** Status */
+            status: string;
+            /** Priority */
+            priority: string;
+            /**
+             * Has Danger Sign
+             * @default false
+             */
+            has_danger_sign: boolean;
+            /**
+             * Parent Guidance Message
+             * @default
+             */
+            parent_guidance_message: string;
+            /** Comment */
+            comment?: string | null;
+            /** Intake Id */
+            intake_id?: string | null;
+            /** Symptoms */
+            symptoms?: components["schemas"]["HealthEventSymptomOut"][];
+            /** Organization Id */
+            organization_id?: string | null;
+            /** Caregiver Guidance Notes */
+            caregiver_guidance_notes?: string[];
+            /** Suggested Conditions */
+            suggested_conditions?: string[];
+            /** Assessments */
+            assessments?: components["schemas"]["ClinicalAssessmentOut"][];
+            /** Actions */
+            actions?: components["schemas"]["HealthEventActionOut"][];
+        };
+        /**
+         * HealthEventCreate
+         * @description Payload to declare a new child health event.
+         */
+        HealthEventCreate: {
+            /** Person Id */
+            person_id: string;
+            /** Intake Id */
+            intake_id?: string | null;
+            /**
+             * Declaration Context
+             * @default standalone
+             */
+            declaration_context: string;
+            /** Meal Interrupted */
+            meal_interrupted?: boolean | null;
+            /** Intake Quantity Consumed */
+            intake_quantity_consumed?: string | null;
+            /** Symptoms */
+            symptoms: components["schemas"]["HealthEventSymptomCreate"][];
+            /** Temperature Celsius */
+            temperature_celsius?: number | null;
+            /** Stools Frequency Per Day */
+            stools_frequency_per_day?: number | null;
+            /** Vomiting Frequency Per Day */
+            vomiting_frequency_per_day?: number | null;
+            /** Comment */
+            comment?: string | null;
+        };
+        /**
+         * HealthEventParentOut
+         * @description Reassuring and safe health event view for parents.
+         */
+        HealthEventParentOut: {
+            /** Id */
+            id: string;
+            /** Person Id */
+            person_id: string;
+            /** Reported By */
+            reported_by: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Declaration Context */
+            declaration_context: string;
+            /** Status */
+            status: string;
+            /** Priority */
+            priority: string;
+            /**
+             * Has Danger Sign
+             * @default false
+             */
+            has_danger_sign: boolean;
+            /**
+             * Parent Guidance Message
+             * @default
+             */
+            parent_guidance_message: string;
+            /** Comment */
+            comment?: string | null;
+            /** Intake Id */
+            intake_id?: string | null;
+            /** Symptoms */
+            symptoms?: components["schemas"]["HealthEventSymptomOut"][];
+        };
+        /**
+         * HealthEventSymptomCreate
+         * @description Symptom input when reporting a health event.
+         */
+        HealthEventSymptomCreate: {
+            /** Symptom Code */
+            symptom_code: string;
+            /**
+             * Duration
+             * @default less_than_24h
+             */
+            duration: string;
+            /** Duration Days */
+            duration_days?: number | null;
+            /** Recurrence Count */
+            recurrence_count?: number | null;
+            /** Specific Metrics */
+            specific_metrics?: {
+                [key: string]: unknown;
+            };
+        };
+        /**
+         * HealthEventSymptomOut
+         * @description Symptom output model.
+         */
+        HealthEventSymptomOut: {
+            /** Id */
+            id: string;
+            /** Symptom Code */
+            symptom_code: string;
+            /** Duration */
+            duration: string;
+            /** Duration Days */
+            duration_days?: number | null;
+            /** Recurrence Count */
+            recurrence_count?: number | null;
+            /** Specific Metrics */
+            specific_metrics?: {
+                [key: string]: unknown;
+            };
         };
         /**
          * ImportBatchRead
@@ -5254,6 +5648,30 @@ export interface components {
             decision: "approved" | "rejected";
             /** Refusal Reason */
             refusal_reason?: string | null;
+        };
+        /**
+         * SymptomCatalogOut
+         * @description Symptom catalogue entry presentation.
+         */
+        SymptomCatalogOut: {
+            /** Code */
+            code: string;
+            /** Category */
+            category: string;
+            /** Label Fr */
+            label_fr: string;
+            /** Label En */
+            label_en: string;
+            /** Is Danger Sign */
+            is_danger_sign: boolean;
+            /** Conditional Questions */
+            conditional_questions?: {
+                [key: string]: unknown;
+            }[] | null;
+            /** Display Order */
+            display_order: number;
+            /** Is Active */
+            is_active: boolean;
         };
         /**
          * TokenRefreshRequest
@@ -8400,6 +8818,225 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ComplianceRateResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_symptom_catalog_v1_health_symptoms_catalog_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SymptomCatalogOut"][];
+                };
+            };
+        };
+    };
+    declare_health_event_v1_health_events_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["HealthEventCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HealthEventParentOut"] | components["schemas"]["HealthEventCaregiverOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_health_events_by_person_v1_health_events_person__person_id__get: {
+        parameters: {
+            query?: {
+                status?: string | null;
+                priority?: string | null;
+            };
+            header?: never;
+            path: {
+                person_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": (components["schemas"]["HealthEventParentOut"] | components["schemas"]["HealthEventCaregiverOut"])[];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_health_event_detail_v1_health_events__event_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                event_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HealthEventParentOut"] | components["schemas"]["HealthEventCaregiverOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    add_clinical_assessment_v1_health_events__event_id__assessments_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                event_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ClinicalAssessmentCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HealthEventCaregiverOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    add_health_action_v1_health_events__event_id__actions_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                event_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["HealthEventActionCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HealthEventCaregiverOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_health_alerts_v1_health_alerts_get: {
+        parameters: {
+            query?: {
+                min_priority?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HealthAlertSummary"][];
                 };
             };
             /** @description Validation Error */

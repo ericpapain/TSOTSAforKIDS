@@ -5065,6 +5065,414 @@
         }
       }
     },
+    "/v1/health/symptoms/catalog": {
+      "get": {
+        "tags": [
+          "Health & Well-being"
+        ],
+        "summary": "Get Symptom Catalog",
+        "description": "Return active symptom catalog entries with conditional questions and priority indicators.",
+        "operationId": "get_symptom_catalog_v1_health_symptoms_catalog_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/SymptomCatalogOut"
+                  },
+                  "type": "array",
+                  "title": "Response Get Symptom Catalog V1 Health Symptoms Catalog Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/health/events": {
+      "post": {
+        "tags": [
+          "Health & Well-being"
+        ],
+        "summary": "Declare Health Event",
+        "description": "Report a health event for a child either standalone or during a meal.",
+        "operationId": "declare_health_event_v1_health_events_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HealthEventCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/HealthEventParentOut"
+                    },
+                    {
+                      "$ref": "#/components/schemas/HealthEventCaregiverOut"
+                    }
+                  ],
+                  "title": "Response Declare Health Event V1 Health Events Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/health/events/person/{person_id}": {
+      "get": {
+        "tags": [
+          "Health & Well-being"
+        ],
+        "summary": "List Health Events By Person",
+        "description": "Retrieve chronological longitudinal health event history for an authorized child.",
+        "operationId": "list_health_events_by_person_v1_health_events_person__person_id__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "person_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Person Id"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          },
+          {
+            "name": "priority",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Priority"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "anyOf": [
+                      {
+                        "$ref": "#/components/schemas/HealthEventParentOut"
+                      },
+                      {
+                        "$ref": "#/components/schemas/HealthEventCaregiverOut"
+                      }
+                    ]
+                  },
+                  "title": "Response List Health Events By Person V1 Health Events Person  Person Id  Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/health/events/{event_id}": {
+      "get": {
+        "tags": [
+          "Health & Well-being"
+        ],
+        "summary": "Get Health Event Detail",
+        "description": "Fetch health event detail with role-appropriate visibility filtering.",
+        "operationId": "get_health_event_detail_v1_health_events__event_id__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "event_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Event Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/HealthEventParentOut"
+                    },
+                    {
+                      "$ref": "#/components/schemas/HealthEventCaregiverOut"
+                    }
+                  ],
+                  "title": "Response Get Health Event Detail V1 Health Events  Event Id  Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/health/events/{event_id}/assessments": {
+      "post": {
+        "tags": [
+          "Health & Well-being"
+        ],
+        "summary": "Add Clinical Assessment",
+        "description": "Record a clinical doctor assessment on a reported health event.",
+        "operationId": "add_clinical_assessment_v1_health_events__event_id__assessments_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "event_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Event Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ClinicalAssessmentCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthEventCaregiverOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/health/events/{event_id}/actions": {
+      "post": {
+        "tags": [
+          "Health & Well-being"
+        ],
+        "summary": "Add Health Action",
+        "description": "Record a medical action (transfer, clarification, follow-up, closure).",
+        "operationId": "add_health_action_v1_health_events__event_id__actions_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "event_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Event Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HealthEventActionCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthEventCaregiverOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/health/alerts": {
+      "get": {
+        "tags": [
+          "Health & Well-being"
+        ],
+        "summary": "List Health Alerts",
+        "description": "Retrieve open alerts for healthcare professionals and coordinators.",
+        "operationId": "list_health_alerts_v1_health_alerts_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "min_priority",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Min Priority"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HealthAlertSummary"
+                  },
+                  "title": "Response List Health Alerts V1 Health Alerts Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/persons/{person_id}/evaluations": {
       "post": {
         "tags": [
@@ -8560,6 +8968,108 @@
         "title": "CaregiverPersonRead",
         "description": "Representation of a followed person seen by medical caregiver."
       },
+      "ClinicalAssessmentCreate": {
+        "properties": {
+          "clinical_notes": {
+            "type": "string",
+            "maxLength": 4000,
+            "minLength": 5,
+            "title": "Clinical Notes"
+          },
+          "suspected_condition": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 128
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Suspected Condition"
+          },
+          "requires_investigation": {
+            "type": "boolean",
+            "title": "Requires Investigation",
+            "default": false
+          },
+          "investigation_type": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 128
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Investigation Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "clinical_notes"
+        ],
+        "title": "ClinicalAssessmentCreate",
+        "description": "Medical assessment submitted by an authorized caregiver."
+      },
+      "ClinicalAssessmentOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "caregiver_id": {
+            "type": "string",
+            "title": "Caregiver Id"
+          },
+          "clinical_notes": {
+            "type": "string",
+            "title": "Clinical Notes"
+          },
+          "suspected_condition": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Suspected Condition"
+          },
+          "requires_investigation": {
+            "type": "boolean",
+            "title": "Requires Investigation"
+          },
+          "investigation_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Investigation Type"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "caregiver_id",
+          "clinical_notes",
+          "requires_investigation",
+          "created_at"
+        ],
+        "title": "ClinicalAssessmentOut",
+        "description": "Caregiver assessment view."
+      },
       "ColumnMappingUpdate": {
         "properties": {
           "mapping": {
@@ -10116,6 +10626,553 @@
         },
         "type": "object",
         "title": "HTTPValidationError"
+      },
+      "HealthAlertSummary": {
+        "properties": {
+          "event_id": {
+            "type": "string",
+            "title": "Event Id"
+          },
+          "person_id": {
+            "type": "string",
+            "title": "Person Id"
+          },
+          "person_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Person Code"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "priority": {
+            "type": "string",
+            "title": "Priority"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "symptoms_summary": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Symptoms Summary"
+          },
+          "has_danger_sign": {
+            "type": "boolean",
+            "title": "Has Danger Sign"
+          },
+          "requires_urgent_transfer": {
+            "type": "boolean",
+            "title": "Requires Urgent Transfer"
+          }
+        },
+        "type": "object",
+        "required": [
+          "event_id",
+          "person_id",
+          "created_at",
+          "priority",
+          "status",
+          "has_danger_sign",
+          "requires_urgent_transfer"
+        ],
+        "title": "HealthAlertSummary",
+        "description": "Summary item displayed in the central Alerts & Notifications center."
+      },
+      "HealthEventActionCreate": {
+        "properties": {
+          "action_type": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 2,
+            "pattern": "^(clarification_requested|scheduled_followup|referral_specialist|treatment_advised|emergency_transfer|closed)$",
+            "title": "Action Type"
+          },
+          "details": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 3,
+            "title": "Details"
+          }
+        },
+        "type": "object",
+        "required": [
+          "action_type",
+          "details"
+        ],
+        "title": "HealthEventActionCreate",
+        "description": "Action recorded by a healthcare professional."
+      },
+      "HealthEventActionOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "actor_id": {
+            "type": "string",
+            "title": "Actor Id"
+          },
+          "action_type": {
+            "type": "string",
+            "title": "Action Type"
+          },
+          "details": {
+            "type": "string",
+            "title": "Details"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "actor_id",
+          "action_type",
+          "details",
+          "created_at"
+        ],
+        "title": "HealthEventActionOut",
+        "description": "Medical action output."
+      },
+      "HealthEventCaregiverOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "person_id": {
+            "type": "string",
+            "title": "Person Id"
+          },
+          "reported_by": {
+            "type": "string",
+            "title": "Reported By"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "declaration_context": {
+            "type": "string",
+            "title": "Declaration Context"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "priority": {
+            "type": "string",
+            "title": "Priority"
+          },
+          "has_danger_sign": {
+            "type": "boolean",
+            "title": "Has Danger Sign",
+            "default": false
+          },
+          "parent_guidance_message": {
+            "type": "string",
+            "title": "Parent Guidance Message",
+            "default": ""
+          },
+          "comment": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Comment"
+          },
+          "intake_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Intake Id"
+          },
+          "symptoms": {
+            "items": {
+              "$ref": "#/components/schemas/HealthEventSymptomOut"
+            },
+            "type": "array",
+            "title": "Symptoms"
+          },
+          "organization_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Organization Id"
+          },
+          "caregiver_guidance_notes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Caregiver Guidance Notes"
+          },
+          "suggested_conditions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Suggested Conditions"
+          },
+          "assessments": {
+            "items": {
+              "$ref": "#/components/schemas/ClinicalAssessmentOut"
+            },
+            "type": "array",
+            "title": "Assessments"
+          },
+          "actions": {
+            "items": {
+              "$ref": "#/components/schemas/HealthEventActionOut"
+            },
+            "type": "array",
+            "title": "Actions"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "person_id",
+          "reported_by",
+          "created_at",
+          "declaration_context",
+          "status",
+          "priority"
+        ],
+        "title": "HealthEventCaregiverOut",
+        "description": "Comprehensive clinical view reserved for authorized caregivers."
+      },
+      "HealthEventCreate": {
+        "properties": {
+          "person_id": {
+            "type": "string",
+            "title": "Person Id"
+          },
+          "intake_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Intake Id"
+          },
+          "declaration_context": {
+            "type": "string",
+            "pattern": "^(standalone|during_meal)$",
+            "title": "Declaration Context",
+            "default": "standalone"
+          },
+          "meal_interrupted": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Meal Interrupted"
+          },
+          "intake_quantity_consumed": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 64
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Intake Quantity Consumed"
+          },
+          "symptoms": {
+            "items": {
+              "$ref": "#/components/schemas/HealthEventSymptomCreate"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Symptoms"
+          },
+          "temperature_celsius": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 44.0,
+                "minimum": 34.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Temperature Celsius"
+          },
+          "stools_frequency_per_day": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 50.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stools Frequency Per Day"
+          },
+          "vomiting_frequency_per_day": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 50.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Vomiting Frequency Per Day"
+          },
+          "comment": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 1000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Comment"
+          }
+        },
+        "type": "object",
+        "required": [
+          "person_id",
+          "symptoms"
+        ],
+        "title": "HealthEventCreate",
+        "description": "Payload to declare a new child health event."
+      },
+      "HealthEventParentOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "person_id": {
+            "type": "string",
+            "title": "Person Id"
+          },
+          "reported_by": {
+            "type": "string",
+            "title": "Reported By"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "declaration_context": {
+            "type": "string",
+            "title": "Declaration Context"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "priority": {
+            "type": "string",
+            "title": "Priority"
+          },
+          "has_danger_sign": {
+            "type": "boolean",
+            "title": "Has Danger Sign",
+            "default": false
+          },
+          "parent_guidance_message": {
+            "type": "string",
+            "title": "Parent Guidance Message",
+            "default": ""
+          },
+          "comment": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Comment"
+          },
+          "intake_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Intake Id"
+          },
+          "symptoms": {
+            "items": {
+              "$ref": "#/components/schemas/HealthEventSymptomOut"
+            },
+            "type": "array",
+            "title": "Symptoms"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "person_id",
+          "reported_by",
+          "created_at",
+          "declaration_context",
+          "status",
+          "priority"
+        ],
+        "title": "HealthEventParentOut",
+        "description": "Reassuring and safe health event view for parents."
+      },
+      "HealthEventSymptomCreate": {
+        "properties": {
+          "symptom_code": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 2,
+            "title": "Symptom Code"
+          },
+          "duration": {
+            "type": "string",
+            "maxLength": 64,
+            "title": "Duration",
+            "default": "less_than_24h"
+          },
+          "duration_days": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 365.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Duration Days"
+          },
+          "recurrence_count": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 100.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Recurrence Count"
+          },
+          "specific_metrics": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Specific Metrics"
+          }
+        },
+        "type": "object",
+        "required": [
+          "symptom_code"
+        ],
+        "title": "HealthEventSymptomCreate",
+        "description": "Symptom input when reporting a health event."
+      },
+      "HealthEventSymptomOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "symptom_code": {
+            "type": "string",
+            "title": "Symptom Code"
+          },
+          "duration": {
+            "type": "string",
+            "title": "Duration"
+          },
+          "duration_days": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Duration Days"
+          },
+          "recurrence_count": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Recurrence Count"
+          },
+          "specific_metrics": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Specific Metrics"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "symptom_code",
+          "duration"
+        ],
+        "title": "HealthEventSymptomOut",
+        "description": "Symptom output model."
       },
       "ImportBatchRead": {
         "properties": {
@@ -14512,6 +15569,65 @@
         ],
         "title": "StaffValidationRequest",
         "description": "Request payload to approve or reject a staff member account."
+      },
+      "SymptomCatalogOut": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category"
+          },
+          "label_fr": {
+            "type": "string",
+            "title": "Label Fr"
+          },
+          "label_en": {
+            "type": "string",
+            "title": "Label En"
+          },
+          "is_danger_sign": {
+            "type": "boolean",
+            "title": "Is Danger Sign"
+          },
+          "conditional_questions": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Conditional Questions"
+          },
+          "display_order": {
+            "type": "integer",
+            "title": "Display Order"
+          },
+          "is_active": {
+            "type": "boolean",
+            "title": "Is Active"
+          }
+        },
+        "type": "object",
+        "required": [
+          "code",
+          "category",
+          "label_fr",
+          "label_en",
+          "is_danger_sign",
+          "display_order",
+          "is_active"
+        ],
+        "title": "SymptomCatalogOut",
+        "description": "Symptom catalogue entry presentation."
       },
       "TokenRefreshRequest": {
         "properties": {
