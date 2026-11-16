@@ -56,20 +56,14 @@ export function AppHeader({
   onLogout,
   testID = "app-header",
 }: AppHeaderProps): React.JSX.Element {
-  const { t, i18n } = useTranslation("common");
+  const { t } = useTranslation("common");
   const { t: tNotif } = useTranslation("notifications");
   const { t: tMedical } = useTranslation("medical");
   const currentSpace = spaceTheme ?? space;
   const config = themeStyles[currentSpace] || themeStyles.primary;
   const title = spaceTitle ?? t(config.titleKey);
-  const defaultName =
-    i18n.language === "fr" || i18n.language === "en"
-      ? t("header.defaultUserName")
-      : "Compte démo · Hamadou";
-  const displayUserName =
-    userName === "Compte démo · Hamadou" || userName === undefined
-      ? defaultName
-      : userName;
+  const defaultName = t("header.defaultUserName");
+  const displayUserName = userName || defaultName;
   const isCaregiver = currentSpace === "care" || currentSpace === "caregiver";
   const count = unreadNotifications ?? notificationCount ?? 0;
   const [isNotifOpen, setIsNotifOpen] = useState(false);

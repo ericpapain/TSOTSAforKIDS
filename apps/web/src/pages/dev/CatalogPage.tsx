@@ -15,7 +15,6 @@ import {
   type DataTableColumn,
   type NavItem,
 } from '../../components';
-import type { SpaceTheme } from '../../types';
 
 interface PatientPreview {
   id: string;
@@ -27,7 +26,7 @@ interface PatientPreview {
 
 export const CatalogPage: React.FC = () => {
   const { t } = useTranslation('common');
-  const [currentSpace, setCurrentSpace] = useState<SpaceTheme>('caregiver');
+  const [currentSpace, setCurrentSpace] = useState<"user" | "caregiver" | "admin">("caregiver");
   const [toggleActive, setToggleActive] = useState<boolean>(true);
   const [activeNav, setActiveNav] = useState<string>('/dev/catalog#dashboard');
 
@@ -71,7 +70,7 @@ export const CatalogPage: React.FC = () => {
             </p>
           </div>
           <div className="flex gap-2">
-            {(['user', 'caregiver', 'admin'] as SpaceTheme[]).map((sp) => (
+            {(["user", "caregiver", "admin"] as const).map((sp) => (
               <Button
                 key={sp}
                 variant={currentSpace === sp ? (sp === 'user' ? 'primary' : sp) : 'solid'}

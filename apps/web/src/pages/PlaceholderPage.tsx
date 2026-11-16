@@ -52,7 +52,7 @@ export const PlaceholderPage: React.FC<PlaceholderPageProps> = ({
     : userNavItems;
 
   const defaultUserName = isCaregiver
-    ? 'Prof. Félicité Ngeufack'
+    ? t('header.defaultUserName')
     : isAdmin
     ? tAdmin('nav.teamName')
     : t('header.defaultUserName');
