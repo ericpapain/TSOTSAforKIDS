@@ -9,6 +9,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useTranslation } from "react-i18next";
 
 import { AppBar } from "../src/components/AppBar";
 import { BottomNav, type BottomNavTab } from "../src/components/BottomNav";
@@ -19,37 +20,17 @@ import { fontFamilies, fontSizes } from "../src/theme/typography";
 
 export default function PersonsScreen(): React.JSX.Element {
   const router = useRouter();
+  const { t } = useTranslation("mobile");
   const [persons, setPersons] = useState<PersonItem[]>([]);
 
   useEffect(() => {
     fetchFamilyMembers()
       .then((data) => {
-        if (data.length > 0) {
-          setPersons(data);
-        } else {
-          // Default initial demo persons matching prompt M08
-          setPersons([
-            {
-              id: "amina-demo",
-              first_name: "Amina",
-              birth_date: "2024-12-12",
-              sex: "F",
-              age_formatted: "1 an 11 mois",
-              relation: "child",
-              status_badge: "Démo",
-            },
-            {
-              id: "self-demo",
-              first_name: "Moi-même",
-              birth_date: "1990-01-01",
-              sex: "M",
-              age_formatted: "adulte",
-              relation: "self",
-            },
-          ]);
-        }
+        setPersons(data || []);
       })
-      .catch(() => {});
+      .catch(() => {
+        setPersons([]);
+      });
   }, []);
 
   const handleTabPress = (tab: BottomNavTab): void => {
@@ -69,7 +50,7 @@ export default function PersonsScreen(): React.JSX.Element {
   return (
     <SafeAreaView style={styles.safeArea} edges={["top"]}>
       <AppBar
-        title="Nutrition"
+        title={t("persons.title", { defaultValue: "Nutrition" })}
         onBack={() => router.replace("/u-modules")}
       />
 
@@ -77,52 +58,73 @@ export default function PersonsScreen(): React.JSX.Element {
         contentContainerStyle={styles.container}
         showsVerticalScrollIndicator={false}
       >
-        <Text style={styles.heading}>Pour qui ?</Text>
+        <Text style={styles.heading}>
+          {t("persons.heading", { defaultValue: "Pour qui ?" })}
+        </Text>
 
-        {/* Persons list */}
-        <View style={styles.personsList}>
-          {persons.map((person) => {
-            const isChild = person.relation === "child" || person.first_name === "Amina";
-            const subtitle = isChild
-              ? "Suivie par le CMA de démo"
-              : "Profil à compléter";
+        {/* Persons list or empty state */}
+        {persons.length === 0 ? (
+          <View testID="empty-persons-state" style={styles.emptyCard}>
+            <FontAwesome5 name="child" size={32} color={colors.textSubtle} style={{ marginBottom: 8 }} />
+            <Text style={styles.emptyTitle}>
+              {t("persons.emptyTitle", { defaultValue: "Aucun profil suivi" })}
+            </Text>
+            <Text style={styles.emptySubtitle}>
+              {t("persons.emptySubtitle", { defaultValue: "Appuyez sur « Ajouter un enfant » ci-dessous pour démarrer le suivi." })}
+            </Text>
+          </View>
+        ) : (
+          <View style={styles.personsList}>
+            {persons.map((person) => {
+              const isChild = person.relation === "child";
+              const isSelf = person.relation === "self";
+              const displayName = isSelf ? t("persons.myself", { defaultValue: person.first_name }) : person.first_name;
+              const subtitle = person.facility_name
+                ? `${t("persons.followedByPrefix", { defaultValue: "Suivi(e) par" })} ${person.facility_name}`
+                : t("persons.profileToComplete", { defaultValue: "Profil à compléter" });
+              const ageDisplay = person.age_formatted === "adulte"
+                ? t("persons.adult", { defaultValue: "adulte" })
+                : (person.age_formatted || t("persons.child", { defaultValue: "enfant" }));
 
-            return (
-              <Pressable
-                key={person.id}
-                testID={`card-person-${person.id}`}
-                style={({ pressed }) => [
-                  styles.personCard,
-                  pressed && styles.pressed,
-                ]}
-                onPress={() => handleSelectPerson(person)}
-              >
-                <View style={styles.iconCol}>
-                  <FontAwesome5
-                    name={isChild ? "child" : "user"}
-                    size={32}
-                    color={isChild ? colors.primary : colors.textSubtle}
-                  />
-                </View>
-
-                <View style={styles.textCol}>
-                  <Text style={styles.personTitle}>
-                    {person.first_name} · {person.age_formatted || "enfant"}
-                  </Text>
-                  <Text style={styles.personSubtitle}>{subtitle}</Text>
-                </View>
-
-                {person.status_badge && (
-                  <View style={styles.badgePill}>
-                    <Text style={styles.badgeText}>{person.status_badge}</Text>
+              return (
+                <Pressable
+                  key={person.id}
+                  testID={`card-person-${person.id}`}
+                  style={({ pressed }) => [
+                    styles.personCard,
+                    pressed && styles.pressed,
+                  ]}
+                  onPress={() => handleSelectPerson(person)}
+                >
+                  <View style={styles.iconCol}>
+                    <FontAwesome5
+                      name={isChild ? "child" : "user"}
+                      size={32}
+                      color={isChild ? colors.primary : colors.textSubtle}
+                    />
                   </View>
-                )}
 
-                <Text style={styles.chevron}>›</Text>
-              </Pressable>
-            );
-          })}
-        </View>
+                  <View style={styles.textCol}>
+                    <Text style={styles.personTitle}>
+                      {displayName} · {ageDisplay}
+                    </Text>
+                    <Text style={styles.personSubtitle}>{subtitle}</Text>
+                  </View>
+
+                  {person.status_badge && (
+                    <View style={styles.badgePill}>
+                      <Text style={styles.badgeText}>
+                        {person.status_badge}
+                      </Text>
+                    </View>
+                  )}
+
+                  <Text style={styles.chevron}>›</Text>
+                </Pressable>
+              );
+            })}
+          </View>
+        )}
 
         {/* Add Person button */}
         <Pressable
@@ -134,7 +136,9 @@ export default function PersonsScreen(): React.JSX.Element {
           onPress={() => router.push("/u-addperson")}
         >
           <FontAwesome5 name="plus" size={30} color={colors.primary} />
-          <Text style={styles.addPersonText}>Ajouter une personne</Text>
+          <Text style={styles.addPersonText}>
+            {t("persons.addPerson", { defaultValue: "Ajouter une personne" })}
+          </Text>
         </Pressable>
 
         {/* Explore without profile link */}
@@ -146,13 +150,19 @@ export default function PersonsScreen(): React.JSX.Element {
           ]}
           onPress={() => router.push("/u-choose")}
         >
-          <Text style={styles.exploreText}>Explorer les produits sans profil  ›</Text>
+          <Text style={styles.exploreText}>
+            {t("persons.exploreWithoutProfile", {
+              defaultValue: "Explorer les produits sans profil  ›",
+            })}
+          </Text>
         </Pressable>
 
         {/* Info box: no account needed for family members */}
         <View style={styles.infoBox}>
           <Text style={styles.infoText}>
-            Ajoutez les membres de votre famille : pas besoin de leur créer un compte.
+            {t("persons.familyNote", {
+              defaultValue: "Ajoutez les membres de votre famille : pas besoin de leur créer un compte.",
+            })}
           </Text>
         </View>
       </ScrollView>
@@ -181,6 +191,29 @@ const styles = StyleSheet.create({
   personsList: {
     gap: 12,
     marginBottom: 20,
+  },
+  emptyCard: {
+    backgroundColor: colors.surface2,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 9,
+    padding: 24,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 20,
+  },
+  emptyTitle: {
+    fontFamily: fontFamilies.bold,
+    fontSize: fontSizes.base16,
+    color: colors.text,
+    marginBottom: 4,
+    textAlign: "center",
+  },
+  emptySubtitle: {
+    fontFamily: fontFamilies.regular,
+    fontSize: fontSizes.sm14,
+    color: colors.textMuted,
+    textAlign: "center",
   },
   personCard: {
     width: "100%",

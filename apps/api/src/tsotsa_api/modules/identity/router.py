@@ -8,6 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from tsotsa_api.core.database import get_db_session
 from tsotsa_api.modules.identity.dependencies import get_current_user
 from tsotsa_api.modules.identity.models import User
+from tsotsa_api.modules.identity.permissions_repo import PermissionsRepository
 from tsotsa_api.modules.identity.repository import IdentityRepository
 from tsotsa_api.modules.identity.schemas import (
     EmailLoginRequest,
@@ -24,10 +25,12 @@ from tsotsa_api.modules.identity.schemas import (
     TokenRefreshRequest,
     TokenResponse,
     UserProfileResponse,
+    UserProfileUpdateRequest,
 )
 from tsotsa_api.modules.identity.service import IdentityService
 
 router = APIRouter(prefix="/auth", tags=["auth"])
+profile_router = APIRouter(tags=["profile"])
 
 
 def get_client_ip(request: Request) -> str:
@@ -112,12 +115,8 @@ async def register_email(
 ) -> MessageResponse:
     """Create a new account with email and password and issue verification token."""
     ip = get_client_ip(request)
-    await service.register_email(
-        email=payload.email,
-        password=payload.password,
-        display_name=payload.display_name,
-        ip_address=ip,
-    )
+    reg_data = payload.model_dump()
+    await service.register_email(**reg_data, ip_address=ip)
     return MessageResponse(
         message="Compte créé avec succès. Un e-mail de confirmation vous a été envoyé."
     )
@@ -227,7 +226,37 @@ async def logout(
     return MessageResponse(message="Déconnexion effectuée avec succès.")
 
 
+async def _build_user_profile_response(user: User, db: AsyncSession) -> UserProfileResponse:
+    repo = IdentityRepository(db)
+    perm_repo = PermissionsRepository(db)
+    roles = await repo.get_user_role_codes(user.id)
+    perms = await perm_repo.get_user_permissions(user.id)
+    profile = await repo.get_caregiver_profile(user.id)
+    is_verified_caregiver = profile.verification_status == "approved" if profile else False
+    pref_loc = user.preferred_locale if user.preferred_locale in ("fr", "en") else "fr"
+
+    return UserProfileResponse(
+        id=user.id,
+        display_name=user.display_name,
+        first_name=user.first_name,
+        last_name=user.last_name,
+        locality=user.locality,
+        language=pref_loc,
+        preferred_locale=pref_loc,  # type: ignore[arg-type]
+        status=user.status,
+        roles=roles,
+        permissions=sorted(list(perms)),
+        is_verified_caregiver=is_verified_caregiver,
+    )
+
+
 @router.get(
+    "/me",
+    response_model=UserProfileResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Profil de l'utilisateur connecté",
+)
+@profile_router.get(
     "/me",
     response_model=UserProfileResponse,
     status_code=status.HTTP_200_OK,
@@ -237,17 +266,32 @@ async def get_me(
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db_session),
 ) -> UserProfileResponse:
-    """Return identity and roles profile of current authenticated user."""
-    repo = IdentityRepository(db)
-    roles = await repo.get_user_role_codes(user.id)
-    profile = await repo.get_caregiver_profile(user.id)
-    is_verified_caregiver = profile.verification_status == "approved" if profile else False
+    """Return identity, roles, and preferred_locale of current authenticated user."""
+    return await _build_user_profile_response(user, db)
 
-    return UserProfileResponse(
-        id=user.id,
-        display_name=user.display_name,
-        language=user.language,
-        status=user.status,
-        roles=roles,
-        is_verified_caregiver=is_verified_caregiver,
+
+@router.patch(
+    "/me",
+    response_model=UserProfileResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Mise à jour du profil et de la langue préférée",
+)
+@profile_router.patch(
+    "/me",
+    response_model=UserProfileResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Mise à jour du profil et de la langue préférée",
+)
+async def patch_me(
+    payload: UserProfileUpdateRequest,
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db_session),
+) -> UserProfileResponse:
+    """Update preferred_locale and/or display_name of current authenticated user."""
+    repo = IdentityRepository(db)
+    updated_user = await repo.update_user_profile(
+        user_id=user.id,
+        preferred_locale=payload.preferred_locale,
+        display_name=payload.display_name,
     )
+    return await _build_user_profile_response(updated_user or user, db)

@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { FontAwesome5 } from "@expo/vector-icons";
+import { useTranslation } from "react-i18next";
 import { colors } from "../src/theme/colors";
 import { fontFamilies } from "../src/theme/typography";
 import { submitConsent } from "../src/features/persons/personsService";
@@ -34,9 +35,10 @@ function BulletItem({ icon, text }: BulletItemProps) {
 
 export default function ConsentScreen() {
   const router = useRouter();
+  const { t } = useTranslation(["mobile", "common"]);
   const params = useLocalSearchParams<{ personId?: string; name?: string }>();
   const personId = params.personId ?? "";
-  const personName = params.name ?? "l'enfant";
+  const personName = params.name ?? t("mobile:consent.childFallback", { defaultValue: "l'enfant" });
 
   const [accepted, setAccepted] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -47,9 +49,12 @@ export default function ConsentScreen() {
 
   const handleReadFullText = () => {
     Alert.alert(
-      "Accord de traitement des données",
-      "Les données de santé de votre proche sont traitées de manière confidentielle et sécurisée conformément à la réglementation en vigueur.",
-      [{ text: "Compris" }]
+      t("mobile:consent.alertTitle", { defaultValue: "Accord de traitement des données" }),
+      t("mobile:consent.alertBody", {
+        defaultValue:
+          "Les données de santé de votre proche sont traitées de manière confidentielle et sécurisée conformément à la réglementation en vigueur.",
+      }),
+      [{ text: t("mobile:consent.alertUnderstood", { defaultValue: "Compris" }) }]
     );
   };
 
@@ -65,8 +70,8 @@ export default function ConsentScreen() {
         params: { personId, name: personName },
       });
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "Erreur lors de l'enregistrement";
-      Alert.alert("Erreur", msg);
+      const msg = err instanceof Error ? err.message : "Erreur";
+      Alert.alert(t("common:errors.generic", { defaultValue: "Erreur" }), msg);
     } finally {
       setLoading(false);
     }
@@ -80,14 +85,16 @@ export default function ConsentScreen() {
       <View style={styles.appBar}>
         <TouchableOpacity
           testID="btn-back"
-          accessibilityLabel="Retour"
+          accessibilityLabel={t("common:actions.back", { defaultValue: "Retour" })}
           accessibilityRole="button"
           onPress={() => router.back()}
           style={styles.touchBack}
         >
           <FontAwesome5 name="arrow-left" size={24} color={colors.white} />
         </TouchableOpacity>
-        <Text style={styles.appBarTitle}>Votre accord</Text>
+        <Text style={styles.appBarTitle}>
+          {t("mobile:consent.title", { defaultValue: "Votre accord" })}
+        </Text>
         <View style={styles.appBarSpacer} />
       </View>
 
@@ -97,15 +104,20 @@ export default function ConsentScreen() {
       >
         <BulletItem
           icon="clipboard-check"
-          text={`Les informations d'${personName} servent à suivre sa nutrition.`}
+          text={t("mobile:consent.bullet1", {
+            name: personName,
+            defaultValue: `Les informations de ${personName} servent à suivre sa nutrition.`,
+          })}
         />
         <BulletItem
           icon="user-md"
-          text="Seul son soignant les voit."
+          text={t("mobile:consent.bullet2", { defaultValue: "Seul son soignant les voit." })}
         />
         <BulletItem
           icon="undo"
-          text="Vous pouvez retirer votre accord à tout moment."
+          text={t("mobile:consent.bullet3", {
+            defaultValue: "Vous pouvez retirer votre accord à tout moment.",
+          })}
         />
 
         {/* Checkbox row */}
@@ -121,7 +133,10 @@ export default function ConsentScreen() {
             {accepted && <Text style={styles.checkmark}>✓</Text>}
           </View>
           <Text style={styles.checkboxLabel}>
-            J&apos;ai lu et j&apos;accepte pour {personName}
+            {t("mobile:consent.checkbox", {
+              name: personName,
+              defaultValue: `J'ai lu et j'accepte pour ${personName}`,
+            })}
           </Text>
         </TouchableOpacity>
 
@@ -132,7 +147,9 @@ export default function ConsentScreen() {
           style={styles.linkTouch}
           activeOpacity={0.85}
         >
-          <Text style={styles.linkText}>Lire le texte complet</Text>
+          <Text style={styles.linkText}>
+            {t("mobile:consent.readFullText", { defaultValue: "Lire le texte complet" })}
+          </Text>
         </TouchableOpacity>
 
         {/* Submit button */}
@@ -147,7 +164,9 @@ export default function ConsentScreen() {
           {loading ? (
             <ActivityIndicator color={colors.white} />
           ) : (
-            <Text style={styles.submitButtonText}>J&apos;accepte</Text>
+            <Text style={styles.submitButtonText}>
+              {t("mobile:consent.submit", { defaultValue: "J'accepte" })}
+            </Text>
           )}
         </TouchableOpacity>
       </ScrollView>

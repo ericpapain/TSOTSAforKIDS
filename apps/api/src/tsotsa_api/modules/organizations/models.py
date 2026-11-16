@@ -27,6 +27,10 @@ class Organization(Base):
     created_by: Mapped[str | None] = mapped_column(
         BinaryUUID, ForeignKey("users.id"), nullable=True
     )
+    deleted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    deleted_by: Mapped[str | None] = mapped_column(
+        BinaryUUID, ForeignKey("users.id"), nullable=True
+    )
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=lambda: datetime.now(UTC), nullable=False
     )

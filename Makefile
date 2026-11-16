@@ -9,6 +9,7 @@ check: check-quality check-api check-openapi check-client check-web check-mobile
 check-quality:
 	$(PYTHON) scripts/check_file_length.py
 	$(PYTHON) scripts/check_no_mock.py
+	node --no-warnings --experimental-strip-types scripts/check_i18n.ts
 	$(PYTHON) -m pytest scripts/tests -q
 
 check-api:
@@ -26,6 +27,7 @@ check-client:
 	pnpm --filter @tsotsa/api-client check
 
 check-web:
+	pnpm --filter @tsotsa/i18n check
 	pnpm --filter @tsotsa/web check
 
 check-mobile:

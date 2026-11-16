@@ -10,6 +10,7 @@ from sqlalchemy.orm import selectinload
 
 from tsotsa_api.modules.identity.models import (
     CaregiverProfile,
+    FieldAgentProfile,
     Role,
     User,
     UserIdentity,
@@ -42,11 +43,49 @@ class IdentityRepository(TokenRepository):
         self,
         display_name: str,
         language: str = "fr",
+        preferred_locale: str | None = None,
         status: str = "active",
+        first_name: str | None = None,
+        last_name: str | None = None,
+        preferred_region_id: str | None = None,
+        locality: str | None = None,
     ) -> User:
         """Create a new user entity."""
-        user = User(display_name=display_name, language=language, status=status)
+        loc = (
+            preferred_locale
+            if preferred_locale in ("fr", "en")
+            else (language if language in ("fr", "en") else "fr")
+        )
+        user = User(
+            display_name=display_name,
+            language=loc,
+            preferred_locale=loc,
+            status=status,
+            first_name=first_name,
+            last_name=last_name,
+            preferred_region_id=preferred_region_id,
+            locality=locality,
+        )
         self.session.add(user)
+        await self.session.flush()
+        return user
+
+    async def update_user_profile(
+        self,
+        user_id: str,
+        preferred_locale: str | None = None,
+        display_name: str | None = None,
+    ) -> User | None:
+        """Update user preferred_locale and/or display_name."""
+        user = await self.get_user_by_id(user_id)
+        if not user:
+            return None
+        if preferred_locale is not None:
+            user.preferred_locale = preferred_locale
+            user.language = preferred_locale
+        if display_name is not None:
+            user.display_name = display_name.strip()
+        user.updated_at = datetime.now(UTC)
         await self.session.flush()
         return user
 
@@ -172,13 +211,37 @@ class IdentityRepository(TokenRepository):
         licence_number: str | None = None,
         document_file: str | None = None,
         status: str = "pending",
+        phone: str | None = None,
+        speciality: str | None = None,
+        order_number: str | None = None,
     ) -> CaregiverProfile:
         """Create caregiver profile."""
         profile = CaregiverProfile(
             user_id=user_id,
             organization_id=organization_id,
-            licence_number=licence_number,
+            licence_number=licence_number or order_number,
+            order_number=order_number,
+            speciality=speciality,
+            phone=phone,
             document_file=document_file,
+            verification_status=status,
+        )
+        self.session.add(profile)
+        await self.session.flush()
+        return profile
+
+    async def create_field_agent_profile(
+        self,
+        user_id: str,
+        phone: str,
+        structure_name: str | None = None,
+        status: str = "pending",
+    ) -> FieldAgentProfile:
+        """Create field agent profile."""
+        profile = FieldAgentProfile(
+            user_id=user_id,
+            phone=phone,
+            structure_name=structure_name,
             verification_status=status,
         )
         self.session.add(profile)

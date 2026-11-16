@@ -1,0 +1,186 @@
+{
+  "pageTitle": "Équivalents locaux — TSOTSA4Kids",
+  "productCard": {
+    "title": "Produit",
+    "referenceSection": "Produits de référence",
+    "customSection": "Mes produits",
+    "giveButton": "Donner à {{name}}"
+  },
+  "equivalentsCard": {
+    "title": "Aliments locaux équivalents",
+    "mobileVersion": "← Version mobile",
+    "mobileRedirectToast": "Redirection vers la version mobile...",
+    "defaultNutrientsSummary": "Nutriments : protéines, lipides, fer",
+    "footnote": "Valeurs pour 100 g. Démo : USDA indicatives ; en production : base aliments extraite d'ORKG et validée.",
+    "confirmIntakeBtn": "Confirmer une prise ›"
+  },
+  "table": {
+    "rank": "#",
+    "localFood": "Aliment local",
+    "common": "Commun",
+    "extra": "En plus",
+    "proteins": "Protéines",
+    "lipids": "Lipides",
+    "iron": "Fer"
+  },
+  "regions": {
+    "all": { "label": "Toutes régions", "shortName": "Région Ouest" },
+    "west": { "label": "Région Ouest", "shortName": "Région Ouest" },
+    "adamaoua": { "label": "Région Adamaoua", "shortName": "Région Adamaoua" },
+    "centre": { "label": "Région Centre", "shortName": "Région Centre" },
+    "east": { "label": "Région Est", "shortName": "Région Est" },
+    "far-north": { "label": "Région Extrême-Nord", "shortName": "Région Extrême-Nord" },
+    "littoral": { "label": "Région Littoral", "shortName": "Région Littoral" },
+    "north": { "label": "Région Nord", "shortName": "Région Nord" },
+    "north-west": { "label": "Région Nord-Ouest", "shortName": "Région Nord-Ouest" },
+    "south": { "label": "Région Sud", "shortName": "Région Sud" },
+    "south-west": { "label": "Région Sud-Ouest", "shortName": "Région Sud-Ouest" }
+  },
+  "nutrientNames": {
+    "energy": "Énergie",
+    "proteinsStar": "Protéines ★",
+    "proteins": "Protéines",
+    "lipidsStar": "Lipides ★",
+    "lipids": "Lipides",
+    "ironStar": "Fer ★",
+    "calciumStar": "Calcium ★",
+    "calcium": "Calcium",
+    "zinc": "Zinc",
+    "lactoseStar": "Lactose ★",
+    "potassiumStar": "Potassium ★",
+    "sodium": "Sodium",
+    "magnesium": "Magnésium",
+    "copper": "Cuivre"
+  },
+  "products": {
+    "plumpy-nut": {
+      "name": "Plumpy'Nut",
+      "usage": "Pâte prête à l'emploi (ATPE)",
+      "keyNutrientsSummary": "Nutriments : protéines, lipides, fer",
+      "specification": "Composition pour 100 g · spécification OMS/UNICEF",
+      "proteinsValue": "≈ 13 – 16 g (10–12 % de l'énergie)",
+      "lipidsValue": "≈ 26 – 37 g (45–60 % de l'énergie)",
+      "costInfo": "Coût : prix non renseigné pour l'Ouest"
+    },
+    "plumpy-sup": {
+      "name": "Plumpy'Sup",
+      "usage": "Supplément prêt à l'emploi (ASPE)",
+      "keyNutrientsSummary": "Nutriments : protéines, lipides, fer",
+      "specification": "Composition pour 100 g · supplément nutritionnel (MAM)",
+      "costInfo": "Coût : prix non renseigné pour l'Ouest"
+    },
+    "f-75": {
+      "name": "F-75",
+      "usage": "Lait thérapeutique · à l'hôpital",
+      "keyNutrientsSummary": "Nutriments : protéines, lactose, potassium, zinc",
+      "specification": "Composition pour 100 ml · OMS, malnutrition sévère (1999)",
+      "costInfo": "Usage hospitalier exclusif (phase de stabilisation)"
+    },
+    "f-100": {
+      "name": "F-100",
+      "usage": "Lait thérapeutique · à l'hôpital",
+      "keyNutrientsSummary": "Nutriments : protéines, lipides, potassium, zinc",
+      "specification": "Composition pour 100 ml · OMS, réhabilitation nutritionnelle",
+      "costInfo": "Usage hospitalier (phase de réhabilitation)"
+    },
+    "farine-infantile-enrichie": {
+      "name": "Farine infantile enrichie",
+      "usage": "Bouillie infantile locale enrichie",
+      "statusBadge": "En vérification",
+      "keyNutrientsSummary": "Nutriments : protéines, fer, calcium",
+      "specification": "Composition pour 100 g · produit ajouté par le compte utilisateur",
+      "costInfo": "Coût : variable selon préparation locale"
+    }
+  },
+  "foods": {
+    "extraCalcium": "+ calcium",
+    "graines-de-courge": {
+      "name": "Graines de courge",
+      "category": "Graines oléagineuses",
+      "description": "Riches en protéines, lipides de qualité et minéraux."
+    },
+    "sesame": {
+      "name": "Sésame",
+      "category": "Graines oléagineuses",
+      "description": "Très forte teneur en fer, lipides et calcium végétal."
+    },
+    "arachide": {
+      "name": "Arachide",
+      "category": "Légumineuses oléagineuses",
+      "description": "Aliment de base local hautement énergétique et riche en protéines."
+    },
+    "soja": {
+      "name": "Soja",
+      "category": "Légumineuses",
+      "description": "Teneur exceptionnelle en protéines végétales complètes et fer."
+    },
+    "niebe": {
+      "name": "Niébé",
+      "category": "Légumineuses",
+      "description": "Haricot local résistant à la sécheresse, riche en protéines et fer."
+    },
+    "lait-entier-en-poudre": {
+      "name": "Lait entier en poudre",
+      "category": "Produits laitiers",
+      "description": "Excellente source de lipides laitiers, protéines et calcium."
+    },
+    "feuilles-de-moringa": {
+      "name": "Feuilles de moringa",
+      "category": "Légumes-feuilles",
+      "description": "Feuilles séchées à haute densité micronutritionnelle."
+    }
+  },
+  "foodModal": {
+    "defaultCategory": "Aliment local",
+    "rankLabel": "{{category}} · Rang #{{rank}}",
+    "closeAria": "Fermer la boîte de dialogue",
+    "nutritionPer100g": "Valeurs nutritionnelles pour 100 g",
+    "energy": "Énergie :",
+    "proteins": "Protéines :",
+    "lipids": "Lipides :",
+    "iron": "Fer :",
+    "calcium": "Calcium :",
+    "zinc": "Zinc :",
+    "westAvailability": "Disponibilité Région Ouest :",
+    "availableYes": "Oui (disponible)",
+    "availableNo": "Non",
+    "commonNutrients": "Nutriments communs : {{count}}",
+    "closeBtn": "Fermer",
+    "giveFoodBtn": "Donner {{food}} à {{person}}"
+  },
+  "confirmIntakeModal": {
+    "title": "Confirmer la prise",
+    "closeAria": "Fermer",
+    "forPerson": "Pour : {{person}}",
+    "quantityLabel": "Quantité",
+    "whenLabel": "Quand ?",
+    "timeOptions": {
+      "0800": "Aujourd'hui · 08:00",
+      "1230": "Aujourd'hui · 12:30",
+      "1800": "Aujourd'hui · 18:00",
+      "now": "À l'instant"
+    },
+    "ateLabel": "{{person}} a mangé :",
+    "consumption": {
+      "all": "Tout",
+      "half": "La moitié",
+      "refused": "Refusé"
+    },
+    "submitBtn": "Confirmer",
+    "recordedTitle": "Prise enregistrée",
+    "summaryAll": "{{person}} a tout mangé.",
+    "summaryHalf": "{{person}} a mangé la moitié.",
+    "summaryRefused": "{{person}} a refusé la prise.",
+    "caregiverNotified": "Votre soignant est prévenu et la voit dans le suivi de {{person}}.",
+    "returnToPerson": "Retour à {{person}}",
+    "viewCaregiverSide": "Voir côté soignant →",
+    "units": {
+      "portion_one": "{{grams}} g ({{count}} portion)",
+      "portion_other": "{{grams}} g ({{count}} portions)",
+      "sachet_one": "{{count}} sachet",
+      "sachet_other": "{{count}} sachets",
+      "meal100ml_one": "{{count}} repas (100 ml)",
+      "meal100ml_other": "{{count}} repas (100 ml)"
+    }
+  }
+}

@@ -247,11 +247,199 @@ export interface paths {
         };
         /**
          * Profil de l'utilisateur connecté
-         * @description Return identity and roles profile of current authenticated user.
+         * @description Return identity, roles, and preferred_locale of current authenticated user.
          */
         get: operations["get_me_v1_auth_me_get"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Mise à jour du profil et de la langue préférée
+         * @description Update preferred_locale and/or display_name of current authenticated user.
+         */
+        patch: operations["patch_me_v1_auth_me_patch"];
+        trace?: never;
+    };
+    "/v1/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Profil de l'utilisateur connecté
+         * @description Return identity, roles, and preferred_locale of current authenticated user.
+         */
+        get: operations["get_me_v1_me_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Mise à jour du profil et de la langue préférée
+         * @description Update preferred_locale and/or display_name of current authenticated user.
+         */
+        patch: operations["patch_me_v1_me_patch"];
+        trace?: never;
+    };
+    "/v1/staff/pending": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Lister le personnel en attente de validation
+         * @description Retrieve caregivers and field agents awaiting validation.
+         */
+        get: operations["list_pending_staff_v1_staff_pending_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/staff/{user_id}/validate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Valider ou refuser un compte soignant ou agent de terrain
+         * @description Validate or refuse a pending staff account.
+         */
+        post: operations["validate_staff_v1_staff__user_id__validate_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/staff/{user_id}/suspend": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Suspendre un compte utilisateur
+         * @description Suspend user account.
+         */
+        post: operations["suspend_user_v1_staff__user_id__suspend_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/staff/{user_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Supprimer (soft delete) un compte utilisateur
+         * @description Soft delete user account.
+         */
+        delete: operations["delete_user_v1_staff__user_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/permissions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Lister toutes les permissions canoniques
+         * @description List system permissions.
+         */
+        get: operations["list_permissions_v1_permissions_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/permissions/users/{user_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Lister les droits délégués d'un utilisateur
+         * @description List granted permissions for a target user.
+         */
+        get: operations["list_user_grants_v1_permissions_users__user_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/permissions/grant": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Déléguer un droit à un utilisateur
+         * @description Delegate a permission.
+         */
+        post: operations["grant_permission_v1_permissions_grant_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/permissions/revoke": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Révoquer un droit délégué
+         * @description Revoke a permission grant.
+         */
+        post: operations["revoke_permission_v1_permissions_revoke_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1222,6 +1410,66 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/patients/pending": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Pending Patients
+         * @description List patients awaiting validation (requires patients.validate).
+         */
+        get: operations["list_pending_patients_v1_patients_pending_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/patients/{person_id}/validate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Validate Patient
+         * @description Validate or refuse a pending patient (requires patients.validate).
+         */
+        post: operations["validate_patient_v1_patients__person_id__validate_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/patients/{person_id}/assign": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Assign Patient Caregiver
+         * @description Assign patient to an approved caregiver (requires patients.assign).
+         */
+        post: operations["assign_patient_caregiver_v1_patients__person_id__assign_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/consents/text": {
         parameters: {
             query?: never;
@@ -1502,6 +1750,146 @@ export interface paths {
          * @description Compute confirmed intake compliance rate over 7 days for clinical dashboard.
          */
         get: operations["get_intakes_compliance_rate_v1_persons__person_id__intakes_compliance_rate_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/health/symptoms/catalog": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Symptom Catalog
+         * @description Return active symptom catalog entries with conditional questions and priority indicators.
+         */
+        get: operations["get_symptom_catalog_v1_health_symptoms_catalog_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/health/events": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Declare Health Event
+         * @description Report a health event for a child either standalone or during a meal.
+         */
+        post: operations["declare_health_event_v1_health_events_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/health/events/person/{person_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Health Events By Person
+         * @description Retrieve chronological longitudinal health event history for an authorized child.
+         */
+        get: operations["list_health_events_by_person_v1_health_events_person__person_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/health/events/{event_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Health Event Detail
+         * @description Fetch health event detail with role-appropriate visibility filtering.
+         */
+        get: operations["get_health_event_detail_v1_health_events__event_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/health/events/{event_id}/assessments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Add Clinical Assessment
+         * @description Record a clinical doctor assessment on a reported health event.
+         */
+        post: operations["add_clinical_assessment_v1_health_events__event_id__assessments_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/health/events/{event_id}/actions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Add Health Action
+         * @description Record a medical action (transfer, clarification, follow-up, closure).
+         */
+        post: operations["add_health_action_v1_health_events__event_id__actions_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/health/alerts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Health Alerts
+         * @description Retrieve open alerts for healthcare professionals and coordinators.
+         */
+        get: operations["list_health_alerts_v1_health_alerts_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -2559,6 +2947,46 @@ export interface components {
             has_active_consent: boolean;
         };
         /**
+         * ClinicalAssessmentCreate
+         * @description Medical assessment submitted by an authorized caregiver.
+         */
+        ClinicalAssessmentCreate: {
+            /** Clinical Notes */
+            clinical_notes: string;
+            /** Suspected Condition */
+            suspected_condition?: string | null;
+            /**
+             * Requires Investigation
+             * @default false
+             */
+            requires_investigation: boolean;
+            /** Investigation Type */
+            investigation_type?: string | null;
+        };
+        /**
+         * ClinicalAssessmentOut
+         * @description Caregiver assessment view.
+         */
+        ClinicalAssessmentOut: {
+            /** Id */
+            id: string;
+            /** Caregiver Id */
+            caregiver_id: string;
+            /** Clinical Notes */
+            clinical_notes: string;
+            /** Suspected Condition */
+            suspected_condition?: string | null;
+            /** Requires Investigation */
+            requires_investigation: boolean;
+            /** Investigation Type */
+            investigation_type?: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
+        /**
          * ColumnMappingUpdate
          * @description Admin column mapping correction.
          */
@@ -2848,7 +3276,31 @@ export interface components {
              */
             password: string;
             /** Display Name */
-            display_name: string;
+            display_name?: string | null;
+            /** First Name */
+            first_name?: string | null;
+            /** Last Name */
+            last_name?: string | null;
+            /**
+             * Role
+             * @default parent
+             * @enum {string}
+             */
+            role: "parent" | "field_agent" | "caregiver";
+            /** Region Id */
+            region_id?: string | null;
+            /** Locality */
+            locality?: string | null;
+            /** Phone */
+            phone?: string | null;
+            /** Facility Id */
+            facility_id?: string | null;
+            /** Speciality */
+            speciality?: string | null;
+            /** Order Number */
+            order_number?: string | null;
+            /** Structure Name */
+            structure_name?: string | null;
         };
         /**
          * EmailVerifyRequest
@@ -3063,6 +3515,13 @@ export interface components {
             id: string;
             /** Name */
             name: string;
+            /**
+             * Original Name
+             * @default
+             */
+            original_name: string;
+            /** Name En */
+            name_en?: string | null;
             /** Kind */
             kind: string;
             /** Scientific Name */
@@ -3164,6 +3623,13 @@ export interface components {
             id: string;
             /** Name */
             name: string;
+            /**
+             * Original Name
+             * @default
+             */
+            original_name: string;
+            /** Name En */
+            name_en?: string | null;
             /** Kind */
             kind: string;
             /** Category */
@@ -3190,6 +3656,220 @@ export interface components {
         HTTPValidationError: {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
+        };
+        /**
+         * HealthAlertSummary
+         * @description Summary item displayed in the central Alerts & Notifications center.
+         */
+        HealthAlertSummary: {
+            /** Event Id */
+            event_id: string;
+            /** Person Id */
+            person_id: string;
+            /** Person Code */
+            person_code?: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Priority */
+            priority: string;
+            /** Status */
+            status: string;
+            /** Symptoms Summary */
+            symptoms_summary?: string[];
+            /** Has Danger Sign */
+            has_danger_sign: boolean;
+            /** Requires Urgent Transfer */
+            requires_urgent_transfer: boolean;
+        };
+        /**
+         * HealthEventActionCreate
+         * @description Action recorded by a healthcare professional.
+         */
+        HealthEventActionCreate: {
+            /** Action Type */
+            action_type: string;
+            /** Details */
+            details: string;
+        };
+        /**
+         * HealthEventActionOut
+         * @description Medical action output.
+         */
+        HealthEventActionOut: {
+            /** Id */
+            id: string;
+            /** Actor Id */
+            actor_id: string;
+            /** Action Type */
+            action_type: string;
+            /** Details */
+            details: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+        };
+        /**
+         * HealthEventCaregiverOut
+         * @description Comprehensive clinical view reserved for authorized caregivers.
+         */
+        HealthEventCaregiverOut: {
+            /** Id */
+            id: string;
+            /** Person Id */
+            person_id: string;
+            /** Reported By */
+            reported_by: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Declaration Context */
+            declaration_context: string;
+            /** Status */
+            status: string;
+            /** Priority */
+            priority: string;
+            /**
+             * Has Danger Sign
+             * @default false
+             */
+            has_danger_sign: boolean;
+            /**
+             * Parent Guidance Message
+             * @default
+             */
+            parent_guidance_message: string;
+            /** Comment */
+            comment?: string | null;
+            /** Intake Id */
+            intake_id?: string | null;
+            /** Symptoms */
+            symptoms?: components["schemas"]["HealthEventSymptomOut"][];
+            /** Organization Id */
+            organization_id?: string | null;
+            /** Caregiver Guidance Notes */
+            caregiver_guidance_notes?: string[];
+            /** Suggested Conditions */
+            suggested_conditions?: string[];
+            /** Assessments */
+            assessments?: components["schemas"]["ClinicalAssessmentOut"][];
+            /** Actions */
+            actions?: components["schemas"]["HealthEventActionOut"][];
+        };
+        /**
+         * HealthEventCreate
+         * @description Payload to declare a new child health event.
+         */
+        HealthEventCreate: {
+            /** Person Id */
+            person_id: string;
+            /** Intake Id */
+            intake_id?: string | null;
+            /**
+             * Declaration Context
+             * @default standalone
+             */
+            declaration_context: string;
+            /** Meal Interrupted */
+            meal_interrupted?: boolean | null;
+            /** Intake Quantity Consumed */
+            intake_quantity_consumed?: string | null;
+            /** Symptoms */
+            symptoms: components["schemas"]["HealthEventSymptomCreate"][];
+            /** Temperature Celsius */
+            temperature_celsius?: number | null;
+            /** Stools Frequency Per Day */
+            stools_frequency_per_day?: number | null;
+            /** Vomiting Frequency Per Day */
+            vomiting_frequency_per_day?: number | null;
+            /** Comment */
+            comment?: string | null;
+        };
+        /**
+         * HealthEventParentOut
+         * @description Reassuring and safe health event view for parents.
+         */
+        HealthEventParentOut: {
+            /** Id */
+            id: string;
+            /** Person Id */
+            person_id: string;
+            /** Reported By */
+            reported_by: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Declaration Context */
+            declaration_context: string;
+            /** Status */
+            status: string;
+            /** Priority */
+            priority: string;
+            /**
+             * Has Danger Sign
+             * @default false
+             */
+            has_danger_sign: boolean;
+            /**
+             * Parent Guidance Message
+             * @default
+             */
+            parent_guidance_message: string;
+            /** Comment */
+            comment?: string | null;
+            /** Intake Id */
+            intake_id?: string | null;
+            /** Symptoms */
+            symptoms?: components["schemas"]["HealthEventSymptomOut"][];
+        };
+        /**
+         * HealthEventSymptomCreate
+         * @description Symptom input when reporting a health event.
+         */
+        HealthEventSymptomCreate: {
+            /** Symptom Code */
+            symptom_code: string;
+            /**
+             * Duration
+             * @default less_than_24h
+             */
+            duration: string;
+            /** Duration Days */
+            duration_days?: number | null;
+            /** Recurrence Count */
+            recurrence_count?: number | null;
+            /** Specific Metrics */
+            specific_metrics?: {
+                [key: string]: unknown;
+            };
+        };
+        /**
+         * HealthEventSymptomOut
+         * @description Symptom output model.
+         */
+        HealthEventSymptomOut: {
+            /** Id */
+            id: string;
+            /** Symptom Code */
+            symptom_code: string;
+            /** Duration */
+            duration: string;
+            /** Duration Days */
+            duration_days?: number | null;
+            /** Recurrence Count */
+            recurrence_count?: number | null;
+            /** Specific Metrics */
+            specific_metrics?: {
+                [key: string]: unknown;
+            };
         };
         /**
          * ImportBatchRead
@@ -3591,6 +4271,8 @@ export interface components {
         ManualFoodCreate: {
             /** Name */
             name: string;
+            /** Name En */
+            name_en?: string | null;
             /**
              * Kind
              * @default dish
@@ -3922,6 +4604,16 @@ export interface components {
             id: string;
             /** Code */
             code: string;
+            /**
+             * Name
+             * @default
+             */
+            name: string;
+            /**
+             * Original Name
+             * @default
+             */
+            original_name: string;
             /** Name Fr */
             name_fr: string;
             /** Name En */
@@ -3951,6 +4643,16 @@ export interface components {
             id: string;
             /** Code */
             code: string;
+            /**
+             * Name
+             * @default
+             */
+            name: string;
+            /**
+             * Original Name
+             * @default
+             */
+            original_name: string;
             /** Name Fr */
             name_fr: string;
             /** Name En */
@@ -4263,6 +4965,112 @@ export interface components {
             new_password: string;
         };
         /**
+         * PatientAssignRequest
+         * @description Payload to assign a patient to a healthcare caregiver in an organization.
+         */
+        PatientAssignRequest: {
+            /** Caregiver Id */
+            caregiver_id: string;
+            /** Organization Id */
+            organization_id: string;
+            /** Reason */
+            reason?: string | null;
+        };
+        /**
+         * PatientValidationRequest
+         * @description Payload to validate or refuse a pending patient registration.
+         */
+        PatientValidationRequest: {
+            /**
+             * Decision
+             * @enum {string}
+             */
+            decision: "validated" | "refused";
+            /** Refusal Reason */
+            refusal_reason?: string | null;
+        };
+        /**
+         * PendingPatientRead
+         * @description Detailed representation of a patient pending validation.
+         */
+        PendingPatientRead: {
+            /** Id */
+            id: string;
+            /** Pseudonym */
+            pseudonym: string;
+            /** First Name */
+            first_name: string;
+            /**
+             * Birth Date
+             * Format: date
+             */
+            birth_date: string;
+            /** Sex */
+            sex: string;
+            /** Region Id */
+            region_id?: string | null;
+            /** Status */
+            status: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Validated At */
+            validated_at?: string | null;
+            /** Refusal Reason */
+            refusal_reason?: string | null;
+        };
+        /**
+         * PermissionGrantRequest
+         * @description Request payload to delegate a permission to another user.
+         */
+        PermissionGrantRequest: {
+            /** Target User Id */
+            target_user_id: string;
+            /** Permission Code */
+            permission_code: string;
+            /** Reason */
+            reason?: string | null;
+            /** Valid To */
+            valid_to?: string | null;
+        };
+        /**
+         * PermissionGrantResponse
+         * @description Representation of an active or historical permission grant.
+         */
+        PermissionGrantResponse: {
+            /** Id */
+            id: string;
+            /** User Id */
+            user_id: string;
+            /** Permission Code */
+            permission_code: string;
+            /** Granted By */
+            granted_by: string;
+            /** Reason */
+            reason?: string | null;
+            /**
+             * Valid From
+             * Format: date-time
+             */
+            valid_from: string;
+            /** Valid To */
+            valid_to?: string | null;
+            /** Is Active */
+            is_active: boolean;
+        };
+        /**
+         * PermissionRevokeRequest
+         * @description Request payload to revoke a delegated permission.
+         */
+        PermissionRevokeRequest: {
+            /** Target User Id */
+            target_user_id: string;
+            /** Permission Code */
+            permission_code: string;
+        };
+        /**
          * PersonCreate
          * @description Payload to register a new family member.
          */
@@ -4531,6 +5339,13 @@ export interface components {
             type: string;
             /** Name */
             name: string;
+            /**
+             * Original Name
+             * @default
+             */
+            original_name: string;
+            /** Name En */
+            name_en?: string | null;
             /** Base */
             base: string;
             /** Usage */
@@ -4607,6 +5422,13 @@ export interface components {
             type: string;
             /** Name */
             name: string;
+            /**
+             * Original Name
+             * @default
+             */
+            original_name: string;
+            /** Name En */
+            name_en?: string | null;
             /** Base */
             base: string;
             /** Usage */
@@ -4629,6 +5451,8 @@ export interface components {
         ReferenceProductCreate: {
             /** Name */
             name: string;
+            /** Name En */
+            name_en?: string | null;
             /**
              * Base
              * @default 100g
@@ -4668,6 +5492,8 @@ export interface components {
         ReferenceProductUpdate: {
             /** Name */
             name?: string | null;
+            /** Name En */
+            name_en?: string | null;
             /** Base */
             base?: string | null;
             /** Usage */
@@ -4811,6 +5637,43 @@ export interface components {
             url?: string | null;
         };
         /**
+         * StaffValidationRequest
+         * @description Request payload to approve or reject a staff member account.
+         */
+        StaffValidationRequest: {
+            /**
+             * Decision
+             * @enum {string}
+             */
+            decision: "approved" | "rejected";
+            /** Refusal Reason */
+            refusal_reason?: string | null;
+        };
+        /**
+         * SymptomCatalogOut
+         * @description Symptom catalogue entry presentation.
+         */
+        SymptomCatalogOut: {
+            /** Code */
+            code: string;
+            /** Category */
+            category: string;
+            /** Label Fr */
+            label_fr: string;
+            /** Label En */
+            label_en: string;
+            /** Is Danger Sign */
+            is_danger_sign: boolean;
+            /** Conditional Questions */
+            conditional_questions?: {
+                [key: string]: unknown;
+            }[] | null;
+            /** Display Order */
+            display_order: number;
+            /** Is Active */
+            is_active: boolean;
+        };
+        /**
          * TokenRefreshRequest
          * @description Request a fresh access token using a valid refresh token.
          */
@@ -4851,17 +5714,41 @@ export interface components {
             id: string;
             /** Display Name */
             display_name: string;
+            /** First Name */
+            first_name?: string | null;
+            /** Last Name */
+            last_name?: string | null;
+            /** Locality */
+            locality?: string | null;
             /** Language */
             language: string;
+            /**
+             * Preferred Locale
+             * @default fr
+             * @enum {string}
+             */
+            preferred_locale: "fr" | "en";
             /** Status */
             status: string;
             /** Roles */
             roles?: string[];
+            /** Permissions */
+            permissions?: string[];
             /**
              * Is Verified Caregiver
              * @default false
              */
             is_verified_caregiver: boolean;
+        };
+        /**
+         * UserProfileUpdateRequest
+         * @description Payload to update the current authenticated user's profile.
+         */
+        UserProfileUpdateRequest: {
+            /** Preferred Locale */
+            preferred_locale?: ("fr" | "en") | null;
+            /** Display Name */
+            display_name?: string | null;
         };
         /**
          * UserRegionPreferenceRead
@@ -5298,13 +6185,337 @@ export interface operations {
             };
         };
     };
+    patch_me_v1_auth_me_patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UserProfileUpdateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserProfileResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_me_v1_me_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserProfileResponse"];
+                };
+            };
+        };
+    };
+    patch_me_v1_me_patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UserProfileUpdateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserProfileResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_pending_staff_v1_staff_pending_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserProfileResponse"][];
+                };
+            };
+        };
+    };
+    validate_staff_v1_staff__user_id__validate_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                user_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StaffValidationRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MessageResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    suspend_user_v1_staff__user_id__suspend_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                user_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MessageResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_user_v1_staff__user_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                user_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MessageResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_permissions_v1_permissions_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: string | null;
+                    }[];
+                };
+            };
+        };
+    };
+    list_user_grants_v1_permissions_users__user_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                user_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PermissionGrantResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    grant_permission_v1_permissions_grant_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PermissionGrantRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MessageResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    revoke_permission_v1_permissions_revoke_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PermissionRevokeRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MessageResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     list_nutrients_v1_nutrients_get: {
         parameters: {
             query?: {
                 /** @description Filtrer uniquement les nutriments suivis */
                 tracked_only?: boolean;
             };
-            header?: never;
+            header?: {
+                "Accept-Language"?: string | null;
+            };
             path?: never;
             cookie?: never;
         };
@@ -5333,7 +6544,9 @@ export interface operations {
     get_nutrient_v1_nutrients__code__get: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                "Accept-Language"?: string | null;
+            };
             path: {
                 code: string;
             };
@@ -5549,7 +6762,9 @@ export interface operations {
     create_manual_food_v1_admin_foods_post: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                "Accept-Language"?: string | null;
+            };
             path?: never;
             cookie?: never;
         };
@@ -5593,7 +6808,9 @@ export interface operations {
                 /** @description Items per page */
                 limit?: number;
             };
-            header?: never;
+            header?: {
+                "Accept-Language"?: string | null;
+            };
             path?: never;
             cookie?: never;
         };
@@ -5622,7 +6839,9 @@ export interface operations {
     get_published_food_detail_v1_foods__food_id__get: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                "Accept-Language"?: string | null;
+            };
             path: {
                 food_id: string;
             };
@@ -5653,7 +6872,9 @@ export interface operations {
     list_products_v1_products_get: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                "Accept-Language"?: string | null;
+            };
             path?: never;
             cookie?: never;
         };
@@ -5668,12 +6889,23 @@ export interface operations {
                     "application/json": components["schemas"]["ProductSummaryRead"][];
                 };
             };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
         };
     };
     get_product_v1_products__product_id__get: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                "Accept-Language"?: string | null;
+            };
             path: {
                 product_id: string;
             };
@@ -5704,7 +6936,9 @@ export interface operations {
     list_admin_reference_products_v1_admin_reference_products_get: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                "Accept-Language"?: string | null;
+            };
             path?: never;
             cookie?: never;
         };
@@ -5717,6 +6951,15 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ProductSummaryRead"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };
@@ -6944,6 +8187,98 @@ export interface operations {
             };
         };
     };
+    list_pending_patients_v1_patients_pending_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PendingPatientRead"][];
+                };
+            };
+        };
+    };
+    validate_patient_v1_patients__person_id__validate_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                person_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PatientValidationRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PendingPatientRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    assign_patient_caregiver_v1_patients__person_id__assign_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                person_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PatientAssignRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: string;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     get_active_consent_text_v1_consents_text_get: {
         parameters: {
             query?: {
@@ -7483,6 +8818,225 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ComplianceRateResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_symptom_catalog_v1_health_symptoms_catalog_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SymptomCatalogOut"][];
+                };
+            };
+        };
+    };
+    declare_health_event_v1_health_events_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["HealthEventCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HealthEventParentOut"] | components["schemas"]["HealthEventCaregiverOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_health_events_by_person_v1_health_events_person__person_id__get: {
+        parameters: {
+            query?: {
+                status?: string | null;
+                priority?: string | null;
+            };
+            header?: never;
+            path: {
+                person_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": (components["schemas"]["HealthEventParentOut"] | components["schemas"]["HealthEventCaregiverOut"])[];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_health_event_detail_v1_health_events__event_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                event_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HealthEventParentOut"] | components["schemas"]["HealthEventCaregiverOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    add_clinical_assessment_v1_health_events__event_id__assessments_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                event_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ClinicalAssessmentCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HealthEventCaregiverOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    add_health_action_v1_health_events__event_id__actions_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                event_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["HealthEventActionCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HealthEventCaregiverOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_health_alerts_v1_health_alerts_get: {
+        parameters: {
+            query?: {
+                min_priority?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HealthAlertSummary"][];
                 };
             };
             /** @description Validation Error */

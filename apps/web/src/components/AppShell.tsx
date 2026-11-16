@@ -7,6 +7,7 @@ export interface AppShellProps {
   space: SpaceTheme;
   userName?: string;
   unreadNotifications?: number;
+  onNotificationClick?: () => void;
   navItems: NavItem[];
   activeNavPath?: string;
   onNavigate?: (path: string) => void;
@@ -18,6 +19,7 @@ export const AppShell: React.FC<AppShellProps> = ({
   space,
   userName,
   unreadNotifications = 0,
+  onNotificationClick,
   navItems,
   activeNavPath,
   onNavigate,
@@ -30,6 +32,7 @@ export const AppShell: React.FC<AppShellProps> = ({
         space={space}
         userName={userName}
         unreadNotifications={unreadNotifications}
+        onNotificationClick={onNotificationClick}
         onLogout={onLogout}
       />
       <div className="flex flex-1 relative">
@@ -38,6 +41,7 @@ export const AppShell: React.FC<AppShellProps> = ({
           items={navItems}
           activePath={activeNavPath}
           onNavigate={onNavigate}
+          className="sticky top-[63px] h-[calc(100vh-63px)] overflow-y-auto"
         />
         <main className="flex-1 min-w-0 px-[23px] py-[20px] overflow-y-auto">
           <div className="max-w-[1155px]">

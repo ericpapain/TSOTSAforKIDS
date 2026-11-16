@@ -1,0 +1,9 @@
+{
+  "summary": "Batch {file_name} ({status}): {rows_valid} valid row(s), {rows_warning} warning(s), {rows_error} error(s).",
+  "row_valid": "✓ valid",
+  "missing_food_name": "Missing food name.",
+  "missing_source": "Required source missing (ORKG ID, DOI, or article reference required).",
+  "out_of_bounds_max": "✕ out of bounds (max {max} {unit})",
+  "missing_unit": "⚠ missing unit"
+}
+

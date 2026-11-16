@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "TSOTSA Kids",
+    "name": "TSOTSA4Kids",
     "slug": "tsotsa-kids",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -32,7 +32,14 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "5eec1bc5-7346-4101-9c18-7f12c5a86866"
+      }
     }
   }
 }
-

@@ -113,11 +113,10 @@ describe("personsService", () => {
       expect(members[0].first_name).toBe("Fatima");
     });
 
-    it("returns fallback members when API returns empty or fails", async () => {
+    it("returns empty array when API returns empty or fails", async () => {
       global.fetch = jest.fn().mockRejectedValueOnce(new Error("API offline"));
       const members = await fetchFamilyMembers();
-      expect(members.length).toBeGreaterThan(0);
-      expect(members[0].first_name).toBe("Amina");
+      expect(members).toEqual([]);
     });
   });
 

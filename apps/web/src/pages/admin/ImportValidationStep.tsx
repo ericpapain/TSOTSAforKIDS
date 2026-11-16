@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "../../components/Button";
 import { Card } from "../../components/Card";
 
@@ -19,20 +20,24 @@ export function ImportValidationStep({
   onBackToFoods,
   onViewUserSide,
 }: ImportValidationStepProps): React.JSX.Element {
+  const { t } = useTranslation("admin");
+  const displayUser =
+    currentUser === "Équipe TSOTSA" ? t("nav.shortTeamName") : currentUser;
+
   return (
     <Card testID="validation-step-card" className="p-6 flex flex-col gap-5">
       <h2 className="text-21 font-bold text-text">
-        Étape 4 : Validation du lot par un second relecteur
+        {t("import.step4.title")}
       </h2>
       <p className="text-16 text-text-muted">
-        Conformément aux règles de sécurité sanitaire, l'auteur du lot ne peut pas approuver sa propre saisie.
+        {t("import.step4.subtitle")}
       </p>
 
       <div className="bg-surface-2 p-4 rounded-[6px] border border-border flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <span className="text-14 text-text-muted">Utilisateur actuellement connecté :</span>
+          <span className="text-14 text-text-muted">{t("import.step4.currentReviewerLabel")}</span>
           <p className="text-16 font-bold text-text" data-testid="current-reviewer-display">
-            {currentUser}
+            {displayUser}
           </p>
         </div>
         <div className="flex gap-2">
@@ -44,7 +49,7 @@ export function ImportValidationStep({
               currentUser === "Fidel" ? "bg-admin text-white" : "bg-white border text-text"
             }`}
           >
-            Fidel (Auteur)
+            {t("import.step4.fidelAuthorBtn")}
           </button>
           <button
             type="button"
@@ -54,7 +59,7 @@ export function ImportValidationStep({
               currentUser === "Équipe TSOTSA" ? "bg-admin text-white" : "bg-white border text-text"
             }`}
           >
-            Équipe TSOTSA (Second lecteur)
+            {t("import.step4.teamSecondReaderBtn")}
           </button>
         </div>
       </div>
@@ -67,14 +72,14 @@ export function ImportValidationStep({
           disabled={isPublished}
           onClick={onPublish}
         >
-          {isPublished ? "Lot publié avec succès" : "Valider et publier le lot"}
+          {isPublished ? t("import.step4.publishedBtn") : t("import.step4.publishBtn")}
         </Button>
         <Button
           variant="outline"
           onClick={onBackToFoods}
           testID="btn-back-foods"
         >
-          Retour à la base aliments
+          {t("import.step4.backToFoodsBtn")}
         </Button>
         {isPublished && (
           <Button
@@ -83,11 +88,12 @@ export function ImportValidationStep({
             onClick={onViewUserSide}
             testID="btn-view-user-side"
           >
-            Voir côté utilisateur ›
+            {t("import.step4.viewUserSideBtn")}
           </Button>
         )}
       </div>
     </Card>
   );
 }
+
 

@@ -41,6 +41,8 @@ class ProductSummaryRead(BaseModel):
     id: str
     type: str
     name: str
+    original_name: str = ""
+    name_en: str | None = None
     base: str
     usage: str | None = None
     owner_user_id: str | None = None
@@ -63,6 +65,7 @@ class ReferenceProductCreate(BaseModel):
     """Admin payload for creating a reference product."""
 
     name: str = Field(..., min_length=1, max_length=200)
+    name_en: str | None = None
     base: str = "100g"
     usage: str = "hospital"
     source_reference: str | None = None
@@ -76,6 +79,7 @@ class ReferenceProductUpdate(BaseModel):
     """Admin payload for updating a reference product."""
 
     name: str | None = None
+    name_en: str | None = None
     base: str | None = None
     usage: str | None = None
     source_reference: str | None = None

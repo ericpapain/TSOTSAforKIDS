@@ -1,7 +1,7 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "TSOTSA Kids API",
+    "title": "TSOTSA4Kids API",
     "description": "Infant nutrition platform backend API",
     "version": "0.1.0"
   },
@@ -480,7 +480,7 @@
           "auth"
         ],
         "summary": "Profil de l'utilisateur connect\u00e9",
-        "description": "Return identity and roles profile of current authenticated user.",
+        "description": "Return identity, roles, and preferred_locale of current authenticated user.",
         "operationId": "get_me_v1_auth_me_get",
         "responses": {
           "200": {
@@ -489,6 +489,495 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/UserProfileResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "patch": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Mise \u00e0 jour du profil et de la langue pr\u00e9f\u00e9r\u00e9e",
+        "description": "Update preferred_locale and/or display_name of current authenticated user.",
+        "operationId": "patch_me_v1_auth_me_patch",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserProfileUpdateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserProfileResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/me": {
+      "get": {
+        "tags": [
+          "profile"
+        ],
+        "summary": "Profil de l'utilisateur connect\u00e9",
+        "description": "Return identity, roles, and preferred_locale of current authenticated user.",
+        "operationId": "get_me_v1_me_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserProfileResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "patch": {
+        "tags": [
+          "profile"
+        ],
+        "summary": "Mise \u00e0 jour du profil et de la langue pr\u00e9f\u00e9r\u00e9e",
+        "description": "Update preferred_locale and/or display_name of current authenticated user.",
+        "operationId": "patch_me_v1_me_patch",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserProfileUpdateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserProfileResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/staff/pending": {
+      "get": {
+        "tags": [
+          "Staff Management"
+        ],
+        "summary": "Lister le personnel en attente de validation",
+        "description": "Retrieve caregivers and field agents awaiting validation.",
+        "operationId": "list_pending_staff_v1_staff_pending_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/UserProfileResponse"
+                  },
+                  "type": "array",
+                  "title": "Response List Pending Staff V1 Staff Pending Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/staff/{user_id}/validate": {
+      "post": {
+        "tags": [
+          "Staff Management"
+        ],
+        "summary": "Valider ou refuser un compte soignant ou agent de terrain",
+        "description": "Validate or refuse a pending staff account.",
+        "operationId": "validate_staff_v1_staff__user_id__validate_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "User Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StaffValidationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/staff/{user_id}/suspend": {
+      "post": {
+        "tags": [
+          "Staff Management"
+        ],
+        "summary": "Suspendre un compte utilisateur",
+        "description": "Suspend user account.",
+        "operationId": "suspend_user_v1_staff__user_id__suspend_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "User Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/staff/{user_id}": {
+      "delete": {
+        "tags": [
+          "Staff Management"
+        ],
+        "summary": "Supprimer (soft delete) un compte utilisateur",
+        "description": "Soft delete user account.",
+        "operationId": "delete_user_v1_staff__user_id__delete",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "User Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/permissions": {
+      "get": {
+        "tags": [
+          "Permissions & Delegations"
+        ],
+        "summary": "Lister toutes les permissions canoniques",
+        "description": "List system permissions.",
+        "operationId": "list_permissions_v1_permissions_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "additionalProperties": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "type": "object"
+                  },
+                  "type": "array",
+                  "title": "Response List Permissions V1 Permissions Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/permissions/users/{user_id}": {
+      "get": {
+        "tags": [
+          "Permissions & Delegations"
+        ],
+        "summary": "Lister les droits d\u00e9l\u00e9gu\u00e9s d'un utilisateur",
+        "description": "List granted permissions for a target user.",
+        "operationId": "list_user_grants_v1_permissions_users__user_id__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "User Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PermissionGrantResponse"
+                  },
+                  "title": "Response List User Grants V1 Permissions Users  User Id  Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/permissions/grant": {
+      "post": {
+        "tags": [
+          "Permissions & Delegations"
+        ],
+        "summary": "D\u00e9l\u00e9guer un droit \u00e0 un utilisateur",
+        "description": "Delegate a permission.",
+        "operationId": "grant_permission_v1_permissions_grant_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PermissionGrantRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/permissions/revoke": {
+      "post": {
+        "tags": [
+          "Permissions & Delegations"
+        ],
+        "summary": "R\u00e9voquer un droit d\u00e9l\u00e9gu\u00e9",
+        "description": "Revoke a permission grant.",
+        "operationId": "revoke_permission_v1_permissions_revoke_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PermissionRevokeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessageResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
                 }
               }
             }
@@ -509,6 +998,11 @@
         "summary": "List Nutrients",
         "description": "Retrieve canonical nutrients.",
         "operationId": "list_nutrients_v1_nutrients_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "parameters": [
           {
             "name": "tracked_only",
@@ -521,6 +1015,22 @@
               "title": "Tracked Only"
             },
             "description": "Filtrer uniquement les nutriments suivis"
+          },
+          {
+            "name": "Accept-Language",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Accept-Language"
+            }
           }
         ],
         "responses": {
@@ -559,6 +1069,11 @@
         "summary": "Get Nutrient",
         "description": "Retrieve detailed description of a specific nutrient by its canonical code.",
         "operationId": "get_nutrient_v1_nutrients__code__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "parameters": [
           {
             "name": "code",
@@ -567,6 +1082,22 @@
             "schema": {
               "type": "string",
               "title": "Code"
+            }
+          },
+          {
+            "name": "Accept-Language",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Accept-Language"
             }
           }
         ],
@@ -886,15 +1417,38 @@
         "summary": "Create Manual Food",
         "description": "Manually enter food item and composition through identical quality controls.",
         "operationId": "create_manual_food_v1_admin_foods_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "Accept-Language",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Accept-Language"
+            }
+          }
+        ],
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/ManualFoodCreate"
               }
             }
-          },
-          "required": true
+          }
         },
         "responses": {
           "201": {
@@ -917,12 +1471,7 @@
               }
             }
           }
-        },
-        "security": [
-          {
-            "HTTPBearer": []
-          }
-        ]
+        }
       }
     },
     "/v1/foods": {
@@ -933,6 +1482,11 @@
         "summary": "Search Published Foods",
         "description": "Retrieve published food catalog with pagination and filters.",
         "operationId": "search_published_foods_v1_foods_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "parameters": [
           {
             "name": "q",
@@ -1014,6 +1568,22 @@
               "title": "Limit"
             },
             "description": "Items per page"
+          },
+          {
+            "name": "Accept-Language",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Accept-Language"
+            }
           }
         ],
         "responses": {
@@ -1048,6 +1618,11 @@
         "summary": "Get Published Food Detail",
         "description": "Retrieve full details of a published food item.",
         "operationId": "get_published_food_detail_v1_foods__food_id__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "parameters": [
           {
             "name": "food_id",
@@ -1056,6 +1631,22 @@
             "schema": {
               "type": "string",
               "title": "Food Id"
+            }
+          },
+          {
+            "name": "Accept-Language",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Accept-Language"
             }
           }
         ],
@@ -1091,27 +1682,55 @@
         "summary": "List Products",
         "description": "List validated reference products, published custom products, and user's custom products.",
         "operationId": "list_products_v1_products_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "Accept-Language",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Accept-Language"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful Response",
             "content": {
               "application/json": {
                 "schema": {
+                  "type": "array",
                   "items": {
                     "$ref": "#/components/schemas/ProductSummaryRead"
                   },
-                  "type": "array",
                   "title": "Response List Products V1 Products Get"
                 }
               }
             }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
           }
-        },
-        "security": [
-          {
-            "HTTPBearer": []
-          }
-        ]
+        }
       }
     },
     "/v1/products/{product_id}": {
@@ -1135,6 +1754,22 @@
             "schema": {
               "type": "string",
               "title": "Product Id"
+            }
+          },
+          {
+            "name": "Accept-Language",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Accept-Language"
             }
           }
         ],
@@ -1163,35 +1798,6 @@
       }
     },
     "/v1/admin/reference-products": {
-      "get": {
-        "tags": [
-          "admin-reference-products"
-        ],
-        "summary": "List Admin Reference Products",
-        "description": "List all reference products (all statuses) for administration.",
-        "operationId": "list_admin_reference_products_v1_admin_reference_products_get",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "items": {
-                    "$ref": "#/components/schemas/ProductSummaryRead"
-                  },
-                  "type": "array",
-                  "title": "Response List Admin Reference Products V1 Admin Reference Products Get"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "HTTPBearer": []
-          }
-        ]
-      },
       "post": {
         "tags": [
           "admin-reference-products"
@@ -1199,15 +1805,20 @@
         "summary": "Create Reference Product",
         "description": "Create a reference product (restricted to administration, requires source).",
         "operationId": "create_reference_product_v1_admin_reference_products_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/ReferenceProductCreate"
               }
             }
-          },
-          "required": true
+          }
         },
         "responses": {
           "201": {
@@ -1230,12 +1841,64 @@
               }
             }
           }
-        },
+        }
+      },
+      "get": {
+        "tags": [
+          "admin-reference-products"
+        ],
+        "summary": "List Admin Reference Products",
+        "description": "List all reference products (all statuses) for administration.",
+        "operationId": "list_admin_reference_products_v1_admin_reference_products_get",
         "security": [
           {
             "HTTPBearer": []
           }
-        ]
+        ],
+        "parameters": [
+          {
+            "name": "Accept-Language",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Accept-Language"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ProductSummaryRead"
+                  },
+                  "title": "Response List Admin Reference Products V1 Admin Reference Products Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/v1/admin/reference-products/{product_id}": {
@@ -3162,6 +3825,157 @@
         }
       }
     },
+    "/v1/patients/pending": {
+      "get": {
+        "tags": [
+          "Patient Validation"
+        ],
+        "summary": "List Pending Patients",
+        "description": "List patients awaiting validation (requires patients.validate).",
+        "operationId": "list_pending_patients_v1_patients_pending_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/PendingPatientRead"
+                  },
+                  "type": "array",
+                  "title": "Response List Pending Patients V1 Patients Pending Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/patients/{person_id}/validate": {
+      "post": {
+        "tags": [
+          "Patient Validation"
+        ],
+        "summary": "Validate Patient",
+        "description": "Validate or refuse a pending patient (requires patients.validate).",
+        "operationId": "validate_patient_v1_patients__person_id__validate_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "person_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Person Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PatientValidationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PendingPatientRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/patients/{person_id}/assign": {
+      "post": {
+        "tags": [
+          "Patient Validation"
+        ],
+        "summary": "Assign Patient Caregiver",
+        "description": "Assign patient to an approved caregiver (requires patients.assign).",
+        "operationId": "assign_patient_caregiver_v1_patients__person_id__assign_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "person_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Person Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PatientAssignRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "title": "Response Assign Patient Caregiver V1 Patients  Person Id  Assign Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/v1/consents/text": {
       "get": {
         "tags": [
@@ -4234,6 +5048,414 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ComplianceRateResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/health/symptoms/catalog": {
+      "get": {
+        "tags": [
+          "Health & Well-being"
+        ],
+        "summary": "Get Symptom Catalog",
+        "description": "Return active symptom catalog entries with conditional questions and priority indicators.",
+        "operationId": "get_symptom_catalog_v1_health_symptoms_catalog_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/SymptomCatalogOut"
+                  },
+                  "type": "array",
+                  "title": "Response Get Symptom Catalog V1 Health Symptoms Catalog Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/health/events": {
+      "post": {
+        "tags": [
+          "Health & Well-being"
+        ],
+        "summary": "Declare Health Event",
+        "description": "Report a health event for a child either standalone or during a meal.",
+        "operationId": "declare_health_event_v1_health_events_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HealthEventCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/HealthEventParentOut"
+                    },
+                    {
+                      "$ref": "#/components/schemas/HealthEventCaregiverOut"
+                    }
+                  ],
+                  "title": "Response Declare Health Event V1 Health Events Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/v1/health/events/person/{person_id}": {
+      "get": {
+        "tags": [
+          "Health & Well-being"
+        ],
+        "summary": "List Health Events By Person",
+        "description": "Retrieve chronological longitudinal health event history for an authorized child.",
+        "operationId": "list_health_events_by_person_v1_health_events_person__person_id__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "person_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Person Id"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          },
+          {
+            "name": "priority",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Priority"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "anyOf": [
+                      {
+                        "$ref": "#/components/schemas/HealthEventParentOut"
+                      },
+                      {
+                        "$ref": "#/components/schemas/HealthEventCaregiverOut"
+                      }
+                    ]
+                  },
+                  "title": "Response List Health Events By Person V1 Health Events Person  Person Id  Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/health/events/{event_id}": {
+      "get": {
+        "tags": [
+          "Health & Well-being"
+        ],
+        "summary": "Get Health Event Detail",
+        "description": "Fetch health event detail with role-appropriate visibility filtering.",
+        "operationId": "get_health_event_detail_v1_health_events__event_id__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "event_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Event Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/HealthEventParentOut"
+                    },
+                    {
+                      "$ref": "#/components/schemas/HealthEventCaregiverOut"
+                    }
+                  ],
+                  "title": "Response Get Health Event Detail V1 Health Events  Event Id  Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/health/events/{event_id}/assessments": {
+      "post": {
+        "tags": [
+          "Health & Well-being"
+        ],
+        "summary": "Add Clinical Assessment",
+        "description": "Record a clinical doctor assessment on a reported health event.",
+        "operationId": "add_clinical_assessment_v1_health_events__event_id__assessments_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "event_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Event Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ClinicalAssessmentCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthEventCaregiverOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/health/events/{event_id}/actions": {
+      "post": {
+        "tags": [
+          "Health & Well-being"
+        ],
+        "summary": "Add Health Action",
+        "description": "Record a medical action (transfer, clarification, follow-up, closure).",
+        "operationId": "add_health_action_v1_health_events__event_id__actions_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "event_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Event Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HealthEventActionCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthEventCaregiverOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/health/alerts": {
+      "get": {
+        "tags": [
+          "Health & Well-being"
+        ],
+        "summary": "List Health Alerts",
+        "description": "Retrieve open alerts for healthcare professionals and coordinators.",
+        "operationId": "list_health_alerts_v1_health_alerts_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "min_priority",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Min Priority"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HealthAlertSummary"
+                  },
+                  "title": "Response List Health Alerts V1 Health Alerts Get"
                 }
               }
             }
@@ -7746,6 +8968,108 @@
         "title": "CaregiverPersonRead",
         "description": "Representation of a followed person seen by medical caregiver."
       },
+      "ClinicalAssessmentCreate": {
+        "properties": {
+          "clinical_notes": {
+            "type": "string",
+            "maxLength": 4000,
+            "minLength": 5,
+            "title": "Clinical Notes"
+          },
+          "suspected_condition": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 128
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Suspected Condition"
+          },
+          "requires_investigation": {
+            "type": "boolean",
+            "title": "Requires Investigation",
+            "default": false
+          },
+          "investigation_type": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 128
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Investigation Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "clinical_notes"
+        ],
+        "title": "ClinicalAssessmentCreate",
+        "description": "Medical assessment submitted by an authorized caregiver."
+      },
+      "ClinicalAssessmentOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "caregiver_id": {
+            "type": "string",
+            "title": "Caregiver Id"
+          },
+          "clinical_notes": {
+            "type": "string",
+            "title": "Clinical Notes"
+          },
+          "suspected_condition": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Suspected Condition"
+          },
+          "requires_investigation": {
+            "type": "boolean",
+            "title": "Requires Investigation"
+          },
+          "investigation_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Investigation Type"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "caregiver_id",
+          "clinical_notes",
+          "requires_investigation",
+          "created_at"
+        ],
+        "title": "ClinicalAssessmentOut",
+        "description": "Caregiver assessment view."
+      },
       "ColumnMappingUpdate": {
         "properties": {
           "mapping": {
@@ -8350,17 +9674,137 @@
             "description": "Password between 8 and 72 characters"
           },
           "display_name": {
-            "type": "string",
-            "maxLength": 150,
-            "minLength": 2,
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 150
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Display Name"
+          },
+          "first_name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "First Name"
+          },
+          "last_name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Name"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "parent",
+              "field_agent",
+              "caregiver"
+            ],
+            "title": "Role",
+            "default": "parent"
+          },
+          "region_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Region Id"
+          },
+          "locality": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 150
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Locality"
+          },
+          "phone": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Phone"
+          },
+          "facility_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Facility Id"
+          },
+          "speciality": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 150
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Speciality"
+          },
+          "order_number": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Order Number"
+          },
+          "structure_name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 200
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Structure Name"
           }
         },
         "type": "object",
         "required": [
           "email",
-          "password",
-          "display_name"
+          "password"
         ],
         "title": "EmailRegisterRequest",
         "description": "User registration with email and password."
@@ -8812,6 +10256,22 @@
             "type": "string",
             "title": "Name"
           },
+          "original_name": {
+            "type": "string",
+            "title": "Original Name",
+            "default": ""
+          },
+          "name_en": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name En"
+          },
           "kind": {
             "type": "string",
             "title": "Kind"
@@ -9076,6 +10536,22 @@
             "type": "string",
             "title": "Name"
           },
+          "original_name": {
+            "type": "string",
+            "title": "Original Name",
+            "default": ""
+          },
+          "name_en": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name En"
+          },
           "kind": {
             "type": "string",
             "title": "Kind"
@@ -9150,6 +10626,553 @@
         },
         "type": "object",
         "title": "HTTPValidationError"
+      },
+      "HealthAlertSummary": {
+        "properties": {
+          "event_id": {
+            "type": "string",
+            "title": "Event Id"
+          },
+          "person_id": {
+            "type": "string",
+            "title": "Person Id"
+          },
+          "person_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Person Code"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "priority": {
+            "type": "string",
+            "title": "Priority"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "symptoms_summary": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Symptoms Summary"
+          },
+          "has_danger_sign": {
+            "type": "boolean",
+            "title": "Has Danger Sign"
+          },
+          "requires_urgent_transfer": {
+            "type": "boolean",
+            "title": "Requires Urgent Transfer"
+          }
+        },
+        "type": "object",
+        "required": [
+          "event_id",
+          "person_id",
+          "created_at",
+          "priority",
+          "status",
+          "has_danger_sign",
+          "requires_urgent_transfer"
+        ],
+        "title": "HealthAlertSummary",
+        "description": "Summary item displayed in the central Alerts & Notifications center."
+      },
+      "HealthEventActionCreate": {
+        "properties": {
+          "action_type": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 2,
+            "pattern": "^(clarification_requested|scheduled_followup|referral_specialist|treatment_advised|emergency_transfer|closed)$",
+            "title": "Action Type"
+          },
+          "details": {
+            "type": "string",
+            "maxLength": 1000,
+            "minLength": 3,
+            "title": "Details"
+          }
+        },
+        "type": "object",
+        "required": [
+          "action_type",
+          "details"
+        ],
+        "title": "HealthEventActionCreate",
+        "description": "Action recorded by a healthcare professional."
+      },
+      "HealthEventActionOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "actor_id": {
+            "type": "string",
+            "title": "Actor Id"
+          },
+          "action_type": {
+            "type": "string",
+            "title": "Action Type"
+          },
+          "details": {
+            "type": "string",
+            "title": "Details"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "actor_id",
+          "action_type",
+          "details",
+          "created_at"
+        ],
+        "title": "HealthEventActionOut",
+        "description": "Medical action output."
+      },
+      "HealthEventCaregiverOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "person_id": {
+            "type": "string",
+            "title": "Person Id"
+          },
+          "reported_by": {
+            "type": "string",
+            "title": "Reported By"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "declaration_context": {
+            "type": "string",
+            "title": "Declaration Context"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "priority": {
+            "type": "string",
+            "title": "Priority"
+          },
+          "has_danger_sign": {
+            "type": "boolean",
+            "title": "Has Danger Sign",
+            "default": false
+          },
+          "parent_guidance_message": {
+            "type": "string",
+            "title": "Parent Guidance Message",
+            "default": ""
+          },
+          "comment": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Comment"
+          },
+          "intake_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Intake Id"
+          },
+          "symptoms": {
+            "items": {
+              "$ref": "#/components/schemas/HealthEventSymptomOut"
+            },
+            "type": "array",
+            "title": "Symptoms"
+          },
+          "organization_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Organization Id"
+          },
+          "caregiver_guidance_notes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Caregiver Guidance Notes"
+          },
+          "suggested_conditions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Suggested Conditions"
+          },
+          "assessments": {
+            "items": {
+              "$ref": "#/components/schemas/ClinicalAssessmentOut"
+            },
+            "type": "array",
+            "title": "Assessments"
+          },
+          "actions": {
+            "items": {
+              "$ref": "#/components/schemas/HealthEventActionOut"
+            },
+            "type": "array",
+            "title": "Actions"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "person_id",
+          "reported_by",
+          "created_at",
+          "declaration_context",
+          "status",
+          "priority"
+        ],
+        "title": "HealthEventCaregiverOut",
+        "description": "Comprehensive clinical view reserved for authorized caregivers."
+      },
+      "HealthEventCreate": {
+        "properties": {
+          "person_id": {
+            "type": "string",
+            "title": "Person Id"
+          },
+          "intake_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Intake Id"
+          },
+          "declaration_context": {
+            "type": "string",
+            "pattern": "^(standalone|during_meal)$",
+            "title": "Declaration Context",
+            "default": "standalone"
+          },
+          "meal_interrupted": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Meal Interrupted"
+          },
+          "intake_quantity_consumed": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 64
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Intake Quantity Consumed"
+          },
+          "symptoms": {
+            "items": {
+              "$ref": "#/components/schemas/HealthEventSymptomCreate"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Symptoms"
+          },
+          "temperature_celsius": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 44.0,
+                "minimum": 34.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Temperature Celsius"
+          },
+          "stools_frequency_per_day": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 50.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stools Frequency Per Day"
+          },
+          "vomiting_frequency_per_day": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 50.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Vomiting Frequency Per Day"
+          },
+          "comment": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 1000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Comment"
+          }
+        },
+        "type": "object",
+        "required": [
+          "person_id",
+          "symptoms"
+        ],
+        "title": "HealthEventCreate",
+        "description": "Payload to declare a new child health event."
+      },
+      "HealthEventParentOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "person_id": {
+            "type": "string",
+            "title": "Person Id"
+          },
+          "reported_by": {
+            "type": "string",
+            "title": "Reported By"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "declaration_context": {
+            "type": "string",
+            "title": "Declaration Context"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "priority": {
+            "type": "string",
+            "title": "Priority"
+          },
+          "has_danger_sign": {
+            "type": "boolean",
+            "title": "Has Danger Sign",
+            "default": false
+          },
+          "parent_guidance_message": {
+            "type": "string",
+            "title": "Parent Guidance Message",
+            "default": ""
+          },
+          "comment": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Comment"
+          },
+          "intake_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Intake Id"
+          },
+          "symptoms": {
+            "items": {
+              "$ref": "#/components/schemas/HealthEventSymptomOut"
+            },
+            "type": "array",
+            "title": "Symptoms"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "person_id",
+          "reported_by",
+          "created_at",
+          "declaration_context",
+          "status",
+          "priority"
+        ],
+        "title": "HealthEventParentOut",
+        "description": "Reassuring and safe health event view for parents."
+      },
+      "HealthEventSymptomCreate": {
+        "properties": {
+          "symptom_code": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 2,
+            "title": "Symptom Code"
+          },
+          "duration": {
+            "type": "string",
+            "maxLength": 64,
+            "title": "Duration",
+            "default": "less_than_24h"
+          },
+          "duration_days": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 365.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Duration Days"
+          },
+          "recurrence_count": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 100.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Recurrence Count"
+          },
+          "specific_metrics": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Specific Metrics"
+          }
+        },
+        "type": "object",
+        "required": [
+          "symptom_code"
+        ],
+        "title": "HealthEventSymptomCreate",
+        "description": "Symptom input when reporting a health event."
+      },
+      "HealthEventSymptomOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "symptom_code": {
+            "type": "string",
+            "title": "Symptom Code"
+          },
+          "duration": {
+            "type": "string",
+            "title": "Duration"
+          },
+          "duration_days": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Duration Days"
+          },
+          "recurrence_count": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Recurrence Count"
+          },
+          "specific_metrics": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Specific Metrics"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "symptom_code",
+          "duration"
+        ],
+        "title": "HealthEventSymptomOut",
+        "description": "Symptom output model."
       },
       "ImportBatchRead": {
         "properties": {
@@ -10190,6 +12213,17 @@
             "type": "string",
             "title": "Name"
           },
+          "name_en": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name En"
+          },
           "kind": {
             "type": "string",
             "title": "Kind",
@@ -10918,6 +12952,16 @@
             "type": "string",
             "title": "Code"
           },
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "default": ""
+          },
+          "original_name": {
+            "type": "string",
+            "title": "Original Name",
+            "default": ""
+          },
           "name_fr": {
             "type": "string",
             "title": "Name Fr"
@@ -10996,6 +13040,16 @@
           "code": {
             "type": "string",
             "title": "Code"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "default": ""
+          },
+          "original_name": {
+            "type": "string",
+            "title": "Original Name",
+            "default": ""
           },
           "name_fr": {
             "type": "string",
@@ -11810,6 +13864,272 @@
         "title": "PasswordResetRequest",
         "description": "Reset password using one-time token."
       },
+      "PatientAssignRequest": {
+        "properties": {
+          "caregiver_id": {
+            "type": "string",
+            "title": "Caregiver Id"
+          },
+          "organization_id": {
+            "type": "string",
+            "title": "Organization Id"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 255
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "caregiver_id",
+          "organization_id"
+        ],
+        "title": "PatientAssignRequest",
+        "description": "Payload to assign a patient to a healthcare caregiver in an organization."
+      },
+      "PatientValidationRequest": {
+        "properties": {
+          "decision": {
+            "type": "string",
+            "enum": [
+              "validated",
+              "refused"
+            ],
+            "title": "Decision"
+          },
+          "refusal_reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Refusal Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "decision"
+        ],
+        "title": "PatientValidationRequest",
+        "description": "Payload to validate or refuse a pending patient registration."
+      },
+      "PendingPatientRead": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "pseudonym": {
+            "type": "string",
+            "title": "Pseudonym"
+          },
+          "first_name": {
+            "type": "string",
+            "title": "First Name"
+          },
+          "birth_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Birth Date"
+          },
+          "sex": {
+            "type": "string",
+            "title": "Sex"
+          },
+          "region_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Region Id"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "validated_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Validated At"
+          },
+          "refusal_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Refusal Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "pseudonym",
+          "first_name",
+          "birth_date",
+          "sex",
+          "status",
+          "created_at"
+        ],
+        "title": "PendingPatientRead",
+        "description": "Detailed representation of a patient pending validation."
+      },
+      "PermissionGrantRequest": {
+        "properties": {
+          "target_user_id": {
+            "type": "string",
+            "title": "Target User Id"
+          },
+          "permission_code": {
+            "type": "string",
+            "title": "Permission Code"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 255
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "valid_to": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Valid To"
+          }
+        },
+        "type": "object",
+        "required": [
+          "target_user_id",
+          "permission_code"
+        ],
+        "title": "PermissionGrantRequest",
+        "description": "Request payload to delegate a permission to another user."
+      },
+      "PermissionGrantResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "user_id": {
+            "type": "string",
+            "title": "User Id"
+          },
+          "permission_code": {
+            "type": "string",
+            "title": "Permission Code"
+          },
+          "granted_by": {
+            "type": "string",
+            "title": "Granted By"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "valid_from": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Valid From"
+          },
+          "valid_to": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Valid To"
+          },
+          "is_active": {
+            "type": "boolean",
+            "title": "Is Active"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "user_id",
+          "permission_code",
+          "granted_by",
+          "valid_from",
+          "is_active"
+        ],
+        "title": "PermissionGrantResponse",
+        "description": "Representation of an active or historical permission grant."
+      },
+      "PermissionRevokeRequest": {
+        "properties": {
+          "target_user_id": {
+            "type": "string",
+            "title": "Target User Id"
+          },
+          "permission_code": {
+            "type": "string",
+            "title": "Permission Code"
+          }
+        },
+        "type": "object",
+        "required": [
+          "target_user_id",
+          "permission_code"
+        ],
+        "title": "PermissionRevokeRequest",
+        "description": "Request payload to revoke a delegated permission."
+      },
       "PersonCreate": {
         "properties": {
           "first_name": {
@@ -12369,6 +14689,22 @@
             "type": "string",
             "title": "Name"
           },
+          "original_name": {
+            "type": "string",
+            "title": "Original Name",
+            "default": ""
+          },
+          "name_en": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name En"
+          },
           "base": {
             "type": "string",
             "title": "Base"
@@ -12595,6 +14931,22 @@
             "type": "string",
             "title": "Name"
           },
+          "original_name": {
+            "type": "string",
+            "title": "Original Name",
+            "default": ""
+          },
+          "name_en": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name En"
+          },
           "base": {
             "type": "string",
             "title": "Base"
@@ -12677,6 +15029,17 @@
             "maxLength": 200,
             "minLength": 1,
             "title": "Name"
+          },
+          "name_en": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name En"
           },
           "base": {
             "type": "string",
@@ -12763,6 +15126,17 @@
               }
             ],
             "title": "Name"
+          },
+          "name_en": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name En"
           },
           "base": {
             "anyOf": [
@@ -13166,6 +15540,95 @@
         "title": "SourceRead",
         "description": "Source reference metadata."
       },
+      "StaffValidationRequest": {
+        "properties": {
+          "decision": {
+            "type": "string",
+            "enum": [
+              "approved",
+              "rejected"
+            ],
+            "title": "Decision"
+          },
+          "refusal_reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 255
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Refusal Reason"
+          }
+        },
+        "type": "object",
+        "required": [
+          "decision"
+        ],
+        "title": "StaffValidationRequest",
+        "description": "Request payload to approve or reject a staff member account."
+      },
+      "SymptomCatalogOut": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category"
+          },
+          "label_fr": {
+            "type": "string",
+            "title": "Label Fr"
+          },
+          "label_en": {
+            "type": "string",
+            "title": "Label En"
+          },
+          "is_danger_sign": {
+            "type": "boolean",
+            "title": "Is Danger Sign"
+          },
+          "conditional_questions": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Conditional Questions"
+          },
+          "display_order": {
+            "type": "integer",
+            "title": "Display Order"
+          },
+          "is_active": {
+            "type": "boolean",
+            "title": "Is Active"
+          }
+        },
+        "type": "object",
+        "required": [
+          "code",
+          "category",
+          "label_fr",
+          "label_en",
+          "is_danger_sign",
+          "display_order",
+          "is_active"
+        ],
+        "title": "SymptomCatalogOut",
+        "description": "Symptom catalogue entry presentation."
+      },
       "TokenRefreshRequest": {
         "properties": {
           "refresh_token": {
@@ -13226,9 +15689,51 @@
             "type": "string",
             "title": "Display Name"
           },
+          "first_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "First Name"
+          },
+          "last_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Name"
+          },
+          "locality": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Locality"
+          },
           "language": {
             "type": "string",
             "title": "Language"
+          },
+          "preferred_locale": {
+            "type": "string",
+            "enum": [
+              "fr",
+              "en"
+            ],
+            "title": "Preferred Locale",
+            "default": "fr"
           },
           "status": {
             "type": "string",
@@ -13240,6 +15745,13 @@
             },
             "type": "array",
             "title": "Roles"
+          },
+          "permissions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Permissions"
           },
           "is_verified_caregiver": {
             "type": "boolean",
@@ -13256,6 +15768,41 @@
         ],
         "title": "UserProfileResponse",
         "description": "Public user identity and profile view."
+      },
+      "UserProfileUpdateRequest": {
+        "properties": {
+          "preferred_locale": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "fr",
+                  "en"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Preferred Locale"
+          },
+          "display_name": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 150,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Display Name"
+          }
+        },
+        "type": "object",
+        "title": "UserProfileUpdateRequest",
+        "description": "Payload to update the current authenticated user's profile."
       },
       "UserRegionPreferenceRead": {
         "properties": {

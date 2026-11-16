@@ -15,7 +15,7 @@ describe("IntakePlanPage (W07)", () => {
       </MemoryRouter>
     );
 
-    expect(screen.getByText("Plan de prises et rappels — Amina (#A-014)")).toBeInTheDocument();
+    expect(screen.getByText("Plan de prises et rappels — Hamadou (#A-014)")).toBeInTheDocument();
     expect(screen.getByTestId("intake-row-intake-1")).toBeInTheDocument();
     expect(screen.getByTestId("toggle-reminder-intake-1")).toBeInTheDocument();
 

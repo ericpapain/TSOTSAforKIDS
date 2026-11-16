@@ -9,6 +9,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useTranslation } from "react-i18next";
 
 import { AppBar } from "../src/components/AppBar";
 import { addPersonStyles as styles } from "../src/features/persons/addPersonStyles";
@@ -16,8 +17,15 @@ import { createFamilyMember } from "../src/features/persons/personsService";
 import type { RelationType, SexType } from "../src/features/persons/types";
 import { colors } from "../src/theme/colors";
 
+const RELATION_OPTIONS: Array<{ key: RelationType; labelKey: string; defaultLabel: string }> = [
+  { key: "self", labelKey: "addPerson.self", defaultLabel: "Moi-même" },
+  { key: "child", labelKey: "addPerson.child", defaultLabel: "Un enfant" },
+  { key: "relative", labelKey: "addPerson.relative", defaultLabel: "Un proche" },
+];
+
 export default function AddPersonScreen(): React.JSX.Element {
   const router = useRouter();
+  const { t } = useTranslation("mobile");
   const [relation, setRelation] = useState<RelationType>("child");
   const [firstName, setFirstName] = useState("");
   const [birthDate, setBirthDate] = useState("");
@@ -34,11 +42,11 @@ export default function AddPersonScreen(): React.JSX.Element {
 
   const handleContinue = async (): Promise<void> => {
     if (!firstName.trim()) {
-      setErrorMessage("Veuillez saisir un prénom.");
+      setErrorMessage(t("addPerson.missingFirstName", { defaultValue: "Veuillez saisir un prénom." }));
       return;
     }
     if (!birthDate.trim()) {
-      setErrorMessage("Veuillez saisir une date de naissance.");
+      setErrorMessage(t("addPerson.missingBirthDate", { defaultValue: "Veuillez saisir une date de naissance." }));
       return;
     }
 
@@ -69,7 +77,7 @@ export default function AddPersonScreen(): React.JSX.Element {
         });
       }
     } catch {
-      setErrorMessage("Erreur de connexion.");
+      setErrorMessage(t("addPerson.connError", { defaultValue: "Erreur de connexion." }));
     } finally {
       setLoading(false);
     }
@@ -78,7 +86,7 @@ export default function AddPersonScreen(): React.JSX.Element {
   return (
     <SafeAreaView style={styles.safeArea} edges={["top", "bottom"]}>
       <AppBar
-        title="Ajouter une personne"
+        title={t("addPerson.title", { defaultValue: "Ajouter une personne" })}
         onBack={() => router.replace("/u-persons")}
       />
 
@@ -88,61 +96,25 @@ export default function AddPersonScreen(): React.JSX.Element {
         showsVerticalScrollIndicator={false}
       >
         {/* Relation selector: Qui ? */}
-        <Text style={styles.sectionTitle}>Qui ?</Text>
+        <Text style={styles.sectionTitle}>
+          {t("addPerson.who", { defaultValue: "Qui ?" })}
+        </Text>
         <View style={styles.relationRow}>
-          <Pressable
-            testID="btn-relation-self"
-            style={[
-              styles.relationButton,
-              relation === "self" ? styles.relationActive : styles.relationInactive,
-            ]}
-            onPress={() => setRelation("self")}
-          >
-            <Text
-              style={[
-                styles.relationText,
-                relation === "self" ? styles.relationTextActive : styles.relationTextInactive,
-              ]}
-            >
-              Moi-même
-            </Text>
-          </Pressable>
-
-          <Pressable
-            testID="btn-relation-child"
-            style={[
-              styles.relationButton,
-              relation === "child" ? styles.relationActive : styles.relationInactive,
-            ]}
-            onPress={() => setRelation("child")}
-          >
-            <Text
-              style={[
-                styles.relationText,
-                relation === "child" ? styles.relationTextActive : styles.relationTextInactive,
-              ]}
-            >
-              Un enfant
-            </Text>
-          </Pressable>
-
-          <Pressable
-            testID="btn-relation-relative"
-            style={[
-              styles.relationButton,
-              relation === "relative" ? styles.relationActive : styles.relationInactive,
-            ]}
-            onPress={() => setRelation("relative")}
-          >
-            <Text
-              style={[
-                styles.relationText,
-                relation === "relative" ? styles.relationTextActive : styles.relationTextInactive,
-              ]}
-            >
-              Un proche
-            </Text>
-          </Pressable>
+          {RELATION_OPTIONS.map((opt) => {
+            const isActive = relation === opt.key;
+            return (
+              <Pressable
+                key={opt.key}
+                testID={`btn-relation-${opt.key}`}
+                style={[styles.relationButton, isActive ? styles.relationActive : styles.relationInactive]}
+                onPress={() => setRelation(opt.key)}
+              >
+                <Text style={[styles.relationText, isActive ? styles.relationTextActive : styles.relationTextInactive]}>
+                  {t(opt.labelKey, { defaultValue: opt.defaultLabel })}
+                </Text>
+              </Pressable>
+            );
+          })}
         </View>
 
         {errorMessage && (
@@ -153,14 +125,16 @@ export default function AddPersonScreen(): React.JSX.Element {
 
         {/* First name field */}
         <View style={styles.fieldBlock}>
-          <Text style={styles.fieldLabel}>Prénom</Text>
+          <Text style={styles.fieldLabel}>
+            {t("addPerson.firstNameLabel", { defaultValue: "Prénom" })}
+          </Text>
           <View style={styles.inputContainer}>
             <TextInput
               testID="input-first-name"
               style={styles.input}
               value={firstName}
-              onChangeText={(t) => {
-                setFirstName(t);
+              onChangeText={(text) => {
+                setFirstName(text);
                 if (errorMessage) setErrorMessage(null);
               }}
               placeholder="Amina"
@@ -172,14 +146,16 @@ export default function AddPersonScreen(): React.JSX.Element {
         {/* Date of birth & Sex */}
         <View style={styles.twoColRow}>
           <View style={styles.colLeft}>
-            <Text style={styles.fieldLabel}>Date de naissance</Text>
+            <Text style={styles.fieldLabel}>
+              {t("addPerson.birthDateLabel", { defaultValue: "Date de naissance" })}
+            </Text>
             <View style={styles.inputContainer}>
               <TextInput
                 testID="input-birth-date"
                 style={styles.input}
                 value={birthDate}
-                onChangeText={(t) => {
-                  setBirthDate(t);
+                onChangeText={(text) => {
+                  setBirthDate(text);
                   if (errorMessage) setErrorMessage(null);
                 }}
                 placeholder="12/12/2024"
@@ -190,14 +166,18 @@ export default function AddPersonScreen(): React.JSX.Element {
           </View>
 
           <View style={styles.colRight}>
-            <Text style={styles.fieldLabel}>Sexe</Text>
+            <Text style={styles.fieldLabel}>
+              {t("addPerson.sexLabel", { defaultValue: "Sexe" })}
+            </Text>
             <Pressable
               testID="btn-toggle-sex"
               style={styles.selectContainer}
               onPress={toggleSex}
             >
               <Text style={styles.selectText}>
-                {sex === "F" ? "Fille ▾" : "Garçon ▾"}
+                {sex === "F"
+                  ? t("addPerson.girlDropdown", { defaultValue: "Fille ▾" })
+                  : t("addPerson.boyDropdown", { defaultValue: "Garçon ▾" })}
               </Text>
             </Pressable>
           </View>
@@ -206,7 +186,9 @@ export default function AddPersonScreen(): React.JSX.Element {
         {/* Weight & Height */}
         <View style={styles.twoColRow}>
           <View style={styles.colHalf}>
-            <Text style={styles.fieldLabel}>Poids</Text>
+            <Text style={styles.fieldLabel}>
+              {t("addPerson.weightLabel", { defaultValue: "Poids" })}
+            </Text>
             <View style={styles.inputContainer}>
               <TextInput
                 testID="input-weight"
@@ -222,7 +204,9 @@ export default function AddPersonScreen(): React.JSX.Element {
 
           <View style={styles.colHalf}>
             <Text style={styles.fieldLabel}>
-              {relation === "child" ? "Taille (couchée)" : "Taille (debout)"}
+              {relation === "child"
+                ? t("addPerson.heightRecumbent", { defaultValue: "Taille (couchée)" })
+                : t("addPerson.heightStanding", { defaultValue: "Taille (debout)" })}
             </Text>
             <View style={styles.inputContainer}>
               <TextInput
@@ -240,7 +224,9 @@ export default function AddPersonScreen(): React.JSX.Element {
 
         {/* MUAC */}
         <View style={styles.fieldBlock}>
-          <Text style={styles.fieldLabel}>Périmètre brachial (facultatif)</Text>
+          <Text style={styles.fieldLabel}>
+            {t("addPerson.muacLabel", { defaultValue: "Périmètre brachial (facultatif)" })}
+          </Text>
           <View style={styles.inputContainer}>
             <TextInput
               testID="input-muac"
@@ -256,7 +242,9 @@ export default function AddPersonScreen(): React.JSX.Element {
 
         {/* Info note */}
         <Text style={styles.noteText}>
-          Pas de compte à créer : la personne est suivie depuis le vôtre.
+          {t("addPerson.note", {
+            defaultValue: "Pas de compte à créer : la personne est suivie depuis le vôtre.",
+          })}
         </Text>
 
         {/* Continue button */}
@@ -272,7 +260,9 @@ export default function AddPersonScreen(): React.JSX.Element {
           {loading ? (
             <ActivityIndicator size="small" color={colors.white} />
           ) : (
-            <Text style={styles.continueButtonText}>Continuer</Text>
+            <Text style={styles.continueButtonText}>
+              {t("addPerson.submit", { defaultValue: "Continuer" })}
+            </Text>
           )}
         </Pressable>
       </ScrollView>

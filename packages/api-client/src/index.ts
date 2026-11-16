@@ -4,7 +4,7 @@ export {
   type TokenPair,
   type TsotsaApiClient,
   type TsotsaClientOptions,
-} from "./client.js";
+} from "./client";
 
 export type { components, operations, paths } from "./generated/schema.d.ts";
 

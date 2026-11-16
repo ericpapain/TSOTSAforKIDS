@@ -1,0 +1,274 @@
+{
+  "nav": {
+    "overview": "Vue d'ensemble",
+    "verifications": "Vérifications",
+    "accounts": "Comptes",
+    "foods": "Base aliments",
+    "products": "Produits de référence",
+    "prices": "Prix par région",
+    "optimization": "Optimisation",
+    "modules": "Modules",
+    "notifications": "Notifications",
+    "teamName": "Équipe TSOTSA4Kids",
+    "shortTeamName": "Équipe TSOTSA"
+  },
+  "dashboard": {
+    "pageTitle": "Vue d'ensemble — Administration | TSOTSA4Kids",
+    "title": "Vue d'ensemble",
+    "kpiCaregiver": "soignant à vérifier",
+    "kpiProduct": "produit utilisateur à vérifier",
+    "kpiLots": "lots d'aliments à valider",
+    "kpiPrices": "prix renseignés",
+    "platformHealthTitle": "Santé de la plateforme",
+    "metrics": {
+      "userAccounts": "Comptes utilisateurs",
+      "verifiedCaregivers": "Soignants vérifiés",
+      "followedPersons": "Personnes suivies",
+      "confirmedIntakes7d": "Prises confirmées (7 jours)",
+      "failedSyncs": "Synchronisations en échec",
+      "lastRestoredBackup": "Dernière sauvegarde restaurée"
+    },
+    "realDataNotice": "Les chiffres s'afficheront avec les données réelles. Aucune valeur inventée dans l'administration."
+  },
+  "verify": {
+    "pageTitle": "Vérifications — Administration | TSOTSA4Kids",
+    "title": "Vérifications",
+    "pendingCaregiversTitle": "Soignants en attente",
+    "emptyCaregivers": "Aucun soignant en attente de vérification.",
+    "licenseAndOrder": "Carte professionnelle (PDF) {{pdf}} · Numéro d'ordre [{{status}}] · Inscrit le {{date}}",
+    "validateBtn": "Valider",
+    "rejectBtn": "Refuser",
+    "userProductsTitle": "Produits ajoutés par les utilisateurs",
+    "emptyProducts": "Aucun produit utilisateur en attente de validation.",
+    "validatePublicBtn": "Valider et rendre public",
+    "keepPrivateBtn": "Garder privé / corriger",
+    "nutrients": {
+      "energy": "Énergie : {{val}} kcal",
+      "proteins": "Protéines : {{val}} g",
+      "lipids": "Lipides : {{val}} g",
+      "iron": "Fer : {{val}} mg",
+      "calcium": "Calcium : {{val}} mg"
+    },
+    "autoControls": "Contrôles automatiques : unités {{units}} valeurs plausibles {{plausible}} photo de l'étiquette {{photo}}",
+    "feedback": {
+      "caregiverApproved": "Le soignant {{name}} a été validé et notifié avec succès.",
+      "caregiverRejected": "La demande pour {{name}} a été refusée.",
+      "productApproved": "Le produit \"{{name}}\" a été validé et rendu public.",
+      "productKeptPrivate": "Produit \"{{name}}\" conservé en privé."
+    },
+    "data": {
+      "pediatrician": "pédiatre",
+      "demoFacility": "CMA de démo",
+      "toCheck": "à contrôler",
+      "scopeNotice": "Accès donné uniquement aux personnes de son établissement.",
+      "fortifiedFlour": "Farine infantile enrichie",
+      "addedByUser": "ajouté par un compte utilisateur"
+    }
+  },
+  "accounts": {
+    "pageTitle": "Comptes — Administration | TSOTSA4Kids",
+    "title": "Comptes",
+    "filters": { "Tous": "Tous", "Utilisateurs": "Utilisateurs", "Soignants": "Soignants", "Administrateurs": "Administrateurs" },
+    "columns": { "account": "Compte", "provider": "Connexion", "role": "Rôle", "facility": "Établissement", "status": "Statut" },
+    "roles": { "user": "Utilisateur", "caregiver": "Soignant", "admin": "Admin" },
+    "providers": { "Google": "Google", "Téléphone": "Téléphone", "E-mail": "E-mail" },
+    "statuses": { "active": "Actif", "pending_verification": "À vérifier", "invited": "Invité" },
+    "data": { "demoParent": "Compte parent (démo)", "demoFacility": "CMA de démo", "dschangHospital": "Hôpital de district de Dschang", "userPhonePrefix": "Utilisateur ({{contact}})" },
+    "footnote": "Personnes suivies rattachées à un compte : visibles dans le détail du compte.",
+    "createCardTitle": "Créer un compte",
+    "contactLabel": "Téléphone ou adresse e-mail (Google ou autre)",
+    "facilityLabel": "Établissement",
+    "verifiedByDefaultLabel": "Soignant vérifié d'office",
+    "sendInvitationLabel": "Envoyer une invitation (SMS ou e-mail)",
+    "createBtn": "Créer et inviter",
+    "createNotice": "La personne choisit elle-même sa connexion (Google, téléphone ou e-mail) en ouvrant l'invitation. Action tracée dans le journal d'audit.",
+    "createdFeedback": "Compte {{name}} créé et invitation préparée."
+  },
+  "foods": {
+    "pageTitle": "Base aliments — Administration | TSOTSA4Kids",
+    "title": "Base aliments (extraite d'ORKG)",
+    "importFileBtn": "Importer un fichier",
+    "manualEntryBtn": "Saisie manuelle",
+    "reviewerLabel": "Compte connecté pour la relecture :",
+    "switchFidelBtn": "Connecté : Fidel (auteur)",
+    "switchTeamBtn": "Connecté : Équipe TSOTSA (2ᵉ lecteur)",
+    "columns": { "lot": "Lot", "source": "Source", "submittedBy": "Saisi par", "lines": "Lignes", "status": "Statut" },
+    "validateSecondReviewBtn": "Valider la 2ᵉ relecture",
+    "batchPublishedFeedback": "Lot {{batchId}} validé avec succès par {{reviewer}} et publié !",
+    "controlsCardTitle": "Contrôles avant validation",
+    "controlsList": {
+      "recognizedNutrients": "Nutriments reconnus",
+      "harmonizedUnits": "Unités harmonisées (pour 100 g)",
+      "outOfBounds": "Valeurs hors limites",
+      "duplicates": "Doublons",
+      "sourceProvided": "Source renseignée (ORKG + article)"
+    },
+    "dictionaryCardTitle": "Dictionnaire des nutriments",
+    "dictionaryTargets": {
+      "proteins": "protéines (g)",
+      "lipids": "lipides (g)",
+      "iron": "fer (mg)",
+      "calcium": "calcium (mg)",
+      "energy": "énergie (kcal)"
+    },
+    "data": {
+      "lot1Num": "Lot 1",
+      "lot1Source": "Comparaison ORKG R[identifiant] · export CSV · gabarit TSOTSA",
+      "lot2Num": "Lot 2",
+      "lot2Source": "Saisie manuelle · articles [références]",
+      "statusPendingReview": "À valider (2ᵉ relecture)",
+      "statusDraft": "Brouillon",
+      "statusPublished": "Publié"
+    }
+  },
+  "foodNew": {
+    "pageTitle": "Nouvel aliment · saisie manuelle — Administration | TSOTSA4Kids",
+    "title": "Nouvel aliment · saisie manuelle",
+    "nameLabel": "Nom",
+    "nameEnLabel": "Nom anglais (facultatif)",
+    "nameEnPlaceholder": "[ex. Peanut]",
+    "localNameLabel": "Nom local",
+    "localNamePlaceholder": "[nom local]",
+    "categoryLabel": "Catégorie",
+    "categories": { "Oléagineux": "Oléagineux ▾", "Légumineuses": "Légumineuses ▾", "Céréales": "Céréales ▾" },
+    "stateLabel": "État",
+    "states": { "Graine crue": "Graine crue ▾", "Cuit": "Cuit ▾", "Farine": "Farine ▾" },
+    "regionsLabel": "Régions où il est disponible",
+    "regionNames": { "Ouest": "Ouest", "Centre": "Centre", "Littoral": "Littoral", "Extrême-Nord": "Extrême-Nord" },
+    "addRegionBtn": "+ Région",
+    "orkgLabel": "Comparaison ORKG",
+    "orkgPlaceholder": "R[identifiant]",
+    "articleLabel": "Article (référence ou DOI)",
+    "articlePlaceholder": "[référence]",
+    "optimLimitsTitle": "Limites pour l'optimisation (facultatif)",
+    "optimLimitsDesc": "Portion minimale et maximale par repas (g) : à définir avec l'équipe médicale",
+    "saveDraftBtn": "Enregistrer en brouillon",
+    "submitValidationBtn": "Soumettre à validation",
+    "compositionCardTitle": "Composition pour 100 g",
+    "compositionCols": { "nutrient": "Nutriment", "value": "Valeur", "unit": "Unité" },
+    "nutrientNames": { "Énergie": "Énergie", "Protéines": "Protéines", "Lipides": "Lipides", "Fer": "Fer", "Calcium": "Calcium", "Zinc": "Zinc", "Vitamine A": "Vitamine A" },
+    "foodNames": { "Arachide": "Arachide", "Soja": "Soja", "Niébé": "Niébé", "Moringa": "Moringa" },
+    "addNutrientBtn": "+ Ajouter un nutriment",
+    "controlsSummary": "Contrôles : unités ✓ valeurs plausibles ✓ source ✓"
+  },
+  "import": {
+    "pageTitle": "Importer un fichier — Administration | TSOTSA4Kids",
+    "title": "Importer un fichier (Excel ou CSV)",
+    "downloadTemplateLink": "Télécharger le gabarit vide ›",
+    "steps": { "step1": "1 Fichier ✓", "step2": "2 Colonnes ✓", "step3": "3 Contrôles", "step4": "4 Validation" },
+    "publishSuccessNotice": "Le lot a été vérifié par un second lecteur et validé avec succès. Les aliments sont publiés et visibles côté utilisateur !",
+    "fileCardTitle": "Fichier",
+    "fileCardSub": "Gabarit TSOTSA · démo",
+    "columnMappingTitle": "Correspondance des colonnes",
+    "mappedFields": { "aliment": "aliment", "protéines": "protéines", "fer": "fer", "calcium": "calcium", "lipides": "lipides (g)", "energie": "énergie (kcal)" },
+    "closeEditBtn": "Fermer l'édition",
+    "correctMappingBtn": "Corriger la correspondance",
+    "mapFatLabel": "Mapper Fat (g) vers :",
+    "applyFixBtn": "Appliquer la correction",
+    "validCountBadge": "Lignes valides : {{count}}",
+    "errorCountBadge": "Erreurs : {{count}}",
+    "warningCountBadge": "Avertissements : {{count}}",
+    "tableCols": { "food": "Aliment", "nutrient": "Nutriment", "value": "Valeur", "unit": "Unité", "check": "Contrôle" },
+    "footnote": "Les lignes en erreur ne sont jamais enregistrées. Le lot importé passe « à valider » : une autre personne le relit avant publication.",
+    "correctFileBtn": "Corriger le fichier",
+    "importValidBtn": "Importer les lignes valides",
+    "step4": {
+      "title": "Étape 4 : Validation du lot par un second relecteur",
+      "subtitle": "Conformément aux règles de sécurité sanitaire, l'auteur du lot ne peut pas approuver sa propre saisie.",
+      "currentReviewerLabel": "Utilisateur actuellement connecté :",
+      "fidelAuthorBtn": "Fidel (Auteur)",
+      "teamSecondReaderBtn": "Équipe TSOTSA (Second lecteur)",
+      "publishedBtn": "Lot publié avec succès",
+      "publishBtn": "Valider et publier le lot",
+      "backToFoodsBtn": "Retour à la base aliments",
+      "viewUserSideBtn": "Voir côté utilisateur ›"
+    }
+  },
+  "products": {
+    "pageTitle": "Produits de référence — Administration | TSOTSA4Kids",
+    "title": "Produits de référence",
+    "addProductBtn": "+ Ajouter un produit",
+    "columns": { "product": "Produit", "base": "Base", "nutrients": "Nutriments essentiels", "source": "Source", "status": "Statut" },
+    "data": {
+      "toDefine": "à définir",
+      "plumpyNutNutrients": "protéines, lipides, fer",
+      "whoSam1999": "OMS, malnutrition sévère (1999)",
+      "whoUnicefRutf": "Spécification RUTF OMS/UNICEF",
+      "manufacturerSheet": "Fiche du fabricant",
+      "statusValidateHospital": "À valider · hôpital",
+      "statusValidate": "À valider",
+      "statusToEnter": "À saisir"
+    },
+    "notice": "Chaque valeur garde sa source et sa date. Une modification est tracée dans le journal d'audit. Les nutriments essentiels par défaut sont fixés par l'équipe scientifique (décision D2).",
+    "viewUserSideLink": "Voir côté utilisateur ›"
+  },
+  "prices": {
+    "pageTitle": "Prix par région — Administration | TSOTSA4Kids",
+    "title": "Prix par région",
+    "addPriceBtn": "+ Ajouter un relevé",
+    "columns": { "region": "Région", "item": "Produit ou aliment", "price": "Prix (FCFA)", "unit": "Unité", "date": "Date du relevé", "source": "Source" },
+    "toEnter": "à saisir",
+    "footnote": "Sans relevé, l'application affiche « prix non renseigné ». Chaque prix a une date et une source (relevé de marché, partenaire)."
+  },
+  "optim": {
+    "pageTitle": "Optimisation des rations — Administration | TSOTSA4Kids",
+    "title": "Optimisation des rations · préparation",
+    "engineBadge": "Moteur : phase 2 (non activé)",
+    "tabs": { "cibles": "Cibles nutritionnelles", "limites": "Limites par aliment", "parametres": "Paramètres" },
+    "columns": { "population": "Population", "phase": "Phase", "nutrient": "Nutriment", "min": "Min", "max": "Max", "unit": "Unité", "source": "Source" },
+    "data": {
+      "popSam": "6–59 mois, MAS",
+      "popMam": "6–59 mois, MAM",
+      "phaseRehab": "Réhabilitation",
+      "phaseSupplement": "Supplément",
+      "sourceProtocol": "Protocole"
+    },
+    "footnote": "Les cibles viennent du protocole national, validé par la référente médicale. Aucune valeur par défaut.",
+    "testFormulationBtn": "Tester une formulation",
+    "solverCardTitle": "Ce que le moteur calculera",
+    "solverBullets": {
+      "b1": "La combinaison d'aliments locaux la moins chère qui atteint les cibles",
+      "b2": "Les quantités en grammes par repas",
+      "b3": "Avec les seuls aliments disponibles dans la région",
+      "b4": "Toujours validée par un soignant"
+    }
+  },
+  "modules": {
+    "pageTitle": "Modules — Administration | TSOTSA4Kids",
+    "title": "Modules",
+    "items": {
+      "nutrition": { "name": "Nutrition infantile", "activeSub": "Actif · visible par tous", "inactiveSub": "Inactif · masqué" },
+      "hta": { "name": "HTA", "activeSub": "Actif · visible par tous", "inactiveSub": "Inactif · affiché « bientôt »" },
+      "diabetes": { "name": "Diabète", "activeSub": "Actif · visible par tous", "inactiveSub": "Inactif · affiché « bientôt »" }
+    },
+    "seeUserEffectBtn": "Voir l'effet côté utilisateur"
+  },
+  "notifications": {
+    "pageTitle": "Notifications · réglages de la plateforme — Administration | TSOTSA4Kids",
+    "title": "Notifications · réglages de la plateforme",
+    "enabledToggleLabel": "Notifications activées",
+    "columns": { "channel": "Canal", "service": "Service", "state": "État", "sent7d": "Envoyées (7 j)", "failures": "Échecs" },
+    "channels": {
+      "push": { "name": "Téléphone (push)", "service": "Firebase Cloud Messaging" },
+      "sms": { "name": "SMS", "service": "Agrégateur SMS local (à choisir)" },
+      "email": { "name": "E-mail", "service": "Service d'envoi d'e-mails" },
+      "stateToConfigure": "À configurer"
+    },
+    "templatesCardTitle": "Modèles de messages (FR / EN)",
+    "templates": {
+      "tpl-1": "« C'est l'heure du repas de {prénom} »",
+      "tpl-2": "« Prise de {heure} non confirmée »",
+      "tpl-3": "« {prénom} a reçu {produit} »",
+      "tpl-4": "« Nouvelle évaluation de {prénom} »"
+    },
+    "editBtn": "Modifier",
+    "rulesCardTitle": "Règles par défaut",
+    "rules": {
+      "followUpAfter": "Relance après",
+      "quietHours": "Heures calmes",
+      "caregiverSummary": "Résumé soignant",
+      "localReminder": "Rappel local (hors ligne)",
+      "enabledValue": "activé"
+    }
+  }
+}

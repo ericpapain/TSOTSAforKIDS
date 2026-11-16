@@ -13,6 +13,7 @@ from tsotsa_api.core.database import get_db_session
 from tsotsa_api.core.errors import AppException, ForbiddenError, UnauthorizedError
 from tsotsa_api.core.security import decode_access_token
 from tsotsa_api.modules.identity.models import User
+from tsotsa_api.modules.identity.permissions_service import PermissionsService
 from tsotsa_api.modules.identity.repository import IdentityRepository
 
 bearer_scheme = HTTPBearer(auto_error=False)
@@ -142,3 +143,26 @@ async def require_verified_caregiver(
         )
 
     return user
+
+
+def require_permission(permission_code: str) -> Callable[..., Any]:
+    """Dependency factory verifying the authenticated user holds a specific permission."""
+
+    async def _permission_checker(
+        user: User = Depends(get_current_user),
+        db: AsyncSession = Depends(get_db_session),
+    ) -> User:
+        service = PermissionsService(db)
+        has_perm = await service.has_permission(user.id, permission_code)
+        if not has_perm:
+            user_perms = await service.get_effective_permissions(user.id)
+            raise ForbiddenError(
+                message=f"Droit insuffisant : '{permission_code}' requis pour cette action.",
+                details={
+                    "required_permission": permission_code,
+                    "user_permissions": list(user_perms),
+                },
+            )
+        return user
+
+    return _permission_checker

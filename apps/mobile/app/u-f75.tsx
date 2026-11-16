@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { FontAwesome5 } from "@expo/vector-icons";
+import { useTranslation } from "react-i18next";
 import { colors } from "../src/theme/colors";
 import { BottomNav } from "../src/components/BottomNav";
 import { f75Styles as styles } from "../src/features/products/f75Styles";
@@ -33,6 +34,7 @@ const DEFAULT_F75_ROWS: NutrientDisplayRow[] = [
 
 export default function F75Screen() {
   const router = useRouter();
+  const { t } = useTranslation(["mobile", "common"]);
   const params = useLocalSearchParams<{
     productId?: string;
     personId?: string;
@@ -80,7 +82,7 @@ export default function F75Screen() {
       <View style={styles.appBar}>
         <TouchableOpacity
           testID="btn-back"
-          accessibilityLabel="Retour"
+          accessibilityLabel={t("common:actions.back", { defaultValue: "Retour" })}
           accessibilityRole="button"
           onPress={handleBackToDropdown}
           style={styles.touchIcon}
@@ -96,12 +98,17 @@ export default function F75Screen() {
         {/* Hospital Warning */}
         <View style={styles.dangerBanner}>
           <Text style={styles.dangerBannerText}>
-            Lait thérapeutique de stabilisation, donné à l'hôpital sous surveillance médicale.
+            {t("mobile:f75.warning", {
+              defaultValue:
+                "Lait thérapeutique de stabilisation, donné à l'hôpital sous surveillance médicale.",
+            })}
           </Text>
         </View>
 
         {/* Composition Title */}
-        <Text style={styles.sectionTitle}>Composition pour 100 ml</Text>
+        <Text style={styles.sectionTitle}>
+          {t("mobile:f75.compositionTitle", { defaultValue: "Composition pour 100 ml" })}
+        </Text>
 
         {/* Composition Table */}
         {rows.map((row, index) => {
@@ -119,7 +126,10 @@ export default function F75Screen() {
 
         {/* Source citation */}
         <Text style={styles.sourceText}>
-          Source : OMS, prise en charge de la malnutrition sévère (1999). À confirmer par la référente médicale.
+          {t("mobile:f75.sourceText", {
+            defaultValue:
+              "Source : OMS, prise en charge de la malnutrition sévère (1999). À confirmer par la référente médicale.",
+          })}
         </Text>
 
         {/* Choose other product button */}
@@ -129,7 +139,9 @@ export default function F75Screen() {
           onPress={handleBackToDropdown}
           style={styles.btnChooseOther}
         >
-          <Text style={styles.btnChooseOtherText}>Choisir un autre produit</Text>
+          <Text style={styles.btnChooseOtherText}>
+            {t("mobile:f75.chooseOther", { defaultValue: "Choisir un autre produit" })}
+          </Text>
         </TouchableOpacity>
       </ScrollView>
 

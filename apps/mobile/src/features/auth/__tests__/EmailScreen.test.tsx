@@ -82,12 +82,13 @@ describe("EmailAuthScreen (M04)", () => {
     const { getByTestId, getByText } = render(<EmailAuthScreen />);
     fireEvent.press(getByTestId("tab-email-register"));
 
+    fireEvent.changeText(getByTestId("input-display-name"), "Nouveau Parent");
     fireEvent.changeText(getByTestId("input-email"), "nouveau@tsotsa.org");
     fireEvent.changeText(getByTestId("input-password"), "MonSecret123");
     fireEvent.press(getByTestId("btn-email-continue"));
 
     await waitFor(() => {
-      expect(authService.registerWithEmail).toHaveBeenCalledWith("nouveau@tsotsa.org", "MonSecret123");
+      expect(authService.registerWithEmail).toHaveBeenCalledWith("nouveau@tsotsa.org", "MonSecret123", "Nouveau Parent");
       expect(getByText("Compte créé avec succès. Vérifiez vos e-mails.")).toBeTruthy();
     });
   });

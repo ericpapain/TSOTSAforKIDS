@@ -66,6 +66,8 @@ class FoodSummaryRead(BaseModel):
 
     id: str
     name: str
+    original_name: str = ""
+    name_en: str | None = None
     kind: str
     category: str | None = None
     state: str | None = None
@@ -80,6 +82,8 @@ class FoodDetailRead(BaseModel):
 
     id: str
     name: str
+    original_name: str = ""
+    name_en: str | None = None
     kind: str
     scientific_name: str | None = None
     category: str | None = None
@@ -167,6 +171,7 @@ class ManualFoodCreate(BaseModel):
     """Payload for manual food and composition creation."""
 
     name: str
+    name_en: str | None = None
     kind: str = "dish"
     scientific_name: str | None = None
     category: str | None = None

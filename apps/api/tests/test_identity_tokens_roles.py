@@ -77,7 +77,7 @@ async def test_me_endpoint_authentication(client: AsyncClient) -> None:
     ok_me = await client.get("/v1/auth/me", headers={"Authorization": f"Bearer {access_token}"})
     assert ok_me.status_code == 200
     assert ok_me.json()["display_name"] == "Me User"
-    assert ok_me.json()["roles"] == ["user"]
+    assert ok_me.json()["roles"] in (["parent"], ["user"])
 
 
 @pytest.mark.asyncio

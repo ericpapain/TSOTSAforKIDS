@@ -14,8 +14,8 @@ from tsotsa_api.core.security import (
     generate_random_token,
     hash_password,
     hash_token,
-    verify_password,
 )
+from tsotsa_api.modules.identity.email_auth_service import EmailAuthService
 from tsotsa_api.modules.identity.models import CaregiverProfile, User
 from tsotsa_api.modules.identity.otp import OtpSender, get_otp_sender
 from tsotsa_api.modules.identity.rate_limit import RateLimiter
@@ -40,6 +40,7 @@ class IdentityService:
         self.settings = settings or get_settings()
         self.otp_sender = otp_sender or get_otp_sender(self.settings)
         self.tokens = TokenService(repository=self.repository, settings=self.settings)
+        self.email_auth = EmailAuthService(self.repository, self.tokens, self.settings)
 
     async def authenticate_google(
         self, id_token_str: str, ip_address: str = "127.0.0.1"
@@ -67,7 +68,6 @@ class IdentityService:
                 message="Google email address must be verified.",
                 details={"reason": "unverified_google_email"},
             )
-
         google_sub = payload["sub"]
         email = payload.get("email")
         display_name = payload.get("name") or (email.split("@")[0] if email else "Utilisateur")
@@ -86,24 +86,35 @@ class IdentityService:
                 email=email,
                 email_verified=True,
             )
-            await self.repository.assign_role(user.id, "user")
-
+            await self.repository.assign_role(user.id, "parent")
         return await self.tokens.issue_tokens(user, device_label="Google Auth")
 
     async def request_phone_otp(
-        self, phone_e164: str, ip_address: str = "127.0.0.1"
+        self, phone_e164: str, ip_address: str = "127.0.0.1", locale: str | None = None
     ) -> OtpRequestResponse:
-        """Rate limit, generate 6-digit OTP code, and dispatch SMS."""
+        """Rate limit, generate 6-digit OTP code, and dispatch SMS in recipient locale."""
         RateLimiter.check_limit(f"ip:{ip_address}", max_attempts=5, window_seconds=60)
         RateLimiter.check_limit(f"phone:{phone_e164}", max_attempts=3, window_seconds=120)
 
         code = generate_numeric_otp(6)
         expires_at = datetime.now(UTC) + timedelta(minutes=self.settings.OTP_TTL_MINUTES)
         await self.repository.create_otp(phone_e164, hash_token(code), expires_at)
-        await self.otp_sender.send_otp(phone_e164, code)
 
+        recipient_locale = locale
+        if not recipient_locale:
+            identity = await self.repository.get_identity("phone", phone_e164)
+            if identity:
+                user = await self.repository.get_user_by_id(identity.user_id)
+                if user:
+                    recipient_locale = user.preferred_locale
+        await self.otp_sender.send_otp(phone_e164, code, locale=recipient_locale or "fr")
+        msg = (
+            "A confirmation code has been sent by SMS."
+            if recipient_locale == "en"
+            else "Un code de confirmation a été envoyé par SMS."
+        )
         return OtpRequestResponse(
-            message="Un code de confirmation a été envoyé par SMS.",
+            message=msg,
             expires_in_seconds=self.settings.OTP_TTL_MINUTES * 60,
         )
 
@@ -151,74 +162,54 @@ class IdentityService:
                 phone_e164=phone_e164,
                 phone_verified=True,
             )
-            await self.repository.assign_role(user.id, "user")
+            await self.repository.assign_role(user.id, "parent")
 
         return await self.tokens.issue_tokens(user, device_label="Phone Auth")
 
     async def register_email(
-        self, email: str, password: str, display_name: str, ip_address: str = "127.0.0.1"
+        self,
+        email: str,
+        password: str,
+        display_name: str | None = None,
+        first_name: str | None = None,
+        last_name: str | None = None,
+        role: str = "parent",
+        region_id: str | None = None,
+        locality: str | None = None,
+        phone: str | None = None,
+        facility_id: str | None = None,
+        speciality: str | None = None,
+        order_number: str | None = None,
+        structure_name: str | None = None,
+        ip_address: str = "127.0.0.1",
     ) -> tuple[User, str]:
         """Register a new user account with email and password."""
-        RateLimiter.check_limit(f"ip:{ip_address}", max_attempts=5, window_seconds=60)
-        clean_email = email.lower().strip()
-        if await self.repository.get_identity_by_email(clean_email):
-            raise AppException(
-                status_code=409,
-                code="EMAIL_ALREADY_EXISTS",
-                message="Cette adresse e-mail est déjà utilisée.",
-            )
-
-        pwd_hash = hash_password(password, rounds=self.settings.BCRYPT_ROUNDS)
-        user = await self.repository.create_user(display_name=display_name)
-        identity = await self.repository.create_identity(
-            user_id=user.id,
-            provider="email",
-            provider_subject=clean_email,
-            email=clean_email,
-            password_hash=pwd_hash,
-            email_verified=False,
+        return await self.email_auth.register_email(
+            email=email,
+            password=password,
+            display_name=display_name,
+            first_name=first_name,
+            last_name=last_name,
+            role=role,
+            region_id=region_id,
+            locality=locality,
+            phone=phone,
+            facility_id=facility_id,
+            speciality=speciality,
+            order_number=order_number,
+            structure_name=structure_name,
+            ip_address=ip_address,
         )
-        await self.repository.assign_role(user.id, "user")
-
-        raw_token = generate_random_token(32)
-        await self.repository.create_email_token(
-            user_identity_id=identity.id,
-            purpose="verify",
-            token_hash=hash_token(raw_token),
-            expires_at=datetime.now(UTC) + timedelta(minutes=30),
-        )
-        return user, raw_token
 
     async def login_email(
         self, email: str, password: str, ip_address: str = "127.0.0.1"
     ) -> TokenResponse:
         """Authenticate user with email and password."""
-        clean_email = email.lower().strip()
-        RateLimiter.check_limit(f"ip:{ip_address}", max_attempts=5, window_seconds=60)
-        RateLimiter.check_limit(f"email:{clean_email}", max_attempts=5, window_seconds=60)
-
-        identity = await self.repository.get_identity_by_email(clean_email)
-        if not identity or not identity.password_hash:
-            verify_password(password, FALLBACK_HASH)
-            raise UnauthorizedError(
-                message="Adresse e-mail ou mot de passe incorrect.",
-                details={"reason": "invalid_credentials"},
-            )
-        if not verify_password(password, identity.password_hash):
-            raise UnauthorizedError(
-                message="Adresse e-mail ou mot de passe incorrect.",
-                details={"reason": "invalid_credentials"},
-            )
-
-        user = await self.repository.get_user_by_id(identity.user_id)
-        if not user or user.status != "active":
-            raise UnauthorizedError(
-                message="Compte inactif ou suspendu.", details={"reason": "inactive_user"}
-            )
-        return await self.tokens.issue_tokens(user, device_label="Email Auth")
+        return await self.email_auth.login_email(
+            email=email, password=password, ip_address=ip_address
+        )
 
     async def verify_email_token(self, token_str: str) -> None:
-        """Verify an email verification token."""
         token = await self.repository.get_valid_email_token(hash_token(token_str), "verify")
         if not token:
             raise NotFoundError(
@@ -229,7 +220,6 @@ class IdentityService:
         await self.repository.mark_email_verified(token.user_identity_id)
 
     async def request_password_reset(self, email: str, ip_address: str = "127.0.0.1") -> str | None:
-        """Generate a password reset token if account exists."""
         clean_email = email.lower().strip()
         RateLimiter.check_limit(f"ip:{ip_address}", max_attempts=5, window_seconds=60)
         RateLimiter.check_limit(f"email:{clean_email}", max_attempts=3, window_seconds=60)
@@ -248,7 +238,6 @@ class IdentityService:
     async def reset_password(
         self, token_str: str, new_password: str, ip_address: str = "127.0.0.1"
     ) -> None:
-        """Reset password using a valid reset token."""
         RateLimiter.check_limit(f"ip:{ip_address}", max_attempts=5, window_seconds=60)
         token = await self.repository.get_valid_email_token(hash_token(token_str), "reset")
         if not token:
@@ -263,11 +252,9 @@ class IdentityService:
             await self.repository.revoke_all_user_refresh_tokens(token.user_identity.user_id)
 
     async def refresh_access_token(self, refresh_token_str: str) -> TokenResponse:
-        """Rotate refresh token and issue new access token."""
         return await self.tokens.refresh_access_token(refresh_token_str)
 
     async def revoke_refresh_token(self, refresh_token_str: str) -> None:
-        """Revoke a refresh token on user logout."""
         await self.tokens.revoke_refresh_token(refresh_token_str)
 
     async def attach_caregiver_to_organization(

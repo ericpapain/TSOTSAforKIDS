@@ -15,7 +15,7 @@ AppEnv = Literal["development", "test", "staging", "production"]
 
 
 class Settings(BaseSettings):
-    """Configuration settings for TSOTSA Kids API."""
+    """Configuration settings for TSOTSA4Kids API."""
 
     model_config = SettingsConfigDict(
         env_file=".env",
@@ -52,7 +52,7 @@ class Settings(BaseSettings):
 
     EMAIL_PROVIDER: str = "console"
     EMAIL_API_KEY: str = ""
-    EMAIL_FROM: str = "TSOTSA Kids <no-reply@tsotsa-for-kids.com>"
+    EMAIL_FROM: str = "TSOTSA4Kids <no-reply@tsotsa-for-kids.com>"
 
     EXPO_ACCESS_TOKEN: str = ""
     NOTIFICATION_REMINDER_DELAY_MINUTES: int = Field(default=30, ge=1)

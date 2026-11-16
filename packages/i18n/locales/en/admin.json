@@ -1,0 +1,274 @@
+{
+  "nav": {
+    "overview": "Overview",
+    "verifications": "Verifications",
+    "accounts": "Accounts",
+    "foods": "Food database",
+    "products": "Reference products",
+    "prices": "Regional prices",
+    "optimization": "Optimization",
+    "modules": "Modules",
+    "notifications": "Notifications",
+    "teamName": "TSOTSA4Kids Team",
+    "shortTeamName": "TSOTSA Team"
+  },
+  "dashboard": {
+    "pageTitle": "Overview — Administration | TSOTSA4Kids",
+    "title": "Overview",
+    "kpiCaregiver": "caregiver to verify",
+    "kpiProduct": "user product to verify",
+    "kpiLots": "food batches to approve",
+    "kpiPrices": "recorded prices",
+    "platformHealthTitle": "Platform health",
+    "metrics": {
+      "userAccounts": "User accounts",
+      "verifiedCaregivers": "Verified caregivers",
+      "followedPersons": "Followed persons",
+      "confirmedIntakes7d": "Confirmed intakes (7 days)",
+      "failedSyncs": "Failed synchronizations",
+      "lastRestoredBackup": "Last restored backup"
+    },
+    "realDataNotice": "Figures will be displayed with real data. No invented values in the administration portal."
+  },
+  "verify": {
+    "pageTitle": "Verifications — Administration | TSOTSA4Kids",
+    "title": "Verifications",
+    "pendingCaregiversTitle": "Caregivers pending verification",
+    "emptyCaregivers": "No caregiver pending verification.",
+    "licenseAndOrder": "Professional license (PDF) {{pdf}} · Registration number [{{status}}] · Registered on {{date}}",
+    "validateBtn": "Approve",
+    "rejectBtn": "Reject",
+    "userProductsTitle": "User-submitted products",
+    "emptyProducts": "No user product pending approval.",
+    "validatePublicBtn": "Approve and make public",
+    "keepPrivateBtn": "Keep private / edit",
+    "nutrients": {
+      "energy": "Energy: {{val}} kcal",
+      "proteins": "Proteins: {{val}} g",
+      "lipids": "Lipids: {{val}} g",
+      "iron": "Iron: {{val}} mg",
+      "calcium": "Calcium: {{val}} mg"
+    },
+    "autoControls": "Automated checks: units {{units}} plausible values {{plausible}} label photo {{photo}}",
+    "feedback": {
+      "caregiverApproved": "Caregiver {{name}} has been approved and notified.",
+      "caregiverRejected": "The request for {{name}} has been rejected.",
+      "productApproved": "Product \"{{name}}\" has been approved and made public.",
+      "productKeptPrivate": "Product \"{{name}}\" kept private."
+    },
+    "data": {
+      "pediatrician": "pediatrician",
+      "demoFacility": "Demo Medical Center",
+      "toCheck": "to verify",
+      "scopeNotice": "Access granted only to persons followed in their facility.",
+      "fortifiedFlour": "Fortified infant flour",
+      "addedByUser": "added by a user account"
+    }
+  },
+  "accounts": {
+    "pageTitle": "Accounts — Administration | TSOTSA4Kids",
+    "title": "Accounts",
+    "filters": { "Tous": "All", "Utilisateurs": "Users", "Soignants": "Caregivers", "Administrateurs": "Administrators" },
+    "columns": { "account": "Account", "provider": "Sign-in", "role": "Role", "facility": "Facility", "status": "Status" },
+    "roles": { "user": "User", "caregiver": "Caregiver", "admin": "Admin" },
+    "providers": { "Google": "Google", "Téléphone": "Phone", "E-mail": "Email" },
+    "statuses": { "active": "Active", "pending_verification": "Account pending verification", "invited": "Invited" },
+    "data": { "demoParent": "Parent account (demo)", "demoFacility": "Demo Medical Center", "dschangHospital": "Dschang District Hospital", "userPhonePrefix": "User ({{contact}})" },
+    "footnote": "Followed persons linked to an account: visible in the account details.",
+    "createCardTitle": "Create an account",
+    "contactLabel": "Phone number or email address (Google or other)",
+    "facilityLabel": "Facility",
+    "verifiedByDefaultLabel": "Pre-verified caregiver",
+    "sendInvitationLabel": "Send an invitation (SMS or email)",
+    "createBtn": "Create and invite",
+    "createNotice": "The recipient chooses their sign-in method (Google, phone, or email) when opening the invitation. Action logged in the audit trail.",
+    "createdFeedback": "Account {{name}} created and invitation prepared."
+  },
+  "foods": {
+    "pageTitle": "Food database — Administration | TSOTSA4Kids",
+    "title": "Food database (extracted from ORKG)",
+    "importFileBtn": "Import a file",
+    "manualEntryBtn": "Manual entry",
+    "reviewerLabel": "Connected account for two-step approval:",
+    "switchFidelBtn": "Signed in: Fidel (author)",
+    "switchTeamBtn": "Signed in: TSOTSA Team (2nd reviewer)",
+    "columns": { "lot": "Batch", "source": "Source", "submittedBy": "Entered by", "lines": "Rows", "status": "Status" },
+    "validateSecondReviewBtn": "Approve 2nd review",
+    "batchPublishedFeedback": "Batch {{batchId}} approved by {{reviewer}} and published!",
+    "controlsCardTitle": "Pre-approval checks",
+    "controlsList": {
+      "recognizedNutrients": "Recognized nutrients",
+      "harmonizedUnits": "Harmonized units (per 100 g)",
+      "outOfBounds": "Out-of-bounds values",
+      "duplicates": "Duplicates",
+      "sourceProvided": "Source provided (ORKG + article)"
+    },
+    "dictionaryCardTitle": "Nutrient dictionary",
+    "dictionaryTargets": {
+      "proteins": "proteins (g)",
+      "lipids": "lipids (g)",
+      "iron": "iron (mg)",
+      "calcium": "calcium (mg)",
+      "energy": "energy (kcal)"
+    },
+    "data": {
+      "lot1Num": "Batch 1",
+      "lot1Source": "ORKG comparison R[id] · CSV export · TSOTSA template",
+      "lot2Num": "Batch 2",
+      "lot2Source": "Manual entry · articles [references]",
+      "statusPendingReview": "Pending approval (two-step approval)",
+      "statusDraft": "Draft",
+      "statusPublished": "Published"
+    }
+  },
+  "foodNew": {
+    "pageTitle": "New food · manual entry — Administration | TSOTSA4Kids",
+    "title": "New food · manual entry",
+    "nameLabel": "Name",
+    "nameEnLabel": "English name (optional)",
+    "nameEnPlaceholder": "[e.g. Peanut]",
+    "localNameLabel": "Local name",
+    "localNamePlaceholder": "[local name]",
+    "categoryLabel": "Category",
+    "categories": { "Oléagineux": "Oilseeds ▾", "Légumineuses": "Legumes ▾", "Céréales": "Cereals ▾" },
+    "stateLabel": "State",
+    "states": { "Graine crue": "Raw seed ▾", "Cuit": "Cooked ▾", "Farine": "Flour ▾" },
+    "regionsLabel": "Regions where available",
+    "regionNames": { "Ouest": "West", "Centre": "Centre", "Littoral": "Littoral", "Extrême-Nord": "Far North" },
+    "addRegionBtn": "+ Region",
+    "orkgLabel": "ORKG comparison",
+    "orkgPlaceholder": "R[id]",
+    "articleLabel": "Article (reference or DOI)",
+    "articlePlaceholder": "[reference]",
+    "optimLimitsTitle": "Optimization limits (optional)",
+    "optimLimitsDesc": "Minimum and maximum portion per meal (g): to be defined with the medical team",
+    "saveDraftBtn": "Save as draft",
+    "submitValidationBtn": "Submit for approval",
+    "compositionCardTitle": "Composition per 100 g",
+    "compositionCols": { "nutrient": "Nutrient", "value": "Value", "unit": "Unit" },
+    "nutrientNames": { "Énergie": "Energy", "Protéines": "Proteins", "Lipides": "Lipids", "Fer": "Iron", "Calcium": "Calcium", "Zinc": "Zinc", "Vitamine A": "Vitamin A" },
+    "foodNames": { "Arachide": "Peanut", "Soja": "Soybean", "Niébé": "Cowpea", "Moringa": "Moringa" },
+    "addNutrientBtn": "+ Add a nutrient",
+    "controlsSummary": "Checks: units ✓ plausible values ✓ source ✓"
+  },
+  "import": {
+    "pageTitle": "Import a file — Administration | TSOTSA4Kids",
+    "title": "Import a file (Excel or CSV)",
+    "downloadTemplateLink": "Download empty template ›",
+    "steps": { "step1": "1 File ✓", "step2": "2 Columns ✓", "step3": "3 Checks", "step4": "4 Approval" },
+    "publishSuccessNotice": "The batch was reviewed by a second reviewer and approved! The foods are now published and visible to users.",
+    "fileCardTitle": "File",
+    "fileCardSub": "TSOTSA template · demo",
+    "columnMappingTitle": "Column mapping",
+    "mappedFields": { "aliment": "food", "protéines": "proteins", "fer": "iron", "calcium": "calcium", "lipides": "lipids (g)", "energie": "energy (kcal)" },
+    "closeEditBtn": "Close editor",
+    "correctMappingBtn": "Edit column mapping",
+    "mapFatLabel": "Map Fat (g) to:",
+    "applyFixBtn": "Apply fix",
+    "validCountBadge": "Valid rows: {{count}}",
+    "errorCountBadge": "Errors: {{count}}",
+    "warningCountBadge": "Warnings: {{count}}",
+    "tableCols": { "food": "Food", "nutrient": "Nutrient", "value": "Value", "unit": "Unit", "check": "Check" },
+    "footnote": "Rows with errors are never saved. The imported batch moves to 'pending approval': a second person reviews it before publication (two-step approval).",
+    "correctFileBtn": "Fix file",
+    "importValidBtn": "Import valid rows",
+    "step4": {
+      "title": "Step 4: Two-step approval by a second reviewer",
+      "subtitle": "In accordance with health safety rules, the author of the batch cannot approve their own submission.",
+      "currentReviewerLabel": "Currently signed-in user:",
+      "fidelAuthorBtn": "Fidel (Author)",
+      "teamSecondReaderBtn": "TSOTSA Team (Second reviewer)",
+      "publishedBtn": "Batch published",
+      "publishBtn": "Approve and publish batch",
+      "backToFoodsBtn": "Back to food database",
+      "viewUserSideBtn": "View on user portal ›"
+    }
+  },
+  "products": {
+    "pageTitle": "Reference products — Administration | TSOTSA4Kids",
+    "title": "Reference products",
+    "addProductBtn": "+ Add a product",
+    "columns": { "product": "Product", "base": "Base", "nutrients": "Essential nutrients", "source": "Source", "status": "Status" },
+    "data": {
+      "toDefine": "to be defined",
+      "plumpyNutNutrients": "proteins, lipids, iron",
+      "whoSam1999": "WHO, severe acute malnutrition (1999)",
+      "whoUnicefRutf": "WHO/UNICEF RUTF specification",
+      "manufacturerSheet": "Manufacturer datasheet",
+      "statusValidateHospital": "Pending approval · hospital",
+      "statusValidate": "Pending approval",
+      "statusToEnter": "To be entered"
+    },
+    "notice": "Each value retains its source and date. Any modification is logged in the audit trail. Default essential nutrients are set by the scientific team (decision D2).",
+    "viewUserSideLink": "View on user portal ›"
+  },
+  "prices": {
+    "pageTitle": "Regional prices — Administration | TSOTSA4Kids",
+    "title": "Regional prices",
+    "addPriceBtn": "+ Add a price record",
+    "columns": { "region": "Region", "item": "Product or food", "price": "Price (XAF)", "unit": "Unit", "date": "Record date", "source": "Source" },
+    "toEnter": "to be entered",
+    "footnote": "Without a price record, the app displays 'price not available'. Each price has a date and a source (market survey, partner)."
+  },
+  "optim": {
+    "pageTitle": "Ration optimization — Administration | TSOTSA4Kids",
+    "title": "Ration optimization · preparation",
+    "engineBadge": "Engine: phase 2 (not enabled)",
+    "tabs": { "cibles": "Nutritional targets", "limites": "Per-food limits", "parametres": "Parameters" },
+    "columns": { "population": "Population", "phase": "Phase", "nutrient": "Nutrient", "min": "Min", "max": "Max", "unit": "Unit", "source": "Source" },
+    "data": {
+      "popSam": "6–59 months, SAM",
+      "popMam": "6–59 months, MAM",
+      "phaseRehab": "Rehabilitation",
+      "phaseSupplement": "Supplement",
+      "sourceProtocol": "Protocol"
+    },
+    "footnote": "Targets come from the national protocol, approved by the medical lead. No default values.",
+    "testFormulationBtn": "Test a formulation",
+    "solverCardTitle": "What the engine will compute",
+    "solverBullets": {
+      "b1": "The lowest-cost combination of local foods that meets the nutritional targets",
+      "b2": "Quantities in grams per meal",
+      "b3": "Using only foods available in the selected region",
+      "b4": "Always reviewed and approved by a caregiver"
+    }
+  },
+  "modules": {
+    "pageTitle": "Modules — Administration | TSOTSA4Kids",
+    "title": "Modules",
+    "items": {
+      "nutrition": { "name": "Child nutrition", "activeSub": "Active · visible to all", "inactiveSub": "Inactive · hidden" },
+      "hta": { "name": "Hypertension", "activeSub": "Active · visible to all", "inactiveSub": "Inactive · shown as 'coming soon'" },
+      "diabetes": { "name": "Diabetes", "activeSub": "Active · visible to all", "inactiveSub": "Inactive · shown as 'coming soon'" }
+    },
+    "seeUserEffectBtn": "View effect on user portal"
+  },
+  "notifications": {
+    "pageTitle": "Notifications · platform settings — Administration | TSOTSA4Kids",
+    "title": "Notifications · platform settings",
+    "enabledToggleLabel": "Notifications enabled",
+    "columns": { "channel": "Channel", "service": "Service", "state": "State", "sent7d": "Sent (7 d)", "failures": "Failures" },
+    "channels": {
+      "push": { "name": "Phone (push)", "service": "Firebase Cloud Messaging" },
+      "sms": { "name": "SMS", "service": "Local SMS gateway (to be selected)" },
+      "email": { "name": "Email", "service": "Email delivery service" },
+      "stateToConfigure": "To be configured"
+    },
+    "templatesCardTitle": "Message templates (FR / EN)",
+    "templates": {
+      "tpl-1": "\"It's time for {firstName}'s meal\"",
+      "tpl-2": "\"{time} intake not confirmed\"",
+      "tpl-3": "\"{firstName} received {product}\"",
+      "tpl-4": "\"New assessment for {firstName}\""
+    },
+    "editBtn": "Edit",
+    "rulesCardTitle": "Default rules",
+    "rules": {
+      "followUpAfter": "Follow-up reminder after",
+      "quietHours": "Quiet hours",
+      "caregiverSummary": "Caregiver summary",
+      "localReminder": "Local reminder (offline)",
+      "enabledValue": "enabled"
+    }
+  }
+}

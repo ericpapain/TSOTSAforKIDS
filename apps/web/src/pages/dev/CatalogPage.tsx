@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   BrandLogo,
   Button,
@@ -14,7 +15,6 @@ import {
   type DataTableColumn,
   type NavItem,
 } from '../../components';
-import type { SpaceTheme } from '../../types';
 
 interface PatientPreview {
   id: string;
@@ -24,37 +24,38 @@ interface PatientPreview {
   lastVisit: string;
 }
 
-const sampleColumns: DataTableColumn<PatientPreview>[] = [
-  { header: 'ID', accessor: 'id', width: '100px' },
-  { header: 'Patient', accessor: 'name' },
-  { header: 'Âge', accessor: 'age', width: '100px' },
-  { header: 'Statut', accessor: (p) => <Chip label={p.status} variant="care" /> },
-  { header: 'Dernière visite', accessor: 'lastVisit', width: '160px' },
-];
-
-const samplePatients: PatientPreview[] = [
-  { id: '#A-014', name: 'Amina N.', age: '24 mois', status: 'Suivi actif', lastVisit: '2026-04-12' },
-  { id: '#A-015', name: 'Koffi B.', age: '18 mois', status: 'En attente', lastVisit: '2026-04-10' },
-  { id: '#A-016', name: 'Fatou D.', age: '36 mois', status: 'Clôturé', lastVisit: '2026-03-28' },
-];
-
-const sampleNavItems: NavItem[] = [
-  { label: 'Tableau de bord', path: '/dev/catalog#dashboard', iconName: 'dashboard' },
-  { label: 'Patients', path: '/dev/catalog#patients', iconName: 'patients', badge: 3 },
-  { label: 'Base aliments', path: '/dev/catalog#foods', iconName: 'foods' },
-  { label: 'Paramètres', path: '/dev/catalog#settings', iconName: 'settings' },
-];
-
 export const CatalogPage: React.FC = () => {
-  const [currentSpace, setCurrentSpace] = useState<SpaceTheme>('caregiver');
+  const { t } = useTranslation('common');
+  const [currentSpace, setCurrentSpace] = useState<"user" | "caregiver" | "admin">("caregiver");
   const [toggleActive, setToggleActive] = useState<boolean>(true);
   const [activeNav, setActiveNav] = useState<string>('/dev/catalog#dashboard');
+
+  const sampleColumns: DataTableColumn<PatientPreview>[] = [
+    { header: t('dev.catalog.colId'), accessor: 'id', width: '100px' },
+    { header: t('dev.catalog.colPatient'), accessor: 'name' },
+    { header: t('dev.catalog.colAge'), accessor: 'age', width: '100px' },
+    { header: t('dev.catalog.colStatus'), accessor: (p) => <Chip label={p.status} variant="care" /> },
+    { header: t('dev.catalog.colLastVisit'), accessor: 'lastVisit', width: '160px' },
+  ];
+
+  const samplePatients: PatientPreview[] = [
+    { id: '#A-014', name: 'Hamadou N.', age: '24 m', status: t('dev.catalog.statusActive'), lastVisit: '2026-04-12' },
+    { id: '#A-015', name: 'Koffi B.', age: '18 m', status: t('dev.catalog.statusPending'), lastVisit: '2026-04-10' },
+    { id: '#A-016', name: 'Fatou D.', age: '36 m', status: t('dev.catalog.statusClosed'), lastVisit: '2026-03-28' },
+  ];
+
+  const sampleNavItems: NavItem[] = [
+    { label: t('dev.catalog.navDashboard'), path: '/dev/catalog#dashboard', iconName: 'dashboard' },
+    { label: t('dev.catalog.navPatients'), path: '/dev/catalog#patients', iconName: 'patients', badge: 3 },
+    { label: t('dev.catalog.navFoods'), path: '/dev/catalog#foods', iconName: 'foods' },
+    { label: t('dev.catalog.navSettings'), path: '/dev/catalog#settings', iconName: 'settings' },
+  ];
 
   return (
     <div className="min-h-screen bg-canvas font-sans pb-16">
       <AppHeader
         space={currentSpace}
-        userName="Dr. Marc Eto'o"
+        userName="Prof. Félicité Ngeufack"
         unreadNotifications={3}
       />
 
@@ -62,14 +63,14 @@ export const CatalogPage: React.FC = () => {
         <header className="mb-8 flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold text-text-primary">
-              Catalogue des composants partagés (Dev)
+              {t('dev.catalog.title')}
             </h1>
             <p className="text-text-secondary text-sm">
-              Présentation des composants du système de design TSOTSA Kids.
+              {t('dev.catalog.subtitle')}
             </p>
           </div>
           <div className="flex gap-2">
-            {(['user', 'caregiver', 'admin'] as SpaceTheme[]).map((sp) => (
+            {(["user", "caregiver", "admin"] as const).map((sp) => (
               <Button
                 key={sp}
                 variant={currentSpace === sp ? (sp === 'user' ? 'primary' : sp) : 'solid'}
@@ -77,14 +78,14 @@ export const CatalogPage: React.FC = () => {
                 size="sm"
                 onClick={() => setCurrentSpace(sp)}
               >
-                Espace {sp}
+                {t('dev.catalog.spaceBtn', { space: sp })}
               </Button>
             ))}
           </div>
         </header>
 
         <section className="mb-10 space-y-4">
-          <h2 className="text-lg font-bold text-text-primary border-b pb-2">1. Logos</h2>
+          <h2 className="text-lg font-bold text-text-primary border-b pb-2">{t('dev.catalog.sec1')}</h2>
           <Card className="flex flex-wrap items-center gap-8 p-6">
             <div className="p-4 bg-primary rounded-card">
               <BrandLogo variant="dark" size="md" />
@@ -102,59 +103,59 @@ export const CatalogPage: React.FC = () => {
         </section>
 
         <section className="mb-10 space-y-4">
-          <h2 className="text-lg font-bold text-text-primary border-b pb-2">2. Boutons</h2>
+          <h2 className="text-lg font-bold text-text-primary border-b pb-2">{t('dev.catalog.sec2')}</h2>
           <Card className="flex flex-wrap gap-4 p-6">
-            <Button variant="primary">Utilisateur (Solid)</Button>
-            <Button variant="care">Soignant (Solid)</Button>
-            <Button variant="admin">Admin (Solid)</Button>
-            <Button variant="danger">Danger (Solid)</Button>
-            <Button variant="care" outline>Soignant (Outline)</Button>
-            <Button variant="admin" outline>Admin (Outline)</Button>
-            <Button variant="primary" disabled>Désactivé</Button>
+            <Button variant="primary">{t('dev.catalog.btnUserSolid')}</Button>
+            <Button variant="care">{t('dev.catalog.btnCareSolid')}</Button>
+            <Button variant="admin">{t('dev.catalog.btnAdminSolid')}</Button>
+            <Button variant="danger">{t('dev.catalog.btnDangerSolid')}</Button>
+            <Button variant="care" outline>{t('dev.catalog.btnCareOutline')}</Button>
+            <Button variant="admin" outline>{t('dev.catalog.btnAdminOutline')}</Button>
+            <Button variant="primary" disabled>{t('dev.catalog.btnDisabled')}</Button>
           </Card>
         </section>
 
         <section className="mb-10 space-y-4">
-          <h2 className="text-lg font-bold text-text-primary border-b pb-2">3. Badges (Chips) et Interrupteurs (Toggles)</h2>
+          <h2 className="text-lg font-bold text-text-primary border-b pb-2">{t('dev.catalog.sec3')}</h2>
           <Card className="flex flex-wrap items-center gap-6 p-6">
-            <Chip label="Primaire" variant="primary" />
-            <Chip label="Soignant" variant="care" />
-            <Chip label="Admin" variant="admin" />
-            <Chip label="Attention" variant="warning" />
-            <Chip label="Alerte" variant="danger" />
+            <Chip label={t('dev.catalog.chipPrimary')} variant="primary" />
+            <Chip label={t('dev.catalog.chipCare')} variant="care" />
+            <Chip label={t('dev.catalog.chipAdmin')} variant="admin" />
+            <Chip label={t('dev.catalog.chipWarning')} variant="warning" />
+            <Chip label={t('dev.catalog.chipDanger')} variant="danger" />
             <div className="flex items-center gap-3 ml-6 border-l pl-6">
-              <span className="text-sm font-medium">Mode actif :</span>
+              <span className="text-sm font-medium">{t('dev.catalog.activeMode')}</span>
               <Toggle checked={toggleActive} onChange={setToggleActive} space={currentSpace} />
             </div>
           </Card>
         </section>
 
         <section className="mb-10 space-y-4">
-          <h2 className="text-lg font-bold text-text-primary border-b pb-2">4. Alertes et Notifications (Notice)</h2>
+          <h2 className="text-lg font-bold text-text-primary border-b pb-2">{t('dev.catalog.sec4')}</h2>
           <div className="space-y-3">
             <Notice variant="warning">
-              Vérification requise : 2 pesées dépassent l'écart type attendu pour ce groupe d'âge.
+              {t('dev.catalog.noticeWarning')}
             </Notice>
             <Notice variant="danger">
-              Alerte rouge : z-score P/T &lt; -3, orientation CREN recommandée immédiatement.
+              {t('dev.catalog.noticeDanger')}
             </Notice>
             <Notice variant="info">
-              Information : les nouvelles tables OMS 2026 sont actives.
+              {t('dev.catalog.noticeInfo')}
             </Notice>
           </div>
         </section>
 
         <section className="mb-10 space-y-4">
-          <h2 className="text-lg font-bold text-text-primary border-b pb-2">5. Indicateurs KPI (KpiCard)</h2>
+          <h2 className="text-lg font-bold text-text-primary border-b pb-2">{t('dev.catalog.sec5')}</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <KpiCard title="Patients suivis" value={42} space="care" subtitle="+4 ce mois" />
-            <KpiCard title="Alertes en cours" value={3} space="care" subtitle="Nécessite action" />
-            <KpiCard title="Taux de rémission" value="88 %" space="primary" subtitle="Objectif &gt; 80 %" />
+            <KpiCard title={t('dev.catalog.kpi1Title')} value={42} space="care" subtitle={t('dev.catalog.kpi1Sub')} />
+            <KpiCard title={t('dev.catalog.kpi2Title')} value={3} space="care" subtitle={t('dev.catalog.kpi2Sub')} />
+            <KpiCard title={t('dev.catalog.kpi3Title')} value="88 %" space="primary" subtitle={t('dev.catalog.kpi3Sub')} />
           </div>
         </section>
 
         <section className="mb-10 space-y-4">
-          <h2 className="text-lg font-bold text-text-primary border-b pb-2">6. Tableau de données (DataTable)</h2>
+          <h2 className="text-lg font-bold text-text-primary border-b pb-2">{t('dev.catalog.sec6')}</h2>
           <DataTable
             columns={sampleColumns}
             data={samplePatients}
@@ -164,7 +165,7 @@ export const CatalogPage: React.FC = () => {
         </section>
 
         <section className="mb-10 space-y-4">
-          <h2 className="text-lg font-bold text-text-primary border-b pb-2">7. Courbe de Z-Score OMS (ZScoreChart)</h2>
+          <h2 className="text-lg font-bold text-text-primary border-b pb-2">{t('dev.catalog.sec7')}</h2>
           <Card className="p-6">
             <ZScoreChart
               points={[
@@ -174,13 +175,13 @@ export const CatalogPage: React.FC = () => {
                 { date: '26/02', zScore: -1.2, label: 'S6' },
                 { date: '12/03', zScore: -0.6, label: 'S8' },
               ]}
-              title="Évolution P/T (Poids pour Taille) - Patient #A-014"
+              title={t('dev.catalog.chartTitle')}
             />
           </Card>
         </section>
 
         <section className="mb-10 space-y-4">
-          <h2 className="text-lg font-bold text-text-primary border-b pb-2">8. Barre latérale (Sidebar)</h2>
+          <h2 className="text-lg font-bold text-text-primary border-b pb-2">{t('dev.catalog.sec8')}</h2>
           <div className="w-[262px] border rounded-card overflow-hidden">
             <Sidebar
               space={currentSpace}
@@ -196,3 +197,4 @@ export const CatalogPage: React.FC = () => {
 };
 
 export default CatalogPage;
+

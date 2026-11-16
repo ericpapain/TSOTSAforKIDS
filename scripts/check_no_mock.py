@@ -41,6 +41,9 @@ DEFAULT_IGNORE_DIRS = {
     ".expo",
     "coverage",
     "htmlcov",
+    "playwright-report",
+    ".playwright",
+    "test-results",
     "__pycache__",
 }
 

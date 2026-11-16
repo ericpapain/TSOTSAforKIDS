@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { FontAwesome5 } from "@expo/vector-icons";
+import { useTranslation } from "react-i18next";
 import { colors } from "../src/theme/colors";
 import { BottomNav } from "../src/components/BottomNav";
 import { chooseStyles as styles } from "../src/features/products/chooseStyles";
@@ -16,6 +17,7 @@ import { getUserPreferredRegion } from "../src/features/products/productsService
 
 export default function ChooseProductScreen() {
   const router = useRouter();
+  const { t } = useTranslation(["mobile", "common"]);
   const params = useLocalSearchParams<{
     personId?: string;
     name?: string;
@@ -67,7 +69,7 @@ export default function ChooseProductScreen() {
       <View style={styles.appBar}>
         <TouchableOpacity
           testID="btn-back"
-          accessibilityLabel="Retour"
+          accessibilityLabel={t("common:actions.back", { defaultValue: "Retour" })}
           accessibilityRole="button"
           onPress={() => router.push({ pathname: "/u-profile", params: { personId: params.personId ?? "", name: personName } })}
           style={styles.touchIcon}
@@ -75,7 +77,9 @@ export default function ChooseProductScreen() {
           <FontAwesome5 name="arrow-left" size={24} color={colors.white} />
         </TouchableOpacity>
 
-        <Text style={styles.appBarTitle}>Choisir un produit</Text>
+        <Text style={styles.appBarTitle}>
+          {t("mobile:choose.title", { defaultValue: "Choisir un produit" })}
+        </Text>
         <View style={styles.touchIcon} />
       </View>
 
@@ -83,10 +87,14 @@ export default function ChooseProductScreen() {
         {/* Pills row */}
         <View style={styles.pillRow}>
           <View style={styles.personPill}>
-            <Text style={styles.personPillText}>Pour : {personName}</Text>
+            <Text style={styles.personPillText}>
+              {t("mobile:choose.forPerson", { name: personName, defaultValue: `Pour : ${personName}` })}
+            </Text>
           </View>
           <View style={styles.regionPill}>
-            <Text style={styles.regionPillText}>Ma région : {regionName}</Text>
+            <Text style={styles.regionPillText}>
+              {t("mobile:choose.myRegion", { region: regionName, defaultValue: `Ma région : ${regionName}` })}
+            </Text>
           </View>
         </View>
 
@@ -98,7 +106,9 @@ export default function ChooseProductScreen() {
           style={styles.selectTriggerClosed}
           activeOpacity={0.8}
         >
-          <Text style={styles.selectTriggerText}>Choisir un produit</Text>
+          <Text style={styles.selectTriggerText}>
+            {t("mobile:choose.title", { defaultValue: "Choisir un produit" })}
+          </Text>
           <Text style={styles.chevronText}>▾</Text>
         </TouchableOpacity>
 
@@ -108,7 +118,9 @@ export default function ChooseProductScreen() {
             <FontAwesome5 name="search" size={54} color={colors.primary200} />
           </View>
           <Text style={styles.emptyText}>
-            Choisissez un produit pour voir sa composition et les aliments locaux équivalents.
+            {t("mobile:choose.instruction", {
+              defaultValue: "Choisissez un produit pour voir sa composition et les aliments locaux équivalents.",
+            })}
           </Text>
 
           <TouchableOpacity
@@ -117,7 +129,9 @@ export default function ChooseProductScreen() {
             onPress={handleAddMyProduct}
             style={styles.btnAddMyProduct}
           >
-            <Text style={styles.btnAddMyProductText}>+ Ajouter mon produit</Text>
+            <Text style={styles.btnAddMyProductText}>
+              {t("mobile:choose.addCustomProduct", { defaultValue: "+ Ajouter mon produit" })}
+            </Text>
           </TouchableOpacity>
         </View>
       </ScrollView>

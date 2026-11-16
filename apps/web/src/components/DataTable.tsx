@@ -1,4 +1,6 @@
 import React, { type ReactNode } from "react";
+import { useTranslation } from "react-i18next";
+import "../i18n/setup";
 import type { ColumnDef, SpaceTheme } from "../types";
 
 export type DataTableHeaderTheme = "primary" | "care" | "admin" | "user" | "caregiver";
@@ -30,13 +32,15 @@ export function DataTable<T>({
   keyExtractor,
   headerTheme,
   space = "primary",
-  emptyMessage = "Aucune donnée disponible",
+  emptyMessage,
   onRowClick,
   testID = "data-table",
   className = "",
 }: DataTableProps<T>): React.JSX.Element {
+  const { t } = useTranslation("common");
   const currentTheme = headerTheme ?? space;
   const headerBg = headerThemeBgs[currentTheme] || headerThemeBgs.primary;
+  const resolvedEmptyMessage = emptyMessage ?? t("table.emptyMessage");
 
   return (
     <div
@@ -66,7 +70,7 @@ export function DataTable<T>({
                 data-testid="table-empty"
                 className="text-center py-8 text-text-muted text-14"
               >
-                {emptyMessage}
+                {resolvedEmptyMessage}
               </td>
             </tr>
           ) : (

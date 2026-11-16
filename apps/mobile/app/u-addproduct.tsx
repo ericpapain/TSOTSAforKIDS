@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { FontAwesome5 } from "@expo/vector-icons";
+import { useTranslation } from "react-i18next";
 import { colors } from "../src/theme/colors";
 import { addProductStyles as styles } from "../src/features/products/addProductStyles";
 import { createCustomProduct } from "../src/features/products/productsService";
@@ -31,6 +32,7 @@ const DEFAULT_NUTRIENT_ITEMS: NutrientFormItem[] = [
 ];
 
 export default function AddProductScreen() {
+  const { t } = useTranslation(["mobile", "common"]);
   const router = useRouter();
   const params = useLocalSearchParams<{
     personId?: string;
@@ -45,6 +47,18 @@ export default function AddProductScreen() {
   const [nutrients, setNutrients] = useState<NutrientFormItem[]>(DEFAULT_NUTRIENT_ITEMS);
   const [loading, setLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
+
+  const getNutrientLabel = (name: string): string => {
+    const map: Record<string, string> = {
+      Énergie: t("mobile:food.energy", { defaultValue: "Énergie" }),
+      Protéines: t("mobile:food.proteins", { defaultValue: "Protéines" }),
+      Lipides: t("mobile:food.lipids", { defaultValue: "Lipides" }),
+      Fer: t("mobile:food.iron", { defaultValue: "Fer" }),
+      Calcium: t("mobile:food.calcium", { defaultValue: "Calcium" }),
+      Zinc: t("mobile:food.zinc", { defaultValue: "Zinc" }),
+    };
+    return map[name] ?? name;
+  };
 
   const updateValue = (id: string, text: string) => {
     setNutrients((prev) =>
@@ -81,7 +95,11 @@ export default function AddProductScreen() {
 
   const handleSubmit = async () => {
     if (!productName.trim()) {
-      setErrorMessage("Veuillez renseigner le nom du produit.");
+      setErrorMessage(
+        t("mobile:addProduct.errNameRequired", {
+          defaultValue: "Veuillez renseigner le nom du produit.",
+        })
+      );
       return;
     }
     setErrorMessage("");
@@ -96,7 +114,11 @@ export default function AddProductScreen() {
       }));
 
     if (nutrientPayload.length === 0) {
-      setErrorMessage("Veuillez renseigner au moins un nutriment valide.");
+      setErrorMessage(
+        t("mobile:addProduct.errNutrientRequired", {
+          defaultValue: "Veuillez renseigner au moins un nutriment valide.",
+        })
+      );
       setLoading(false);
       return;
     }
@@ -130,37 +152,56 @@ export default function AddProductScreen() {
       <View style={styles.appBar}>
         <TouchableOpacity
           testID="btn-back"
-          accessibilityLabel="Retour"
+          accessibilityLabel={t("common:actions.back", { defaultValue: "Retour" })}
           accessibilityRole="button"
-          onPress={() => router.push({ pathname: "/u-choose", params: { personId: params.personId ?? "", name: personName, region: regionName } })}
+          onPress={() =>
+            router.push({
+              pathname: "/u-choose",
+              params: {
+                personId: params.personId ?? "",
+                name: personName,
+                region: regionName,
+              },
+            })
+          }
           style={styles.touchIcon}
         >
           <FontAwesome5 name="arrow-left" size={24} color={colors.white} />
         </TouchableOpacity>
 
-        <Text style={styles.appBarTitle}>Ajouter mon produit</Text>
+        <Text style={styles.appBarTitle}>
+          {t("mobile:addProduct.title", { defaultValue: "Ajouter mon produit" })}
+        </Text>
         <View style={styles.touchIcon} />
       </View>
 
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         {/* Product Name Field */}
         <View style={styles.fieldBlock}>
-          <Text style={styles.fieldLabel}>Nom du produit</Text>
+          <Text style={styles.fieldLabel}>
+            {t("mobile:addProduct.nameLabel", { defaultValue: "Nom du produit" })}
+          </Text>
           <TextInput
             testID="input-product-name"
             style={styles.textInput}
             value={productName}
             onChangeText={setProductName}
-            placeholder="Ex : Farine infantile enrichie"
+            placeholder={t("mobile:addProduct.namePlaceholder", {
+              defaultValue: "Ex : Farine infantile enrichie",
+            })}
           />
         </View>
 
         {/* Composition Section */}
-        <Text style={styles.sectionTitle}>Composition pour 100 g (étiquette)</Text>
+        <Text style={styles.sectionTitle}>
+          {t("mobile:addProduct.compositionTitle", {
+            defaultValue: "Composition pour 100 g (étiquette)",
+          })}
+        </Text>
 
         {nutrients.map((item) => (
           <View key={item.id} style={styles.nutrientRow}>
-            <Text style={styles.nutrientNameText}>{item.name}</Text>
+            <Text style={styles.nutrientNameText}>{getNutrientLabel(item.name)}</Text>
             <TextInput
               testID={`input-nutrient-${item.id}`}
               style={styles.valueInput}
@@ -182,11 +223,15 @@ export default function AddProductScreen() {
         {/* Actions Row */}
         <View style={styles.actionsRow}>
           <TouchableOpacity testID="btn-add-nutrient" onPress={handleAddNutrient}>
-            <Text style={styles.linkActionText}>+ Ajouter un nutriment</Text>
+            <Text style={styles.linkActionText}>
+              {t("mobile:addProduct.addNutrient", { defaultValue: "+ Ajouter un nutriment" })}
+            </Text>
           </TouchableOpacity>
 
           <TouchableOpacity testID="btn-add-photo">
-            <Text style={styles.linkActionText}>+ Photo de l'étiquette</Text>
+            <Text style={styles.linkActionText}>
+              {t("mobile:addProduct.addPhoto", { defaultValue: "+ Photo de l'étiquette" })}
+            </Text>
           </TouchableOpacity>
         </View>
 
@@ -203,7 +248,9 @@ export default function AddProductScreen() {
           {loading ? (
             <ActivityIndicator color={colors.white} />
           ) : (
-            <Text style={styles.btnSubmitText}>Voir les équivalents</Text>
+            <Text style={styles.btnSubmitText}>
+              {t("mobile:addProduct.seeEquivalents", { defaultValue: "Voir les équivalents" })}
+            </Text>
           )}
         </TouchableOpacity>
       </ScrollView>

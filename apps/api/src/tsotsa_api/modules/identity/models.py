@@ -7,6 +7,7 @@ from datetime import UTC, datetime
 from sqlalchemy import (
     CheckConstraint,
     DateTime,
+    Enum,
     ForeignKey,
     Index,
     Integer,
@@ -16,6 +17,18 @@ from sqlalchemy import (
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from tsotsa_api.core.database import Base
+from tsotsa_api.modules.identity.models_roles import (
+    Permission,
+    PermissionGrant,
+    Role,
+    RolePermission,
+    UserRole,
+)
+from tsotsa_api.modules.identity.models_staff import (
+    CaregiverProfile,
+    FieldAgentProfile,
+    Invitation,
+)
 from tsotsa_api.shared.types import BinaryUUID, generate_uuid7
 
 
@@ -25,13 +38,29 @@ class User(Base):
     __tablename__ = "users"
 
     id: Mapped[str] = mapped_column(BinaryUUID, primary_key=True, default=generate_uuid7)
+    first_name: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    last_name: Mapped[str | None] = mapped_column(String(100), nullable=True)
     display_name: Mapped[str] = mapped_column(String(150), nullable=False)
     language: Mapped[str] = mapped_column(String(10), default="fr", nullable=False)
+    preferred_locale: Mapped[str] = mapped_column(
+        Enum("fr", "en", name="user_preferred_locale_enum"),
+        default="fr",
+        server_default="fr",
+        nullable=False,
+    )
     preferred_region_id: Mapped[str | None] = mapped_column(
         BinaryUUID, ForeignKey("regions.id"), nullable=True, index=True
     )
+    locality: Mapped[str | None] = mapped_column(String(150), nullable=True)
     status: Mapped[str] = mapped_column(String(30), default="active", nullable=False)
+    failed_login_attempts: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    locked_until: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     last_login_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    refusal_reason: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    deleted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    deleted_by: Mapped[str | None] = mapped_column(
+        BinaryUUID, ForeignKey("users.id"), nullable=True
+    )
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=lambda: datetime.now(UTC), nullable=False
     )
@@ -57,9 +86,18 @@ class User(Base):
         cascade="all, delete-orphan",
         foreign_keys="CaregiverProfile.user_id",
     )
+    field_agent_profile: Mapped[FieldAgentProfile | None] = relationship(
+        back_populates="user",
+        uselist=False,
+        cascade="all, delete-orphan",
+        foreign_keys="FieldAgentProfile.user_id",
+    )
 
     __table_args__ = (
-        CheckConstraint("status IN ('active', 'invited', 'suspended')", name="ck_users_status"),
+        CheckConstraint(
+            "status IN ('pending', 'active', 'refused', 'suspended', 'deleted', 'invited')",
+            name="ck_users_status",
+        ),
     )
 
 
@@ -102,45 +140,6 @@ class UserIdentity(Base):
         UniqueConstraint("provider", "provider_subject", name="uq_user_identities_provider_sub"),
         CheckConstraint("provider IN ('google', 'phone', 'email')", name="ck_user_identities_prov"),
     )
-
-
-class Role(Base):
-    """Role definition entity."""
-
-    __tablename__ = "roles"
-
-    id: Mapped[str] = mapped_column(BinaryUUID, primary_key=True, default=generate_uuid7)
-    code: Mapped[str] = mapped_column(String(50), unique=True, nullable=False)
-    name: Mapped[str] = mapped_column(String(100), nullable=False)
-    description: Mapped[str | None] = mapped_column(String(255), nullable=True)
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), default=lambda: datetime.now(UTC), nullable=False
-    )
-
-    user_roles: Mapped[list[UserRole]] = relationship(back_populates="role")
-
-    __table_args__ = (
-        CheckConstraint("code IN ('user', 'caregiver', 'admin')", name="ck_roles_code"),
-    )
-
-
-class UserRole(Base):
-    """Many-to-many relationship linking users to roles."""
-
-    __tablename__ = "user_roles"
-
-    user_id: Mapped[str] = mapped_column(
-        BinaryUUID, ForeignKey("users.id", ondelete="CASCADE"), primary_key=True
-    )
-    role_id: Mapped[str] = mapped_column(
-        BinaryUUID, ForeignKey("roles.id", ondelete="CASCADE"), primary_key=True
-    )
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), default=lambda: datetime.now(UTC), nullable=False
-    )
-
-    user: Mapped[User] = relationship(back_populates="user_roles")
-    role: Mapped[Role] = relationship(back_populates="user_roles")
 
 
 class OtpCode(Base):
@@ -205,59 +204,18 @@ class RefreshToken(Base):
     user: Mapped[User] = relationship(back_populates="refresh_tokens")
 
 
-class CaregiverProfile(Base):
-    """Professional medical caregiver profile with verification state."""
-
-    __tablename__ = "caregiver_profiles"
-
-    user_id: Mapped[str] = mapped_column(
-        BinaryUUID, ForeignKey("users.id", ondelete="CASCADE"), primary_key=True
-    )
-    organization_id: Mapped[str | None] = mapped_column(BinaryUUID, nullable=True, index=True)
-    licence_number: Mapped[str | None] = mapped_column(String(100), nullable=True)
-    document_file: Mapped[str | None] = mapped_column(String(255), nullable=True)
-    verification_status: Mapped[str] = mapped_column(String(30), default="pending", nullable=False)
-    verification_notes: Mapped[str | None] = mapped_column(String(500), nullable=True)
-    verified_by: Mapped[str | None] = mapped_column(
-        BinaryUUID, ForeignKey("users.id"), nullable=True
-    )
-    verified_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), default=lambda: datetime.now(UTC), nullable=False
-    )
-    updated_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        default=lambda: datetime.now(UTC),
-        onupdate=lambda: datetime.now(UTC),
-        nullable=False,
-    )
-
-    user: Mapped[User] = relationship(back_populates="caregiver_profile", foreign_keys=[user_id])
-
-    __table_args__ = (
-        CheckConstraint(
-            "verification_status IN ('pending', 'approved', 'rejected')",
-            name="ck_caregiver_status",
-        ),
-    )
-
-
-class Invitation(Base):
-    """Direct account invitation created by administration."""
-
-    __tablename__ = "invitations"
-
-    id: Mapped[str] = mapped_column(BinaryUUID, primary_key=True, default=generate_uuid7)
-    created_by: Mapped[str] = mapped_column(BinaryUUID, ForeignKey("users.id"), nullable=False)
-    user_id: Mapped[str | None] = mapped_column(
-        BinaryUUID, ForeignKey("users.id", ondelete="CASCADE"), nullable=True, index=True
-    )
-    role: Mapped[str] = mapped_column(String(50), nullable=False)
-    organization_id: Mapped[str | None] = mapped_column(BinaryUUID, nullable=True)
-    phone_or_email: Mapped[str] = mapped_column(String(255), nullable=False, index=True)
-    token_hash: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
-    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
-    accepted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), default=lambda: datetime.now(UTC), nullable=False
-    )
+__all__ = [
+    "CaregiverProfile",
+    "EmailToken",
+    "FieldAgentProfile",
+    "Invitation",
+    "OtpCode",
+    "Permission",
+    "PermissionGrant",
+    "RefreshToken",
+    "Role",
+    "RolePermission",
+    "User",
+    "UserIdentity",
+    "UserRole",
+]

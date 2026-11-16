@@ -70,3 +70,38 @@ jest.mock("@expo/vector-icons", () => {
   };
 });
 
+// Google Sign-In
+process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID = "test-web-client-id";
+jest.mock("@react-native-google-signin/google-signin", () => ({
+  GoogleSignin: {
+    configure: jest.fn(),
+    hasPlayServices: jest.fn(async () => true),
+    signIn: jest.fn(async () => ({ data: { idToken: "test-google-id-token" }, idToken: "test-google-id-token" })),
+  },
+}));
+
+// Expo Localization
+jest.mock("expo-localization", () => ({
+  getLocales: () => [{ languageCode: "fr", languageTag: "fr-FR" }],
+  locale: "fr-FR",
+}));
+
+// i18n setup for unit tests
+const i18n = require("i18next");
+const { initReactI18next } = require("react-i18next");
+const { I18N_RESOURCES } = require("@tsotsa/i18n");
+
+if (!i18n.isInitialized) {
+  i18n.use(initReactI18next).init({
+    lng: "fr",
+    fallbackLng: "fr",
+    resources: I18N_RESOURCES,
+    interpolation: {
+      escapeValue: false,
+    },
+    react: {
+      useSuspense: false,
+    },
+  });
+}
+

@@ -1,6 +1,10 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { formatNumber, normalizeLocale, DEFAULT_LOCALE } from "@tsotsa/i18n";
+import "../../i18n/setup";
 import { Card, KpiCard, Button, Chip } from "../../components";
+import { CaregiverHealthAlertsWidget } from "../health/CaregiverHealthAlertsWidget";
 import { initialAlerts, initialScheduledEvals } from "../../features/caregiver/caregiverData";
 import type { AlertItem, AlertPriority } from "../../features/caregiver/types";
 
@@ -10,15 +14,43 @@ const priorityWeight: Record<AlertPriority, number> = {
   low: 1,
 };
 
-const priorityLabels: Record<AlertPriority, { text: string; variant: "danger" | "warning" | "care" }> = {
-  high: { text: "Priorité Haute", variant: "danger" },
-  medium: { text: "Priorité Moyenne", variant: "warning" },
-  low: { text: "Priorité Basse", variant: "care" },
-};
-
 export function DashboardPage(): React.JSX.Element {
+  const { t, i18n } = useTranslation("caregiver");
+  const { t: tMedical } = useTranslation("medical");
+  const locale = normalizeLocale(i18n.resolvedLanguage ?? i18n.language) ?? DEFAULT_LOCALE;
   const navigate = useNavigate();
   const [sortBy, setSortBy] = useState<"priority" | "date">("priority");
+
+  useEffect(() => {
+    document.title = t("dashboard.pageTitle");
+  }, [t]);
+
+  const priorityLabels: Record<AlertPriority, { text: string; variant: "danger" | "warning" | "care" }> = {
+    high: { text: t("dashboard.alertsCard.priorityHigh"), variant: "danger" },
+    medium: { text: t("dashboard.alertsCard.priorityMedium"), variant: "warning" },
+    low: { text: t("dashboard.alertsCard.priorityLow"), variant: "care" },
+  };
+
+  const getAlertReason = (alert: AlertItem): string => {
+    if (alert.id === "alt-1") return tMedical("alerts.missedIntakeReason");
+    if (alert.id === "alt-2") return tMedical("alerts.weightStagnationReason");
+    if (alert.id === "alt-3") return tMedical("alerts.eval30DaysReason");
+    return alert.reason;
+  };
+
+  const getScheduledTime = (id: string, fallback: string): string => {
+    if (id === "se-1") return t("dashboard.scheduledCard.se1Time");
+    if (id === "se-2") return t("dashboard.scheduledCard.se2Time");
+    if (id === "se-3") return t("dashboard.scheduledCard.se3Time");
+    return fallback;
+  };
+
+  const getScheduledTitle = (id: string, fallback: string): string => {
+    if (id === "se-1") return t("dashboard.scheduledCard.se1Title");
+    if (id === "se-2") return t("dashboard.scheduledCard.se2Title");
+    if (id === "se-3") return t("dashboard.scheduledCard.se3Title");
+    return fallback;
+  };
 
   const sortedAlerts = useMemo(() => {
     return [...initialAlerts].sort((a, b) => {
@@ -32,62 +64,66 @@ export function DashboardPage(): React.JSX.Element {
   return (
     <div className="flex flex-col gap-6" data-testid="caregiver-dashboard-page">
       <div>
-        <h1 className="text-24 font-bold text-text">Tableau de bord — Espace soignant</h1>
-        <p className="text-14 text-text-muted mt-1">CMA de Kousséri · 4 personnes suivies actives</p>
+        <h1 className="text-24 font-bold text-text">{t("dashboard.title")}</h1>
+        <p className="text-14 text-text-muted mt-1">
+          {t("dashboard.subtitle", { count: 4 })}
+        </p>
       </div>
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" data-testid="kpi-grid">
         <KpiCard
-          title="Personnes suivies"
-          value="4"
-          subtitle="Total sous protocole"
+          title={t("dashboard.kpi.followedPersonsTitle")}
+          value={formatNumber(4, locale)}
+          subtitle={t("dashboard.kpi.followedPersonsSubtitle")}
           space="care"
           testID="kpi-followed-persons"
         />
         <KpiCard
-          title="Alertes actives"
-          value="3"
-          subtitle="1 haute, 1 moyenne, 1 basse"
+          title={t("dashboard.kpi.activeAlertsTitle")}
+          value={formatNumber(3, locale)}
+          subtitle={t("dashboard.kpi.activeAlertsSubtitle")}
           space="care"
           testID="kpi-active-alerts"
         />
         <KpiCard
-          title="Évaluations du jour"
-          value="1"
-          subtitle="Amina (#A-014) à 10h00"
+          title={t("dashboard.kpi.evaluationsTodayTitle")}
+          value={formatNumber(1, locale)}
+          subtitle={t("dashboard.kpi.evaluationsTodaySubtitle")}
           space="care"
           testID="kpi-evaluations-today"
         />
         <KpiCard
-          title="Observance moyenne"
-          value="88 %"
-          subtitle="+3 % sur 7 jours"
+          title={t("dashboard.kpi.adherenceTitle")}
+          value={`${formatNumber(88, locale)} %`}
+          subtitle={t("dashboard.kpi.adherenceSubtitle", { delta: formatNumber(3, locale) })}
           space="care"
           testID="kpi-adherence"
         />
       </div>
 
+      <CaregiverHealthAlertsWidget />
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Alerts Section (2 columns on lg) */}
+        {/* Alerts Section */}
         <div className="lg:col-span-2 flex flex-col gap-4">
           <Card
-            title="Alertes à traiter (3)"
+            title={t("dashboard.alertsCard.title", { count: sortedAlerts.length })}
             action={
               <div className="flex items-center gap-2">
                 <label htmlFor="alert-sort-select" className="text-12 text-text-muted font-medium">
-                  Trier par :
+                  {t("dashboard.alertsCard.sortByLabel")}
                 </label>
                 <select
                   id="alert-sort-select"
-                  aria-label="Trier les alertes par"
+                  aria-label={t("dashboard.alertsCard.sortByAria")}
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value as "priority" | "date")}
                   data-testid="alert-sort-select"
                   className="rounded-input border border-border bg-white px-2 py-1 text-12 text-text font-medium"
                 >
-                  <option value="priority">Priorité (haute d'abord)</option>
-                  <option value="date">Date (récente d'abord)</option>
+                  <option value="priority">{t("dashboard.alertsCard.sortPriority")}</option>
+                  <option value="date">{t("dashboard.alertsCard.sortDate")}</option>
                 </select>
               </div>
             }
@@ -108,7 +144,7 @@ export function DashboardPage(): React.JSX.Element {
                         variant={priorityLabels[alert.priority].variant}
                       />
                     </div>
-                    <p className="text-13 text-text">{alert.reason}</p>
+                    <p className="text-13 text-text">{getAlertReason(alert)}</p>
                     <span className="text-12 text-text-muted">{alert.timestamp}</span>
                   </div>
                   <Button
@@ -117,7 +153,7 @@ export function DashboardPage(): React.JSX.Element {
                     data-testid={`open-file-btn-${alert.personId}`}
                     onClick={() => navigate(`/soignant/personnes/${alert.personId}`)}
                   >
-                    Ouvrir le dossier ›
+                    {t("dashboard.alertsCard.openRecordBtn")}
                   </Button>
                 </div>
               ))}
@@ -127,17 +163,22 @@ export function DashboardPage(): React.JSX.Element {
 
         {/* Scheduled evaluations */}
         <div className="flex flex-col gap-4">
-          <Card title="Évaluations programmées">
+          <Card title={t("dashboard.scheduledCard.title")}>
             <div className="flex flex-col divide-y divide-border">
               {initialScheduledEvals.map((se) => (
                 <div key={se.id} className="py-3 flex flex-col gap-1">
                   <div className="flex items-center justify-between">
                     <span className="font-bold text-14 text-text">
-                      {se.personName} <span className="font-mono text-text-muted text-12">{se.personCode}</span>
+                      {se.personName}{" "}
+                      <span className="font-mono text-text-muted text-12">{se.personCode}</span>
                     </span>
-                    <span className="text-12 font-medium text-care">{se.scheduledTime}</span>
+                    <span className="text-12 font-medium text-care">
+                      {getScheduledTime(se.id, se.scheduledTime)}
+                    </span>
                   </div>
-                  <span className="text-12 text-text-muted">{se.location} · {se.title}</span>
+                  <span className="text-12 text-text-muted">
+                    {`${se.location} · ${getScheduledTitle(se.id, se.title)}`}
+                  </span>
                 </div>
               ))}
             </div>
@@ -148,7 +189,7 @@ export function DashboardPage(): React.JSX.Element {
                 className="w-full text-care"
                 onClick={() => navigate("/soignant/personnes")}
               >
-                Voir toutes les personnes suivies ›
+                {t("dashboard.scheduledCard.viewAllPersonsBtn")}
               </Button>
             </div>
           </Card>

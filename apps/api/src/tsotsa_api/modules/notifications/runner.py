@@ -49,4 +49,3 @@ if __name__ == "__main__":
     except (KeyboardInterrupt, SystemExit):
         logger.info("Notification scheduler stopped.")
         sys.exit(0)
-

@@ -28,10 +28,15 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
       - name: Fichiers de 500 lignes maximum
         run: python scripts/check_file_length.py
       - name: Aucune donnée inventée hors des tests
         run: python scripts/check_no_mock.py
+      - name: Cohérence des catalogues i18n FR/EN
+        run: node --no-warnings --experimental-strip-types scripts/check_i18n.ts
       - name: Tests des scripts de contrôle
         run: pip install pytest && python -m pytest scripts/tests -q
       - name: Aucun secret dans le code

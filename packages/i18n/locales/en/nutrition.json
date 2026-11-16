@@ -1,0 +1,186 @@
+{
+  "pageTitle": "Local equivalents — TSOTSA4Kids",
+  "productCard": {
+    "title": "Product",
+    "referenceSection": "Reference products",
+    "customSection": "My products",
+    "giveButton": "Give to {{name}}"
+  },
+  "equivalentsCard": {
+    "title": "Equivalent local foods",
+    "mobileVersion": "← Mobile version",
+    "mobileRedirectToast": "Redirecting to mobile version...",
+    "defaultNutrientsSummary": "Nutrients: proteins, lipids, iron",
+    "footnote": "Values per 100 g. Demo: indicative USDA values; in production: ORKG-extracted and validated food database.",
+    "confirmIntakeBtn": "Confirm an intake ›"
+  },
+  "table": {
+    "rank": "#",
+    "localFood": "Local food",
+    "common": "Matched",
+    "extra": "Extra",
+    "proteins": "Proteins",
+    "lipids": "Lipids",
+    "iron": "Iron"
+  },
+  "regions": {
+    "all": { "label": "All regions", "shortName": "West Region" },
+    "west": { "label": "West Region", "shortName": "West Region" },
+    "adamaoua": { "label": "Adamawa Region", "shortName": "Adamawa Region" },
+    "centre": { "label": "Centre Region", "shortName": "Centre Region" },
+    "east": { "label": "East Region", "shortName": "East Region" },
+    "far-north": { "label": "Far North Region", "shortName": "Far North Region" },
+    "littoral": { "label": "Littoral Region", "shortName": "Littoral Region" },
+    "north": { "label": "North Region", "shortName": "North Region" },
+    "north-west": { "label": "North-West Region", "shortName": "North-West Region" },
+    "south": { "label": "South Region", "shortName": "South Region" },
+    "south-west": { "label": "South-West Region", "shortName": "South-West Region" }
+  },
+  "nutrientNames": {
+    "energy": "Energy",
+    "proteinsStar": "Proteins ★",
+    "proteins": "Proteins",
+    "lipidsStar": "Lipids ★",
+    "lipids": "Lipids",
+    "ironStar": "Iron ★",
+    "calciumStar": "Calcium ★",
+    "calcium": "Calcium",
+    "zinc": "Zinc",
+    "lactoseStar": "Lactose ★",
+    "potassiumStar": "Potassium ★",
+    "sodium": "Sodium",
+    "magnesium": "Magnesium",
+    "copper": "Copper"
+  },
+  "products": {
+    "plumpy-nut": {
+      "name": "Plumpy'Nut",
+      "usage": "Ready-to-use therapeutic food (RUTF)",
+      "keyNutrientsSummary": "Nutrients: proteins, lipids, iron",
+      "specification": "Composition per 100 g · WHO/UNICEF specification",
+      "proteinsValue": "≈ 13 – 16 g (10–12% of energy)",
+      "lipidsValue": "≈ 26 – 37 g (45–60% of energy)",
+      "costInfo": "Cost: price not available for West Region"
+    },
+    "plumpy-sup": {
+      "name": "Plumpy'Sup",
+      "usage": "Ready-to-use supplementary food (RUSF)",
+      "keyNutrientsSummary": "Nutrients: proteins, lipids, iron",
+      "specification": "Composition per 100 g · nutritional supplement (MAM)",
+      "costInfo": "Cost: price not available for West Region"
+    },
+    "f-75": {
+      "name": "F-75",
+      "usage": "Therapeutic milk · hospital use",
+      "keyNutrientsSummary": "Nutrients: proteins, lactose, potassium, zinc",
+      "specification": "Composition per 100 ml · WHO, severe acute malnutrition (1999)",
+      "costInfo": "Hospital use only (stabilization phase)"
+    },
+    "f-100": {
+      "name": "F-100",
+      "usage": "Therapeutic milk · hospital use",
+      "keyNutrientsSummary": "Nutrients: proteins, lipids, potassium, zinc",
+      "specification": "Composition per 100 ml · WHO, nutritional rehabilitation",
+      "costInfo": "Hospital use (rehabilitation phase)"
+    },
+    "farine-infantile-enrichie": {
+      "name": "Fortified infant flour",
+      "usage": "Local fortified infant porridge",
+      "statusBadge": "Pending verification",
+      "keyNutrientsSummary": "Nutrients: proteins, iron, calcium",
+      "specification": "Composition per 100 g · product added by user account",
+      "costInfo": "Cost: varies by local preparation"
+    }
+  },
+  "foods": {
+    "extraCalcium": "+ calcium",
+    "graines-de-courge": {
+      "name": "Pumpkin seeds",
+      "category": "Oilseeds",
+      "description": "Rich in proteins, healthy lipids, and minerals."
+    },
+    "sesame": {
+      "name": "Sesame",
+      "category": "Oilseeds",
+      "description": "Very high in iron, lipids, and plant calcium."
+    },
+    "arachide": {
+      "name": "Groundnut (Peanut)",
+      "category": "Oilseed legumes",
+      "description": "Energy-dense local staple food rich in proteins."
+    },
+    "soja": {
+      "name": "Soybean",
+      "category": "Legumes",
+      "description": "Exceptional content of complete plant proteins and iron."
+    },
+    "niebe": {
+      "name": "Cowpea",
+      "category": "Legumes",
+      "description": "Drought-resistant local bean rich in proteins and iron."
+    },
+    "lait-entier-en-poudre": {
+      "name": "Whole milk powder",
+      "category": "Dairy products",
+      "description": "Excellent source of dairy lipids, proteins, and calcium."
+    },
+    "feuilles-de-moringa": {
+      "name": "Moringa leaves",
+      "category": "Leafy vegetables",
+      "description": "Dried leaves with high micronutrient density."
+    }
+  },
+  "foodModal": {
+    "defaultCategory": "Local food",
+    "rankLabel": "{{category}} · Rank #{{rank}}",
+    "closeAria": "Close dialog",
+    "nutritionPer100g": "Nutritional values per 100 g",
+    "energy": "Energy:",
+    "proteins": "Proteins:",
+    "lipids": "Lipids:",
+    "iron": "Iron:",
+    "calcium": "Calcium:",
+    "zinc": "Zinc:",
+    "westAvailability": "West Region availability:",
+    "availableYes": "Yes (available)",
+    "availableNo": "No",
+    "commonNutrients": "Matched nutrients: {{count}}",
+    "closeBtn": "Close",
+    "giveFoodBtn": "Give {{food}} to {{person}}"
+  },
+  "confirmIntakeModal": {
+    "title": "Confirm intake",
+    "closeAria": "Close",
+    "forPerson": "For: {{person}}",
+    "quantityLabel": "Quantity",
+    "whenLabel": "When?",
+    "timeOptions": {
+      "0800": "Today · 08:00",
+      "1230": "Today · 12:30",
+      "1800": "Today · 18:00",
+      "now": "Just now"
+    },
+    "ateLabel": "{{person}} ate:",
+    "consumption": {
+      "all": "All",
+      "half": "Half",
+      "refused": "Refused"
+    },
+    "submitBtn": "Confirm",
+    "recordedTitle": "Intake recorded",
+    "summaryAll": "{{person}} ate everything.",
+    "summaryHalf": "{{person}} ate half.",
+    "summaryRefused": "{{person}} refused the intake.",
+    "caregiverNotified": "Your caregiver has been notified and can see it in {{person}}'s follow-up.",
+    "returnToPerson": "Back to {{person}}",
+    "viewCaregiverSide": "View in caregiver portal →",
+    "units": {
+      "portion_one": "{{grams}} g ({{count}} serving)",
+      "portion_other": "{{grams}} g ({{count}} servings)",
+      "sachet_one": "{{count}} sachet",
+      "sachet_other": "{{count}} sachets",
+      "meal100ml_one": "{{count}} meal (100 ml)",
+      "meal100ml_other": "{{count}} meals (100 ml)"
+    }
+  }
+}

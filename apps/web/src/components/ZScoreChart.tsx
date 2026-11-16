@@ -1,4 +1,7 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
+import { formatNumber, normalizeLocale, DEFAULT_LOCALE } from "@tsotsa/i18n";
+import "../i18n/setup";
 import type { ZScorePoint } from "../types";
 
 export interface ZScoreChartProps {
@@ -19,6 +22,9 @@ export function ZScoreChart({
   testID = "zscore-chart",
   className = "",
 }: ZScoreChartProps): React.JSX.Element {
+  const { i18n } = useTranslation();
+  const locale = normalizeLocale(i18n.resolvedLanguage ?? i18n.language) ?? DEFAULT_LOCALE;
+
   // Y-axis range: from -4 to +2 (total span of 6 units)
   const minY = -4;
   const maxY = 2;
@@ -163,7 +169,11 @@ export function ZScoreChart({
           const cx = getX(idx, points.length);
           const cy = getY(p.zScore);
           const pointColor = p.color || "#534AB7";
-          const formattedVal = (p.zScore > 0 ? `+${p.zScore.toFixed(2)}` : p.zScore.toFixed(2)).replace(".", ",");
+          const formattedAbs = formatNumber(p.zScore, locale, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          });
+          const formattedVal = p.zScore > 0 ? `+${formattedAbs}` : formattedAbs;
 
           return (
             <g key={`pt-${p.date}-${idx}`} data-testid={`zscore-point-${idx}`}>

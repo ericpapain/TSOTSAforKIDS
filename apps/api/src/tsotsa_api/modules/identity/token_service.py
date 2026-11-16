@@ -12,6 +12,7 @@ from tsotsa_api.core.security import (
     hash_token,
 )
 from tsotsa_api.modules.identity.models import User
+from tsotsa_api.modules.identity.permissions_repo import PermissionsRepository
 from tsotsa_api.modules.identity.repository import IdentityRepository
 from tsotsa_api.modules.identity.schemas import TokenResponse, UserProfileResponse
 
@@ -33,6 +34,8 @@ class TokenService:
         await self.repository.update_last_login(user.id)
 
         roles = await self.repository.get_user_role_codes(user.id)
+        perm_repo = PermissionsRepository(self.repository.session)
+        perms = await perm_repo.get_user_permissions(user.id)
         caregiver_profile = await self.repository.get_caregiver_profile(user.id)
         is_verified_caregiver = (
             caregiver_profile.verification_status == "approved" if caregiver_profile else False
@@ -41,6 +44,7 @@ class TokenService:
         claims = {
             "name": user.display_name,
             "roles": roles,
+            "permissions": sorted(list(perms)),
             "is_verified_caregiver": is_verified_caregiver,
         }
         access_token = create_access_token(subject=user.id, claims=claims, settings=self.settings)
@@ -54,12 +58,18 @@ class TokenService:
             device_label=device_label,
         )
 
+        pref_loc = user.preferred_locale if user.preferred_locale in ("fr", "en") else "fr"
         user_profile = UserProfileResponse(
             id=user.id,
             display_name=user.display_name,
-            language=user.language,
+            first_name=user.first_name,
+            last_name=user.last_name,
+            locality=user.locality,
+            language=pref_loc,
+            preferred_locale=pref_loc,  # type: ignore[arg-type]
             status=user.status,
             roles=roles,
+            permissions=sorted(list(perms)),
             is_verified_caregiver=is_verified_caregiver,
         )
 

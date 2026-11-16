@@ -33,6 +33,12 @@ class Person(Base):
     region_id: Mapped[str | None] = mapped_column(
         BinaryUUID, ForeignKey("regions.id"), nullable=True, index=True
     )
+    status: Mapped[str] = mapped_column(String(30), default="pending", nullable=False)
+    validated_by: Mapped[str | None] = mapped_column(
+        BinaryUUID, ForeignKey("users.id"), nullable=True
+    )
+    validated_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    refusal_reason: Mapped[str | None] = mapped_column(String(255), nullable=True)
     created_by: Mapped[str | None] = mapped_column(
         BinaryUUID, ForeignKey("users.id"), nullable=True
     )
@@ -46,6 +52,9 @@ class Person(Base):
         nullable=False,
     )
     deleted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    deleted_by: Mapped[str | None] = mapped_column(
+        BinaryUUID, ForeignKey("users.id"), nullable=True
+    )
 
     links: Mapped[list[PersonLink]] = relationship(
         "PersonLink", back_populates="person", cascade="all, delete-orphan"
@@ -54,7 +63,13 @@ class Person(Base):
         "PersonCare", back_populates="person", cascade="all, delete-orphan"
     )
 
-    __table_args__ = (CheckConstraint("sex IN ('M', 'F')", name="ck_persons_sex"),)
+    __table_args__ = (
+        CheckConstraint("sex IN ('M', 'F')", name="ck_persons_sex"),
+        CheckConstraint(
+            "status IN ('pending', 'validated', 'refused', 'archived')",
+            name="ck_persons_status",
+        ),
+    )
 
 
 class PersonLink(Base):
@@ -101,6 +116,10 @@ class PersonCare(Base):
     primary_caregiver_id: Mapped[str | None] = mapped_column(
         BinaryUUID, ForeignKey("users.id"), nullable=True, index=True
     )
+    assigned_by: Mapped[str | None] = mapped_column(
+        BinaryUUID, ForeignKey("users.id"), nullable=True
+    )
+    reason: Mapped[str | None] = mapped_column(String(255), nullable=True)
     started_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=lambda: datetime.now(UTC), nullable=False
     )

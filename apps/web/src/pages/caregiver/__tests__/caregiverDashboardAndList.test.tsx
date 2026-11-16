@@ -37,8 +37,8 @@ describe("DashboardPage (W02)", () => {
 
     const alertItems = screen.getAllByTestId(/^alert-item-/);
     expect(alertItems.length).toBe(3);
-    // Highest priority first is Amina
-    expect(alertItems[0]).toHaveTextContent("Amina");
+    // Highest priority first is Hamadou
+    expect(alertItems[0]).toHaveTextContent("Hamadou");
 
     // Change sort to date
     const sortSelect = screen.getByTestId("alert-sort-select");
@@ -69,10 +69,10 @@ describe("FollowedPersonsPage (W03)", () => {
     );
 
     expect(screen.getByText("Personnes suivies (4)")).toBeInTheDocument();
-    expect(screen.getByText("Amina")).toBeInTheDocument();
-    expect(screen.getByText("Moussa")).toBeInTheDocument();
+    expect(screen.getByText("Hamadou")).toBeInTheDocument();
+    expect(screen.getByText("Maurice")).toBeInTheDocument();
     expect(screen.getByText("Fatimata")).toBeInTheDocument();
-    expect(screen.getByText("Ibrahim")).toBeInTheDocument();
+    expect(screen.getByText("Anicet")).toBeInTheDocument();
   });
 
   it("filters persons by search keyword", () => {
@@ -83,10 +83,10 @@ describe("FollowedPersonsPage (W03)", () => {
     );
 
     const input = screen.getByTestId("search-person-input");
-    fireEvent.change(input, { target: { value: "Moussa" } });
+    fireEvent.change(input, { target: { value: "Maurice" } });
 
-    expect(screen.getByText("Moussa")).toBeInTheDocument();
-    expect(screen.queryByText("Amina")).not.toBeInTheDocument();
+    expect(screen.getByText("Maurice")).toBeInTheDocument();
+    expect(screen.queryByText("Hamadou")).not.toBeInTheDocument();
   });
 
   it("filters persons by nutritional status", () => {
@@ -99,8 +99,8 @@ describe("FollowedPersonsPage (W03)", () => {
     const select = screen.getByTestId("status-filter-select");
     fireEvent.change(select, { target: { value: "MAS" } });
 
-    expect(screen.getByText("Moussa")).toBeInTheDocument();
-    expect(screen.queryByText("Amina")).not.toBeInTheDocument();
+    expect(screen.getByText("Maurice")).toBeInTheDocument();
+    expect(screen.queryByText("Hamadou")).not.toBeInTheDocument();
   });
 
   it("navigates to person file when clicking dossier button", () => {
@@ -114,6 +114,31 @@ describe("FollowedPersonsPage (W03)", () => {
     const btn = screen.getByTestId("view-person-A-014");
     fireEvent.click(btn);
     expect(mockNavigate).toHaveBeenCalledWith("/soignant/personnes/A-014");
+  });
+
+  it("opens new admission modal and creates a new patient", () => {
+    render(
+      <MemoryRouter>
+        <FollowedPersonsPage />
+      </MemoryRouter>
+    );
+
+    const newBtn = screen.getByTestId("new-admission-btn");
+    fireEvent.click(newBtn);
+
+    expect(screen.getByTestId("new-admission-modal")).toBeInTheDocument();
+
+    const nameInput = screen.getByTestId("admission-name-input");
+    const ageInput = screen.getByTestId("admission-age-input");
+
+    fireEvent.change(nameInput, { target: { value: "Aissatou" } });
+    fireEvent.change(ageInput, { target: { value: "2 a 1 m" } });
+
+    const submitBtn = screen.getByTestId("confirm-admission-btn");
+    fireEvent.click(submitBtn);
+
+    expect(screen.queryByTestId("new-admission-modal")).not.toBeInTheDocument();
+    expect(screen.getByText("Aissatou")).toBeInTheDocument();
   });
 });
 

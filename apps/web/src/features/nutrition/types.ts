@@ -7,6 +7,10 @@ export interface ReferenceProductNutrient {
 export interface ReferenceProduct {
   id: string;
   name: string;
+  usage?: string;
+  category?: "reference" | "custom";
+  statusBadge?: string;
+  keyNutrientsSummary?: string;
   specification: string;
   nutrients: ReferenceProductNutrient[];
   costInfo: string;
@@ -23,6 +27,7 @@ export interface EquivalentLocalFood {
   lipids: string; // e.g. "49,1 g"
   iron: string; // e.g. "8,8 mg"
   availableInWestRegion: boolean;
+  regions?: CameroonRegionCode[];
   energyKcal: number;
   calciumMg?: number;
   zincMg?: number;
@@ -30,5 +35,23 @@ export interface EquivalentLocalFood {
   category?: string;
 }
 
-export type RegionFilter = "all" | "west";
+export type CameroonRegionCode =
+  | "west"
+  | "adamaoua"
+  | "centre"
+  | "east"
+  | "far-north"
+  | "littoral"
+  | "north"
+  | "north-west"
+  | "south"
+  | "south-west";
+
+export type RegionFilter = "all" | CameroonRegionCode;
+
+export interface CameroonRegionOption {
+  code: RegionFilter;
+  label: string;
+  shortName: string;
+}
 

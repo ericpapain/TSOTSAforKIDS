@@ -9,6 +9,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useTranslation } from "react-i18next";
 
 import { AppBar } from "../src/components/AppBar";
 import { BottomNav, type BottomNavTab } from "../src/components/BottomNav";
@@ -19,6 +20,7 @@ import { fontFamilies, fontSizes } from "../src/theme/typography";
 
 export default function ModulesScreen(): React.JSX.Element {
   const router = useRouter();
+  const { t } = useTranslation("mobile");
   const [, setModules] = useState<ModuleItem[]>([]);
 
   useEffect(() => {
@@ -35,7 +37,7 @@ export default function ModulesScreen(): React.JSX.Element {
   return (
     <SafeAreaView style={styles.safeArea} edges={["top"]}>
       <AppBar
-        title="Bonjour"
+        title={t("modules.title", { defaultValue: "Bonjour" })}
         rightIcon="wifi"
         onRightPress={() => router.push("/u-offline")}
       />
@@ -44,7 +46,9 @@ export default function ModulesScreen(): React.JSX.Element {
         contentContainerStyle={styles.container}
         showsVerticalScrollIndicator={false}
       >
-        <Text style={styles.heading}>Que voulez-vous suivre ?</Text>
+        <Text style={styles.heading}>
+          {t("modules.heading", { defaultValue: "Que voulez-vous suivre ?" })}
+        </Text>
 
         {/* Nutrition Card */}
         <Pressable
@@ -59,9 +63,13 @@ export default function ModulesScreen(): React.JSX.Element {
             <FontAwesome5 name="apple-alt" size={69} color={colors.white} />
           </View>
           <View style={styles.nutritionTextCol}>
-            <Text style={styles.nutritionTitle}>Nutrition</Text>
+            <Text style={styles.nutritionTitle}>
+              {t("modules.nutritionTitle", { defaultValue: "Nutrition" })}
+            </Text>
             <Text style={styles.nutritionSubtitle}>
-              Produits, aliments locaux, suivi des prises
+              {t("modules.nutritionDesc", {
+                defaultValue: "Produits, aliments locaux, suivi des prises",
+              })}
             </Text>
           </View>
         </Pressable>
@@ -78,9 +86,13 @@ export default function ModulesScreen(): React.JSX.Element {
             onPress={() => router.push("/u-soon")}
           >
             <FontAwesome5 name="heartbeat" size={48} color={colors.textSubtle} />
-            <Text style={styles.soonTitle}>HTA</Text>
+            <Text style={styles.soonTitle}>
+              {t("modules.hta", { defaultValue: "HTA" })}
+            </Text>
             <View style={styles.soonPill}>
-              <Text style={styles.soonPillText}>Bientôt</Text>
+              <Text style={styles.soonPillText}>
+                {t("modules.soon", { defaultValue: "Bientôt" })}
+              </Text>
             </View>
           </Pressable>
 
@@ -94,9 +106,13 @@ export default function ModulesScreen(): React.JSX.Element {
             onPress={() => router.push("/u-soon")}
           >
             <FontAwesome5 name="tint" size={48} color={colors.textSubtle} />
-            <Text style={styles.soonTitle}>Diabète</Text>
+            <Text style={styles.soonTitle}>
+              {t("modules.diabetes", { defaultValue: "Diabète" })}
+            </Text>
             <View style={styles.soonPill}>
-              <Text style={styles.soonPillText}>Bientôt</Text>
+              <Text style={styles.soonPillText}>
+                {t("modules.soon", { defaultValue: "Bientôt" })}
+              </Text>
             </View>
           </Pressable>
         </View>

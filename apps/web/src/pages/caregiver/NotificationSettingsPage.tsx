@@ -1,12 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import "../../i18n/setup";
 import { Card, Button, Toggle, Notice } from "../../components";
 import { initialPersonSettings } from "../../features/caregiver/caregiverData";
 import type { PersonNotificationSettings } from "../../features/caregiver/types";
 
 interface ChannelSetting {
-  id: string;
-  label: string;
+  id: "missed-intake" | "stagnation" | "due-eval" | "confirmed-intake";
   inApp: boolean;
   email: boolean;
   sms: boolean;
@@ -14,33 +15,34 @@ interface ChannelSetting {
 
 export function NotificationSettingsPage(): React.JSX.Element {
   const navigate = useNavigate();
+  const { t } = useTranslation("notifications");
   const [savedSuccess, setSavedSuccess] = useState(false);
+
+  useEffect(() => {
+    document.title = t("settingsPage.pageTitle");
+  }, [t]);
 
   const [channelSettings, setChannelSettings] = useState<ChannelSetting[]>([
     {
       id: "missed-intake",
-      label: "Prise sautée (3 rappels sans confirmation)",
       inApp: true,
       email: true,
       sms: true,
     },
     {
       id: "stagnation",
-      label: "Stagnation pondérale (14 jours sans gain)",
       inApp: true,
       email: true,
       sms: false,
     },
     {
       id: "due-eval",
-      label: "Évaluation périodique échue",
       inApp: true,
       email: false,
       sms: false,
     },
     {
       id: "confirmed-intake",
-      label: "Prise confirmée par le parent",
       inApp: true,
       email: false,
       sms: false,
@@ -80,8 +82,8 @@ export function NotificationSettingsPage(): React.JSX.Element {
   return (
     <div className="flex flex-col gap-6" data-testid="notification-settings-page">
       {savedSuccess && (
-        <Notice variant="success" title="Préférences enregistrées" testID="settings-saved-notice">
-          Vos préférences de notifications ont été enregistrées avec succès.
+        <Notice variant="success" title={t("settingsPage.savedTitle")} testID="settings-saved-notice">
+          {t("settingsPage.savedMessage")}
         </Notice>
       )}
 
@@ -93,13 +95,13 @@ export function NotificationSettingsPage(): React.JSX.Element {
               className="cursor-pointer hover:underline"
               onClick={() => navigate("/soignant/notifications")}
             >
-              Notifications
+              {t("settingsPage.breadcrumbNotifications")}
             </span>{" "}
-            › Réglages
+            {`› ${t("settingsPage.breadcrumbSettings")}`}
           </nav>
-          <h1 className="text-24 font-bold text-text">Réglages des notifications soignant</h1>
+          <h1 className="text-24 font-bold text-text">{t("settingsPage.title")}</h1>
           <p className="text-14 text-text-muted mt-1">
-            Canaux de réception et règles d'alerte pour les personnes suivies
+            {t("settingsPage.subtitle")}
           </p>
         </div>
         <Button
@@ -109,26 +111,28 @@ export function NotificationSettingsPage(): React.JSX.Element {
           data-testid="save-settings-btn"
           onClick={handleSave}
         >
-          Enregistrer les préférences
+          {t("settingsPage.saveBtn")}
         </Button>
       </div>
 
       {/* Channel Matrix */}
-      <Card title="Canaux de notification par type d'événement">
+      <Card title={t("settingsPage.channelsCardTitle")}>
         <div className="overflow-x-auto">
           <table className="w-full text-left text-13 border-collapse">
             <thead>
               <tr className="border-b border-border bg-surface-2 text-12 font-bold text-text-muted">
-                <th className="py-2.5 px-3">Type d'événement</th>
-                <th className="py-2.5 px-3 text-center">In-App / Web</th>
-                <th className="py-2.5 px-3 text-center">E-mail</th>
-                <th className="py-2.5 px-3 text-center">SMS</th>
+                <th className="py-2.5 px-3">{t("settingsPage.columns.eventType")}</th>
+                <th className="py-2.5 px-3 text-center">{t("settingsPage.columns.inApp")}</th>
+                <th className="py-2.5 px-3 text-center">{t("settingsPage.columns.email")}</th>
+                <th className="py-2.5 px-3 text-center">{t("settingsPage.columns.sms")}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
               {channelSettings.map((row) => (
                 <tr key={row.id}>
-                  <td className="py-3 px-3 font-medium text-text">{row.label}</td>
+                  <td className="py-3 px-3 font-medium text-text">
+                    {t(`settingsPage.events.${row.id}`)}
+                  </td>
                   <td className="py-3 px-3 text-center">
                     <Toggle
                       checked={row.inApp}
@@ -158,14 +162,14 @@ export function NotificationSettingsPage(): React.JSX.Element {
       </Card>
 
       {/* Quiet Hours Card */}
-      <Card title="Plage des heures calmes">
+      <Card title={t("settingsPage.quietHoursCardTitle")}>
         <div className="flex items-center justify-between py-2">
           <div>
             <span className="font-bold text-text block">
-              Activer les heures calmes (21h00 – 07h00)
+              {t("settingsPage.quietHoursToggleTitle")}
             </span>
             <span className="text-12 text-text-muted">
-              Aucun SMS ou e-mail ne sera envoyé la nuit, les alertes restent visibles dans l'application.
+              {t("settingsPage.quietHoursToggleDesc")}
             </span>
           </div>
           <Toggle
@@ -177,7 +181,7 @@ export function NotificationSettingsPage(): React.JSX.Element {
       </Card>
 
       {/* Per person alerts */}
-      <Card title="Préférences individuelles par personne suivie">
+      <Card title={t("settingsPage.perPersonCardTitle")}>
         <div className="flex flex-col divide-y divide-border">
           {personSettings.map((p) => (
             <div key={p.personId} className="flex items-center justify-between py-3">
@@ -197,9 +201,9 @@ export function NotificationSettingsPage(): React.JSX.Element {
                   data-testid={`freq-select-${p.personId}`}
                   className="rounded-input border border-border bg-white px-2.5 py-1 text-12 text-text"
                 >
-                  <option value="Immédiat">Immédiat</option>
-                  <option value="Résumé quotidien">Résumé quotidien</option>
-                  <option value="Jamais">Jamais</option>
+                  <option value="Immédiat">{t("settingsPage.frequencies.immediate")}</option>
+                  <option value="Résumé quotidien">{t("settingsPage.frequencies.dailySummary")}</option>
+                  <option value="Jamais">{t("settingsPage.frequencies.never")}</option>
                 </select>
                 <Toggle
                   checked={p.enabled}

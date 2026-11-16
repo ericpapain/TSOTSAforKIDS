@@ -108,6 +108,7 @@ export const initialImportCheckItems: NutrientCheckItem[] = [
     valeur: "25,8",
     unite: "g",
     status: "valid",
+    code: "VALID",
     message: "✓ valide",
   },
   {
@@ -116,6 +117,7 @@ export const initialImportCheckItems: NutrientCheckItem[] = [
     valeur: "4,6",
     unite: "mg",
     status: "valid",
+    code: "VALID",
     message: "✓ valide",
   },
   {
@@ -124,6 +126,7 @@ export const initialImportCheckItems: NutrientCheckItem[] = [
     valeur: "199",
     unite: "g",
     status: "error",
+    code: "ERR_OUT_OF_BOUNDS_100G",
     message: "✕ hors limites (max 100 g)",
   },
   {
@@ -132,6 +135,7 @@ export const initialImportCheckItems: NutrientCheckItem[] = [
     valeur: "110",
     unite: "mg",
     status: "valid",
+    code: "VALID",
     message: "✓ valide",
   },
   {
@@ -140,6 +144,7 @@ export const initialImportCheckItems: NutrientCheckItem[] = [
     valeur: "—",
     unite: "—",
     status: "warning",
+    code: "WARN_MISSING_UNIT",
     message: "⚠ unité manquante",
   },
 ];

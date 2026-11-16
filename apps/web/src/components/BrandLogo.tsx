@@ -1,3 +1,4 @@
+/* eslint-disable i18next/no-literal-string */
 import React, { useId } from "react";
 
 export interface BrandLogoProps {
@@ -53,44 +54,46 @@ export function BrandLogo({
       data-testid={testID}
       className={`inline-flex items-center select-none ${className}`}
       role="img"
-      aria-label="TSOTSA Kids Logo"
+      aria-label="TSOTSA4Kids Logo"
     >
       {/* Symbol */}
       {showSymbol && (
         <div
           data-testid="brand-logo-symbol"
           className="relative inline-flex items-center justify-center shrink-0"
-          style={{ width: diskSize, height: diskSize }}
+          style={{ width: isDark ? diskSize : h, height: isDark ? diskSize : h }}
         >
-          <div
-            className="absolute rounded-full"
-            style={{
-              width: diskSize,
-              height: diskSize,
-              backgroundColor: isDark ? "#FFFFFF" : "#17302A",
-            }}
-          />
+          {isDark && (
+            <div
+              data-testid="brand-logo-dark-disk"
+              className="absolute rounded-full"
+              style={{
+                width: diskSize,
+                height: diskSize,
+                backgroundColor: "#FFFFFF",
+              }}
+            />
+          )}
           <svg
             width={h}
             height={h}
-            viewBox="0 0 100 100"
+            viewBox="8 8 84 84"
             className="relative z-10"
             aria-hidden="true"
           >
             <defs>
               <mask id={maskId}>
-                <rect width="100" height="100" fill="white" />
-                <path
-                  d="M 50 15 C 38 15 28 25 28 37 C 28 47 35 55 45 58 C 30 63 20 75 20 90 L 80 90 C 80 75 70 63 55 58 C 65 55 72 47 72 37 C 72 25 62 15 50 15 Z"
-                  fill="black"
-                />
+                <rect width="100" height="100" fill="#fff" />
+                <rect x="46.9" y="0" width="6.2" height="100" fill="#000" />
+                <circle cx="50" cy="50" r="11.6" fill="#000" />
+                <rect x="50" y="46.4" width="50" height="7.2" fill="#000" />
               </mask>
             </defs>
             <circle
               cx="50"
               cy="50"
-              r="48"
-              fill={isDark ? "#FFFFFF" : "#17302A"}
+              r="42"
+              fill="#F26142"
               mask={`url(#${maskId})`}
             />
           </svg>
@@ -126,7 +129,7 @@ export function BrandLogo({
               lineHeight: 1,
             }}
           >
-            KIDS
+            4KIDS
           </span>
         </div>
       )}

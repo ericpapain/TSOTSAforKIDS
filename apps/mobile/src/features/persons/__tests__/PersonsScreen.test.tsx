@@ -50,7 +50,7 @@ describe("PersonsScreen (M08)", () => {
 
     await waitFor(() => {
       expect(getByText(/Amina/)).toBeTruthy();
-      expect(getByText("Suivie par le CMA de démo")).toBeTruthy();
+      expect(getByText(/Suivi\(e\) par CMA de démo/)).toBeTruthy();
       expect(getByText(/Moi-même/)).toBeTruthy();
     });
 

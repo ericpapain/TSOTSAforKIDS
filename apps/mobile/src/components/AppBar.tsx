@@ -7,6 +7,7 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useTranslation } from "react-i18next";
 
 import { colors } from "../theme/colors";
 import { fontFamilies, fontSizes } from "../theme/typography";
@@ -27,10 +28,11 @@ export function AppBar({
   onBack,
   rightIcon,
   onRightPress,
-  rightAccessibilityLabel = "Action",
+  rightAccessibilityLabel,
   testID = "app-bar",
 }: AppBarProps): React.JSX.Element {
   const insets = useSafeAreaInsets();
+  const { t } = useTranslation("common");
 
   return (
     <View
@@ -49,7 +51,7 @@ export function AppBar({
           <Pressable
             testID="app-bar-back-button"
             accessibilityRole="button"
-            accessibilityLabel="Retour"
+            accessibilityLabel={t("actions.back", { defaultValue: "Retour" })}
             onPress={onBack}
             style={({ pressed }) => [
               styles.touchArea,

@@ -1,80 +1,108 @@
-import React, { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../api/authContext';
-import { Button } from '../components/Button';
-import { Card } from '../components/Card';
-import { BrandLogo } from '../components/BrandLogo';
-import type { UserRole } from '../types';
+import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
+import "../i18n/setup";
+import { useAuth } from "../api/authContext";
+import { Card } from "../components/Card";
+import { BrandLogo } from "../components/BrandLogo";
+import { LanguageSwitcher } from "../components/LanguageSwitcher";
+import { RoleSelector } from "./auth/RoleSelector";
+import { AuthLoginForm } from "./auth/AuthLoginForm";
+import { AuthRegisterForm } from "./auth/AuthRegisterForm";
+import { PendingAccountNotice } from "./auth/PendingAccountNotice";
+import type { UserRole } from "../types";
 
 export const LoginPage: React.FC = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { setSession } = useAuth();
-  const [selectedRole, setSelectedRole] = useState<UserRole>('caregiver');
+  const { t } = useTranslation("auth");
+  const { logout } = useAuth();
 
-  const handleQuickLogin = (role: UserRole) => {
-    setSession(
-      {
-        id: 'usr-1',
-        name: role === 'caregiver' ? 'Dr. Marc Eto\'o' : role === 'admin' ? 'Admin TSOTSA' : 'Parent Amina',
-        role,
-        isVerifiedCaregiver: role === 'caregiver',
-      },
-      'token-session',
-      'refresh-session'
-    );
+  const [selectedRole, setSelectedRole] = useState<UserRole>("parent");
+  const [activeTab, setActiveTab] = useState<"login" | "register">("login");
+  const [showPendingNotice, setShowPendingNotice] = useState(false);
 
-    const from = (location.state as { from?: { pathname?: string } })?.from?.pathname;
-    if (from) {
-      navigate(from, { replace: true });
-    } else if (role === 'caregiver') {
-      navigate('/soignant', { replace: true });
-    } else if (role === 'admin') {
-      navigate('/', { replace: true });
-    } else {
-      navigate('/nutrition/produits/plumpy-nut', { replace: true });
+  useEffect(() => {
+    document.title = t("login.pageTitle");
+  }, [t]);
+
+  const handleRoleChange = (role: UserRole) => {
+    logout();
+    setSelectedRole(role);
+    setShowPendingNotice(false);
+    if (role === "admin" || role === "super_caregiver") {
+      setActiveTab("login");
     }
   };
 
+  const canRegister = selectedRole !== "admin" && selectedRole !== "super_caregiver";
+
   return (
-    <div className="min-h-screen bg-canvas flex flex-col justify-center items-center px-4 font-sans">
-      <Card className="w-full max-w-[420px] p-8 text-center">
-        <div className="flex justify-center mb-6">
+    <div className="min-h-screen bg-canvas flex flex-col justify-center items-center px-4 py-8 font-sans relative">
+      <div className="absolute top-4 right-6 bg-[#17302A] rounded-lg px-2 py-1">
+        <LanguageSwitcher testID="login-language-switcher" />
+      </div>
+
+      <Card className="w-full max-w-[520px] p-6 sm:p-8 text-center shadow-lg border border-border">
+        <div className="flex justify-center mb-4">
           <BrandLogo variant="light" size={48} />
         </div>
-        <h1 className="text-2xl font-bold text-text-primary mb-2">Connexion TSOTSA Kids</h1>
-        <p className="text-sm text-text-secondary mb-6">
-          Connectez-vous par téléphone, e-mail ou Google.
-        </p>
+        <h1 className="text-2xl font-bold text-text-primary mb-1">{t("login.title")}</h1>
+        <p className="text-xs text-text-secondary mb-5">{t("login.subtitle")}</p>
 
-        <div className="space-y-3 mb-6">
-          <div className="flex justify-center gap-2 mb-4">
-            {(['user', 'caregiver', 'admin'] as UserRole[]).map((r) => (
-              <Button
-                key={r}
-                variant={selectedRole === r ? (r === 'user' ? 'primary' : r) : 'solid'}
-                outline={selectedRole !== r}
-                size="sm"
-                testID={`role-btn-${r}`}
-                onClick={() => setSelectedRole(r)}
-              >
-                {r === 'caregiver' ? 'Soignant' : r === 'admin' ? 'Admin' : 'Utilisateur'}
-              </Button>
-            ))}
+        <RoleSelector selectedRole={selectedRole} onSelectRole={handleRoleChange} />
+
+        {canRegister && !showPendingNotice && (
+          <div className="flex border-b border-border mb-5" role="tablist">
+            <button
+              type="button"
+              role="tab"
+              aria-selected={activeTab === "login"}
+              data-testid="tab-login"
+              onClick={() => setActiveTab("login")}
+              className={`flex-1 py-2 text-xs font-bold border-b-2 transition-colors ${
+                activeTab === "login"
+                  ? "border-primary text-primary"
+                  : "border-transparent text-text-secondary hover:text-text-primary"
+              }`}
+            >
+              {t("login.tabs.login")}
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={activeTab === "register"}
+              data-testid="tab-register"
+              onClick={() => setActiveTab("register")}
+              className={`flex-1 py-2 text-xs font-bold border-b-2 transition-colors ${
+                activeTab === "register"
+                  ? "border-primary text-primary"
+                  : "border-transparent text-text-secondary hover:text-text-primary"
+              }`}
+            >
+              {t("login.tabs.register")}
+            </button>
           </div>
+        )}
 
-          <Button
-            variant={selectedRole === 'user' ? 'primary' : selectedRole}
-            testID="login-submit-btn"
-            className="w-full"
-            onClick={() => handleQuickLogin(selectedRole)}
-          >
-            Accéder à l'espace {selectedRole}
-          </Button>
-        </div>
+        {showPendingNotice ? (
+          <PendingAccountNotice
+            onBackToLogin={() => {
+              setShowPendingNotice(false);
+              setActiveTab("login");
+            }}
+          />
+        ) : activeTab === "login" || !canRegister ? (
+          <AuthLoginForm
+            role={selectedRole}
+            onPendingDetected={() => setShowPendingNotice(true)}
+          />
+        ) : (
+          <AuthRegisterForm
+            role={selectedRole}
+            onRegisteredPending={() => setShowPendingNotice(true)}
+          />
+        )}
 
-        <div className="text-xs text-text-muted">
-          Connexion sécurisée · Chiffrement de bout en bout
+        <div className="text-[11px] text-text-muted mt-6 pt-4 border-t border-border">
+          {t("login.securityNote")}
         </div>
       </Card>
     </div>

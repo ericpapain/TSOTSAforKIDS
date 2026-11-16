@@ -23,7 +23,7 @@ describe("PersonFilePage (W04 & W06)", () => {
       </MemoryRouter>
     );
 
-    expect(screen.getByText("Amina (#A-014)")).toBeInTheDocument();
+    expect(screen.getByText("Hamadou (#A-014)")).toBeInTheDocument();
     expect(screen.getByText("CMA de Kousséri")).toBeInTheDocument();
     expect(screen.getByTestId("new-evaluation-btn")).toBeInTheDocument();
     expect(screen.getByTestId("modify-plan-btn")).toBeInTheDocument();
@@ -61,7 +61,7 @@ describe("NewEvaluationPage (W05)", () => {
       </MemoryRouter>
     );
 
-    expect(screen.getByText("Nouvelle évaluation clinique — Amina (#A-014)")).toBeInTheDocument();
+    expect(screen.getByText("Nouvelle évaluation clinique — Hamadou (#A-014)")).toBeInTheDocument();
     expect(screen.getByTestId("clinical-calc-results")).toBeInTheDocument();
 
     // Check default calibrated values

@@ -153,11 +153,26 @@ async def build_essential_models(
     return models
 
 
-def to_product_summary(product: Product) -> ProductSummaryRead:
-    return ProductSummaryRead.model_validate(product)
+def to_product_summary(product: Product, locale: str = "fr") -> ProductSummaryRead:
+    en_val = getattr(product, "name_en", None)
+    display_name = en_val if (locale == "en" and en_val) else product.name
+    return ProductSummaryRead(
+        id=product.id,
+        type=product.type,
+        name=display_name,
+        original_name=product.name,
+        name_en=en_val,
+        base=product.base,
+        usage=product.usage,
+        owner_user_id=product.owner_user_id,
+        status=product.status,
+        unit_label=product.unit_label,
+        label_photo_file=product.label_photo_file,
+        source_reference=product.source_reference,
+    )
 
 
-def to_product_detail(product: Product) -> ProductDetailRead:
+def to_product_detail(product: Product, locale: str = "fr") -> ProductDetailRead:
     nutrients = [
         ProductNutrientRead(
             nutrient_code=nv.nutrient_code,
@@ -171,10 +186,14 @@ def to_product_detail(product: Product) -> ProductDetailRead:
         for nv in product.nutrient_values
     ]
     essentials = [en.nutrient_code for en in product.essential_nutrients]
+    en_val = getattr(product, "name_en", None)
+    display_name = en_val if (locale == "en" and en_val) else product.name
     return ProductDetailRead(
         id=product.id,
         type=product.type,
-        name=product.name,
+        name=display_name,
+        original_name=product.name,
+        name_en=en_val,
         base=product.base,
         usage=product.usage,
         owner_user_id=product.owner_user_id,

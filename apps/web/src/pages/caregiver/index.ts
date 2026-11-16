@@ -1,4 +1,4 @@
-export { CaregiverLayout, caregiverNavItems } from "./CaregiverLayout";
+export { CaregiverLayout } from "./CaregiverLayout";
 export { DashboardPage } from "./DashboardPage";
 export { FollowedPersonsPage } from "./FollowedPersonsPage";
 export { PersonFilePage } from "./PersonFilePage";
@@ -6,3 +6,12 @@ export { NewEvaluationPage } from "./NewEvaluationPage";
 export { IntakePlanPage } from "./IntakePlanPage";
 export { NotificationsPage } from "./NotificationsPage";
 export { NotificationSettingsPage } from "./NotificationSettingsPage";
+export { ReassignDoctorModal } from "./ReassignDoctorModal";
+export { NewAdmissionModal } from "./NewAdmissionModal";
+export { SuperCaregiverBar } from "./SuperCaregiverBar";
+export { ClinicalStatusGuide } from "./ClinicalStatusGuide";
+export { ViewAsBanner } from "./ViewAsBanner";
+export { SupervisionPatientsPage } from "./SupervisionPatientsPage";
+export { SupervisionAssociationPage } from "./SupervisionAssociationPage";
+export { SupervisionValidationPage } from "./SupervisionValidationPage";
+export { SupervisionDelegationsPage } from "./SupervisionDelegationsPage";

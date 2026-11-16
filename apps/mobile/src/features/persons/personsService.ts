@@ -12,11 +12,12 @@ import type {
   PersonItem,
 } from "./types";
 
-export function calculateAgeLabel(birthDateStr: string): string {
+export function calculateAgeLabel(birthDateStr: string, locale: "fr" | "en" = "fr"): string {
   try {
-    const rawParts = birthDateStr.includes("/")
-      ? birthDateStr.split("/").reverse()
-      : birthDateStr.split("-");
+    const cleanDate = birthDateStr.split("T")[0].split(" ")[0];
+    const rawParts = cleanDate.includes("/")
+      ? cleanDate.split("/").reverse()
+      : cleanDate.split("-");
     const [year, month, day] = rawParts.map(Number);
     if (!year || !month || !day) return "";
     const birth = new Date(year, month - 1, day);
@@ -28,7 +29,11 @@ export function calculateAgeLabel(birthDateStr: string): string {
     const diffMs = todayMidnight.getTime() - birthMidnight.getTime();
     const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
     if (diffDays < 0) return "";
-    if (diffDays < 30) return `${diffDays} jours`;
+    if (diffDays < 30) {
+      return locale === "en"
+        ? `${diffDays} day${diffDays > 1 ? "s" : ""}`
+        : `${diffDays} jour${diffDays > 1 ? "s" : ""}`;
+    }
 
     let years = now.getFullYear() - birth.getFullYear();
     let months = now.getMonth() - birth.getMonth();
@@ -40,10 +45,19 @@ export function calculateAgeLabel(birthDateStr: string): string {
       months += 12;
     }
 
-    if (years >= 18) return "adulte";
-    if (years === 0) return `${Math.max(1, months)} mois`;
-    if (months === 0) return `${years} an${years > 1 ? "s" : ""}`;
-    return `${years} an${years > 1 ? "s" : ""} ${months} mois`;
+    if (years >= 18) return locale === "en" ? "adult" : "adulte";
+    if (years === 0) {
+      const m = Math.max(1, months);
+      return locale === "en" ? `${m} month${m > 1 ? "s" : ""}` : `${m} mois`;
+    }
+    if (months === 0) {
+      return locale === "en"
+        ? `${years} year${years > 1 ? "s" : ""}`
+        : `${years} an${years > 1 ? "s" : ""}`;
+    }
+    return locale === "en"
+      ? `${years} year${years > 1 ? "s" : ""} ${months} month${months > 1 ? "s" : ""}`
+      : `${years} an${years > 1 ? "s" : ""} ${months} mois`;
   } catch {
     return "";
   }
@@ -111,27 +125,7 @@ export async function fetchFamilyMembers(): Promise<PersonItem[]> {
       age_formatted: calculateAgeLabel(p.birth_date),
     }));
   }
-  // Fallback matching prompt M08 reference
-  return [
-    {
-      id: "demo-amina",
-      first_name: "Amina",
-      sex: "F",
-      birth_date: "2024-12-12",
-      age_formatted: "1 an 11 mois",
-      status_badge: "Démo",
-      facility_name: "CMA de démo",
-      relation: "child",
-    },
-    {
-      id: "demo-myself",
-      first_name: "Moi-même",
-      sex: "M",
-      birth_date: "1990-01-01",
-      age_formatted: "adulte",
-      relation: "self",
-    },
-  ];
+  return [];
 }
 
 export async function createFamilyMember(

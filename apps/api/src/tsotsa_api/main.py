@@ -1,4 +1,4 @@
-"""Application factory and root API routes for TSOTSA Kids backend."""
+"""Application factory and root API routes for TSOTSA4Kids backend."""
 
 from __future__ import annotations
 
@@ -36,7 +36,13 @@ from tsotsa_api.modules.custom_products import (
 )
 from tsotsa_api.modules.equivalence import equivalence_router
 from tsotsa_api.modules.food_database import food_admin_router, foods_router
-from tsotsa_api.modules.identity import auth_router
+from tsotsa_api.modules.health import health_router
+from tsotsa_api.modules.identity import (
+    auth_router,
+    permissions_router,
+    profile_router,
+    staff_router,
+)
 from tsotsa_api.modules.intakes import intakes_router
 from tsotsa_api.modules.modules_registry import (
     admin_router as modules_admin_router,
@@ -61,7 +67,11 @@ from tsotsa_api.modules.organizations import (
     users_region_router,
 )
 from tsotsa_api.modules.orkg_sync import orkg_sync_admin_router
-from tsotsa_api.modules.persons import caregiver_persons_router, family_router
+from tsotsa_api.modules.persons import (
+    caregiver_persons_router,
+    family_router,
+    patient_validation_router,
+)
 from tsotsa_api.modules.pricing import admin_pricing_router, pricing_router
 from tsotsa_api.modules.reference_products import (
     products_router,
@@ -78,9 +88,12 @@ def _build_v1_router() -> APIRouter:
 
     @v1_router.get("/", tags=["Root"])
     async def v1_root() -> dict[str, str]:
-        return {"message": "TSOTSA Kids API v1", "status": "active"}
+        return {"message": "TSOTSA4Kids API v1", "status": "active"}
 
     v1_router.include_router(auth_router)
+    v1_router.include_router(profile_router)
+    v1_router.include_router(staff_router)
+    v1_router.include_router(permissions_router)
     v1_router.include_router(nutrients_router)
     v1_router.include_router(food_admin_router)
     v1_router.include_router(foods_router)
@@ -99,6 +112,7 @@ def _build_v1_router() -> APIRouter:
     v1_router.include_router(organizations_admin_router)
     v1_router.include_router(family_router)
     v1_router.include_router(caregiver_persons_router)
+    v1_router.include_router(patient_validation_router)
     v1_router.include_router(consents_router)
     v1_router.include_router(admin_consents_router)
     v1_router.include_router(person_consents_router)
@@ -106,6 +120,7 @@ def _build_v1_router() -> APIRouter:
     v1_router.include_router(pricing_router)
     v1_router.include_router(admin_pricing_router)
     v1_router.include_router(intakes_router)
+    v1_router.include_router(health_router)
     v1_router.include_router(clinical_router)
     v1_router.include_router(dashboard_router)
     v1_router.include_router(alerts_router)
@@ -132,7 +147,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         logger.info("Application shutting down", env=cfg.APP_ENV)
 
     app = FastAPI(
-        title="TSOTSA Kids API",
+        title="TSOTSA4Kids API",
         version="0.1.0",
         description="Infant nutrition platform backend API",
         docs_url="/docs",

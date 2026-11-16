@@ -1,0 +1,62 @@
+{
+  "caregiverPage": {
+    "pageTitle": "Caregiver notifications | TSOTSA4Kids",
+    "title": "Caregiver notifications",
+    "subtitle": "Clinical alerts and intake monitoring center",
+    "markAllReadBtn": "Mark all as read",
+    "settingsBtn": "Settings ›",
+    "filters": {
+      "all": "All ({{count}})",
+      "alerts": "Alerts ({{count}})",
+      "intakes": "Intakes ({{count}})",
+      "reminders": "Reminders ({{count}})"
+    },
+    "openRecordBtn": "Open record ›",
+    "items": {
+      "notif-3": {
+        "title": "Intake confirmed by parent",
+        "message": "Enriched porridge 150 ml recorded at 12:35 (scheduled 12:30)."
+      },
+      "notif-4": {
+        "title": "Clinical assessment reminder",
+        "message": "Bi-weekly follow-up visit scheduled tomorrow 11/12."
+      },
+      "notif-5": {
+        "title": "End-of-protocol reminder",
+        "message": "MAM protocol ends in 7 days. Discharge assessment to prepare."
+      }
+    }
+  },
+  "settingsPage": {
+    "pageTitle": "Caregiver notification settings | TSOTSA4Kids",
+    "breadcrumbNotifications": "Notifications",
+    "breadcrumbSettings": "Settings",
+    "title": "Caregiver notification settings",
+    "subtitle": "Delivery channels and alert rules for followed persons",
+    "saveBtn": "Save preferences",
+    "savedTitle": "Preferences saved",
+    "savedMessage": "Your notification preferences have been saved.",
+    "channelsCardTitle": "Notification channels by event type",
+    "columns": {
+      "eventType": "Event type",
+      "inApp": "In-App / Web",
+      "email": "Email",
+      "sms": "SMS"
+    },
+    "events": {
+      "missed-intake": "Missed intake (3 reminders without confirmation)",
+      "stagnation": "Weight stagnation (14 days without gain)",
+      "due-eval": "Periodic assessment due",
+      "confirmed-intake": "Intake confirmed by parent"
+    },
+    "quietHoursCardTitle": "Quiet hours window",
+    "quietHoursToggleTitle": "Enable quiet hours (21:00 – 07:00)",
+    "quietHoursToggleDesc": "No SMS or email will be sent at night; alerts remain visible in the app.",
+    "perPersonCardTitle": "Individual preferences by followed person",
+    "frequencies": {
+      "immediate": "Immediate",
+      "dailySummary": "Daily summary",
+      "never": "Never"
+    }
+  }
+}

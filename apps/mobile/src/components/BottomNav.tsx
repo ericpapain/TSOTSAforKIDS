@@ -2,6 +2,7 @@ import { FontAwesome5 } from "@expo/vector-icons";
 import React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useTranslation } from "react-i18next";
 
 import { colors } from "../theme/colors";
 import { fontFamilies, fontSizes } from "../theme/typography";
@@ -20,19 +21,20 @@ interface TabConfig {
   icon: string;
 }
 
-const TABS: TabConfig[] = [
-  { id: "modules", label: "Modules", icon: "home" },
-  { id: "persons", label: "Personnes", icon: "users" },
-  { id: "products", label: "Produits", icon: "apple-alt" },
-  { id: "intakes", label: "Prises", icon: "history" },
-];
-
 export function BottomNav({
   activeTab,
   onTabPress,
   testID = "bottom-nav",
 }: BottomNavProps): React.JSX.Element {
   const insets = useSafeAreaInsets();
+  const { t } = useTranslation("mobile");
+
+  const tabs: TabConfig[] = [
+    { id: "modules", label: t("nav.modules", { defaultValue: "Modules" }), icon: "home" },
+    { id: "persons", label: t("nav.persons", { defaultValue: "Personnes" }), icon: "users" },
+    { id: "products", label: t("nav.products", { defaultValue: "Produits" }), icon: "apple-alt" },
+    { id: "intakes", label: t("nav.intakes", { defaultValue: "Prises" }), icon: "history" },
+  ];
 
   return (
     <View
@@ -45,7 +47,7 @@ export function BottomNav({
       ]}
     >
       <View style={styles.bar}>
-        {TABS.map((tab) => {
+        {tabs.map((tab) => {
           const isActive = tab.id === activeTab;
           const color = isActive ? colors.primary : colors.textSubtle;
 

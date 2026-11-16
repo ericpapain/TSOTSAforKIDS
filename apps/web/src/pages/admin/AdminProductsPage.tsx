@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../../components/Button";
 import { Card } from "../../components/Card";
@@ -6,12 +7,32 @@ import { initialReferenceProducts } from "../../features/admin/adminData";
 import type { ReferenceProduct } from "../../features/admin/types";
 
 export function AdminProductsPage(): React.JSX.Element {
+  const { t, i18n } = useTranslation("admin");
   const navigate = useNavigate();
   const [products] = useState<ReferenceProduct[]>(initialReferenceProducts);
+
+  useEffect(() => {
+    document.title = t("products.pageTitle");
+  }, [t, i18n.language]);
 
   const getStatusColor = (status: string): string => {
     if (status.includes("À valider")) return "text-warning font-bold";
     return "text-text-muted";
+  };
+
+  const renderNutrients = (val: string): string =>
+    val === "à définir" ? t("products.data.toDefine") : t("products.data.plumpyNutNutrients");
+
+  const renderSource = (val: string): string => {
+    if (val === "OMS, malnutrition sévère (1999)") return t("products.data.whoSam1999");
+    if (val === "Spécification RUTF OMS/UNICEF") return t("products.data.whoUnicefRutf");
+    return t("products.data.manufacturerSheet");
+  };
+
+  const renderStatus = (val: string): string => {
+    if (val === "À valider · hôpital") return t("products.data.statusValidateHospital");
+    if (val === "À valider") return t("products.data.statusValidate");
+    return t("products.data.statusToEnter");
   };
 
   return (
@@ -20,13 +41,13 @@ export function AdminProductsPage(): React.JSX.Element {
       className="p-[29px] max-w-[1400px] flex flex-col gap-6"
     >
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <h1 className="text-29 font-bold text-text">Produits de référence</h1>
+        <h1 className="text-29 font-bold text-text">{t("products.title")}</h1>
         <Button
           variant="primary"
           className="!bg-admin hover:!bg-slate-800"
           testID="btn-add-ref-product"
         >
-          + Ajouter un produit
+          {t("products.addProductBtn")}
         </Button>
       </div>
 
@@ -35,11 +56,11 @@ export function AdminProductsPage(): React.JSX.Element {
         <table className="w-full text-left border-collapse" data-testid="products-table">
           <thead>
             <tr className="bg-admin text-white text-14 font-bold h-[41px]">
-              <th className="px-4 py-2 w-[182px]">Produit</th>
-              <th className="px-4 py-2 w-[103px]">Base</th>
-              <th className="px-4 py-2 w-[296px]">Nutriments essentiels</th>
-              <th className="px-4 py-2 w-[314px]">Source</th>
-              <th className="px-4 py-2 w-[239px]">Statut</th>
+              <th className="px-4 py-2 w-[182px]">{t("products.columns.product")}</th>
+              <th className="px-4 py-2 w-[103px]">{t("products.columns.base")}</th>
+              <th className="px-4 py-2 w-[296px]">{t("products.columns.nutrients")}</th>
+              <th className="px-4 py-2 w-[314px]">{t("products.columns.source")}</th>
+              <th className="px-4 py-2 w-[239px]">{t("products.columns.status")}</th>
             </tr>
           </thead>
           <tbody>
@@ -53,10 +74,10 @@ export function AdminProductsPage(): React.JSX.Element {
               >
                 <td className="px-4 py-3 font-bold text-text">{p.name}</td>
                 <td className="px-4 py-3 text-text-muted">{p.base}</td>
-                <td className="px-4 py-3 text-text">{p.essentialNutrients}</td>
-                <td className="px-4 py-3 text-text-muted">{p.source}</td>
+                <td className="px-4 py-3 text-text">{renderNutrients(p.essentialNutrients)}</td>
+                <td className="px-4 py-3 text-text-muted">{renderSource(p.source)}</td>
                 <td className={`px-4 py-3 ${getStatusColor(p.status)}`}>
-                  {p.status}
+                  {renderStatus(p.status)}
                 </td>
               </tr>
             ))}
@@ -67,9 +88,7 @@ export function AdminProductsPage(): React.JSX.Element {
       {/* Cartouche d'information */}
       <Card testID="products-notice-card" className="p-6 bg-admin-50 border-0">
         <p className="text-17 text-text leading-relaxed">
-          Chaque valeur garde sa source et sa date. Une modification est tracée
-          dans le journal d'audit. Les nutriments essentiels par défaut sont
-          fixés par l'équipe scientifique (décision D2).
+          {t("products.notice")}
         </p>
       </Card>
 
@@ -81,7 +100,7 @@ export function AdminProductsPage(): React.JSX.Element {
           onClick={() => navigate("/nutrition/produits/plumpy-nut")}
           className="text-17 font-bold text-primary hover:underline cursor-pointer"
         >
-          Voir côté utilisateur ›
+          {t("products.viewUserSideLink")}
         </button>
       </div>
     </div>
@@ -89,4 +108,5 @@ export function AdminProductsPage(): React.JSX.Element {
 }
 
 export default AdminProductsPage;
+
 

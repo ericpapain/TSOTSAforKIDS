@@ -10,6 +10,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useTranslation } from "react-i18next";
 
 import { AppBar } from "../src/components/AppBar";
 import { requestPhoneOtp, verifyPhoneOtp } from "../src/features/auth/authService";
@@ -18,6 +19,7 @@ import { fontFamilies, fontSizes } from "../src/theme/typography";
 
 export default function OtpVerificationScreen(): React.JSX.Element {
   const router = useRouter();
+  const { t } = useTranslation("mobile");
   const params = useLocalSearchParams<{ phone?: string }>();
   const phone = params.phone || "+237 6XX XX XX XX";
 
@@ -44,10 +46,10 @@ export default function OtpVerificationScreen(): React.JSX.Element {
       if (res.success) {
         setCountdown(60);
       } else {
-        setErrorMessage(res.error || "Impossible de renvoyer le code.");
+        setErrorMessage(res.error || t("otp.resendFailed", { defaultValue: "Impossible de renvoyer le code." }));
       }
     } catch {
-      setErrorMessage("Erreur de connexion.");
+      setErrorMessage(t("otp.connError", { defaultValue: "Erreur de connexion." }));
     } finally {
       setLoading(false);
     }
@@ -55,7 +57,7 @@ export default function OtpVerificationScreen(): React.JSX.Element {
 
   const handleValidate = async (): Promise<void> => {
     if (code.length < 6) {
-      setErrorMessage("Veuillez saisir le code complet à 6 chiffres.");
+      setErrorMessage(t("otp.enterFullCode", { defaultValue: "Veuillez saisir le code complet à 6 chiffres." }));
       return;
     }
     setLoading(true);
@@ -69,10 +71,10 @@ export default function OtpVerificationScreen(): React.JSX.Element {
           router.replace("/u-modules");
         }
       } else {
-        setErrorMessage(res.error || "Code invalide ou expiré.");
+        setErrorMessage(res.error || t("otp.invalidCode", { defaultValue: "Code invalide ou expiré." }));
       }
     } catch {
-      setErrorMessage("Erreur réseau. Veuillez réessayer.");
+      setErrorMessage(t("otp.networkError", { defaultValue: "Erreur réseau. Veuillez réessayer." }));
     } finally {
       setLoading(false);
     }
@@ -87,7 +89,7 @@ export default function OtpVerificationScreen(): React.JSX.Element {
   return (
     <SafeAreaView style={styles.safeArea} edges={["top", "bottom"]}>
       <AppBar
-        title="Vérification"
+        title={t("otp.title", { defaultValue: "Vérification" })}
         onBack={() => router.replace("/u-signup")}
       />
 
@@ -98,7 +100,10 @@ export default function OtpVerificationScreen(): React.JSX.Element {
       >
         {/* Instruction text */}
         <Text style={styles.instructionText}>
-          Entrez le code reçu par SMS au {phone}
+          {t("otp.instruction", {
+            phone,
+            defaultValue: `Entrez le code reçu par SMS au ${phone}`,
+          })}
         </Text>
 
         {/* 6 OTP Boxes */}
@@ -156,8 +161,11 @@ export default function OtpVerificationScreen(): React.JSX.Element {
         >
           <Text style={[styles.resendText, countdown === 0 && styles.resendActive]}>
             {countdown > 0
-              ? `Renvoyer le code (${formatCountdown(countdown)})`
-              : "Renvoyer le code"}
+              ? t("otp.resendCountdown", {
+                  time: formatCountdown(countdown),
+                  defaultValue: `Renvoyer le code (${formatCountdown(countdown)})`,
+                })
+              : t("otp.resend", { defaultValue: "Renvoyer le code" })}
           </Text>
         </Pressable>
 
@@ -174,7 +182,9 @@ export default function OtpVerificationScreen(): React.JSX.Element {
           {loading ? (
             <ActivityIndicator size="small" color={colors.white} />
           ) : (
-            <Text style={styles.validateButtonText}>Valider</Text>
+            <Text style={styles.validateButtonText}>
+              {t("otp.submit", { defaultValue: "Valider" })}
+            </Text>
           )}
         </Pressable>
       </ScrollView>

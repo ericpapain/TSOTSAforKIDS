@@ -2,24 +2,30 @@ import { useRouter } from "expo-router";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useTranslation } from "react-i18next";
 
 import { AppBar } from "../src/components/AppBar";
 import { colors } from "../src/theme/colors";
 import { fontFamilies, fontSizes } from "../src/theme/typography";
 
 export default function ScreenM29(): React.JSX.Element {
+  const { t } = useTranslation(["mobile", "common"]);
   const router = useRouter();
+  const screenTitle = t("mobile:notifOff.title", { defaultValue: "Rappels désactivés" });
+
   return (
     <SafeAreaView style={styles.container} edges={["bottom", "left", "right"]}>
       <AppBar
-        title="Rappels désactivés"
+        title={screenTitle}
         onBack={() => router.replace("/u-notif-settings")}
       />
       <View style={styles.content} testID="screen-m29">
         <Text style={styles.codeText}>M29</Text>
-        <Text style={styles.titleText}>Rappels désactivés</Text>
+        <Text style={styles.titleText}>{screenTitle}</Text>
         <Text style={styles.descText}>
-          Écran de fondation (M29). L interface complète sera intégrée lors de l étape dédiée.
+          {t("mobile:notifOff.desc", {
+            defaultValue: "Écran de fondation (M29). L interface complète sera intégrée lors de l étape dédiée.",
+          })}
         </Text>
       </View>
     </SafeAreaView>

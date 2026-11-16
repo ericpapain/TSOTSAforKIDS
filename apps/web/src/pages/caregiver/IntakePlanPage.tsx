@@ -1,5 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { formatNumber, type SupportedLocale } from "@tsotsa/i18n";
+import "../../i18n/setup";
 import { Card, Button, Toggle, Notice } from "../../components";
 import { initialAminaIntakePlan } from "../../features/caregiver/caregiverData";
 import type { IntakePlanRow } from "../../features/caregiver/types";
@@ -7,6 +10,12 @@ import type { IntakePlanRow } from "../../features/caregiver/types";
 export function IntakePlanPage(): React.JSX.Element {
   const { personId = "A-014" } = useParams();
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation("caregiver");
+  const locale: SupportedLocale = i18n.language === "en" ? "en" : "fr";
+
+  useEffect(() => {
+    document.title = t("plan.pageTitle", { name: "Hamadou", id: personId });
+  }, [t, personId]);
 
   const [rows, setRows] = useState<IntakePlanRow[]>(initialAminaIntakePlan);
   const [reminders, setReminders] = useState<Record<string, boolean>>({
@@ -54,11 +63,20 @@ export function IntakePlanPage(): React.JSX.Element {
     setTimeout(() => setSavedSuccess(false), 4000);
   };
 
+  const getMealText = (id: string, fallback: string): string => {
+    if (id === "intake-1") return t("record.meals.intake-1");
+    if (id === "intake-2") return t("record.meals.intake-2");
+    if (id === "intake-3") return t("record.meals.intake-3");
+    if (id === "intake-4") return t("record.meals.intake-4");
+    if (id === "intake-5") return t("record.meals.intake-5");
+    return fallback;
+  };
+
   return (
     <div className="flex flex-col gap-6" data-testid="intake-plan-page">
       {savedSuccess && (
-        <Notice variant="success" title="Modifications enregistrées" testID="plan-saved-notice">
-          Le plan de prises d'Amina et les règles de rappel ont été mis à jour avec succès.
+        <Notice variant="success" title={t("plan.savedTitle")} testID="plan-saved-notice">
+          {t("plan.savedMessage", { name: "Hamadou" })}
         </Notice>
       )}
 
@@ -70,22 +88,22 @@ export function IntakePlanPage(): React.JSX.Element {
               className="cursor-pointer hover:underline"
               onClick={() => navigate("/soignant/personnes")}
             >
-              Personnes suivies
+              {t("nav.persons")}
             </span>{" "}
-            ›{" "}
+            {"› "}
             <span
               className="cursor-pointer hover:underline"
               onClick={() => navigate(`/soignant/personnes/${personId}`)}
             >
-              Amina
+              {`Hamadou`}
             </span>{" "}
-            › Plan de prises
+            {`› ${t("plan.breadcrumb")}`}
           </nav>
           <h1 className="text-24 font-bold text-text">
-            Plan de prises et rappels — Amina (#{personId})
+            {t("plan.title", { name: "Hamadou", id: personId })}
           </h1>
           <p className="text-14 text-text-muted mt-1">
-            Prescription active · {rows.length} prises quotidiennes
+            {t("plan.subtitle", { count: Number(formatNumber(rows.length, locale)) || rows.length })}
           </p>
         </div>
         <Button
@@ -95,22 +113,22 @@ export function IntakePlanPage(): React.JSX.Element {
           data-testid="add-intake-btn"
           onClick={() => setIsAdding(true)}
         >
-          + Ajouter une heure
+          {t("plan.addHourBtn")}
         </Button>
       </div>
 
       {/* Add slot modal / inline card */}
       {isAdding && (
-        <Card title="Ajouter une prise quotidienne">
+        <Card title={t("plan.addCardTitle")}>
           <form onSubmit={handleAddHour} className="grid grid-cols-1 sm:grid-cols-4 gap-4 items-end">
             <div>
               <label htmlFor="new-slot-time-input" className="block text-12 font-bold text-text mb-1">
-                Heure (HH:MM)
+                {t("plan.timeInputLabel")}
               </label>
               <input
                 id="new-slot-time-input"
                 type="text"
-                placeholder="21h30"
+                placeholder={t("plan.timePlaceholder")}
                 value={newTime}
                 onChange={(e) => setNewTime(e.target.value)}
                 data-testid="new-slot-time-input"
@@ -120,12 +138,12 @@ export function IntakePlanPage(): React.JSX.Element {
             </div>
             <div className="sm:col-span-2">
               <label htmlFor="new-slot-meal-input" className="block text-12 font-bold text-text mb-1">
-                Aliment / Prise prescrite
+                {t("plan.mealInputLabel")}
               </label>
               <input
                 id="new-slot-meal-input"
                 type="text"
-                placeholder="Bouillie enrichie ou collation"
+                placeholder={t("plan.mealPlaceholder")}
                 value={newMeal}
                 onChange={(e) => setNewMeal(e.target.value)}
                 data-testid="new-slot-meal-input"
@@ -135,12 +153,12 @@ export function IntakePlanPage(): React.JSX.Element {
             </div>
             <div>
               <label htmlFor="new-slot-portion-input" className="block text-12 font-bold text-text mb-1">
-                Portion
+                {t("plan.portionInputLabel")}
               </label>
               <input
                 id="new-slot-portion-input"
                 type="text"
-                placeholder="150 ml"
+                placeholder={t("plan.portionPlaceholder")}
                 value={newPortion}
                 onChange={(e) => setNewPortion(e.target.value)}
                 data-testid="new-slot-portion-input"
@@ -149,10 +167,10 @@ export function IntakePlanPage(): React.JSX.Element {
             </div>
             <div className="sm:col-span-4 flex justify-end gap-2">
               <Button type="button" variant="outline" size="sm" onClick={() => setIsAdding(false)}>
-                Annuler
+                {t("plan.cancelBtn")}
               </Button>
               <Button type="submit" variant="primary" space="care" size="sm" data-testid="save-new-slot-btn">
-                Ajouter au plan
+                {t("plan.saveSlotBtn")}
               </Button>
             </div>
           </form>
@@ -160,23 +178,23 @@ export function IntakePlanPage(): React.JSX.Element {
       )}
 
       {/* Intakes Table */}
-      <Card title="Horaires et rations prescrits">
+      <Card title={t("plan.tableCardTitle")}>
         <div className="overflow-x-auto">
           <table className="w-full text-left text-13 border-collapse">
             <thead>
               <tr className="border-b border-border bg-surface-2 text-12 font-bold text-text-muted">
-                <th className="py-2.5 px-3">Heure</th>
-                <th className="py-2.5 px-3">Prise / Aliment prescrit</th>
-                <th className="py-2.5 px-3">Portion</th>
-                <th className="py-2.5 px-3 text-center">Rappels actifs</th>
-                <th className="py-2.5 px-3 text-right">Actions</th>
+                <th className="py-2.5 px-3">{t("plan.columns.time")}</th>
+                <th className="py-2.5 px-3">{t("plan.columns.meal")}</th>
+                <th className="py-2.5 px-3">{t("plan.columns.portion")}</th>
+                <th className="py-2.5 px-3 text-center">{t("plan.columns.reminders")}</th>
+                <th className="py-2.5 px-3 text-right">{t("plan.columns.actions")}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border" data-testid="intake-plan-tbody">
               {rows.map((row) => (
                 <tr key={row.id} data-testid={`intake-row-${row.id}`}>
                   <td className="py-3 px-3 font-bold text-care text-14">{row.time}</td>
-                  <td className="py-3 px-3 text-text font-medium">{row.mealName}</td>
+                  <td className="py-3 px-3 text-text font-medium">{getMealText(row.id, row.mealName)}</td>
                   <td className="py-3 px-3 text-text-muted">{row.portion}</td>
                   <td className="py-3 px-3 text-center">
                     <Toggle
@@ -194,7 +212,7 @@ export function IntakePlanPage(): React.JSX.Element {
                       onClick={() => handleDelete(row.id)}
                       className="text-12 text-red-600 hover:underline font-medium"
                     >
-                      Supprimer
+                      {t("plan.deleteBtn")}
                     </button>
                   </td>
                 </tr>
@@ -205,15 +223,15 @@ export function IntakePlanPage(): React.JSX.Element {
       </Card>
 
       {/* Alert Rules Card */}
-      <Card title="Règles d'alerte soignant pour Amina">
+      <Card title={t("plan.rulesCardTitle", { name: "Hamadou" })}>
         <div className="flex flex-col gap-4 text-13">
           <div className="flex items-center justify-between py-2 border-b border-border">
             <div>
               <span className="font-bold text-text block">
-                Alerter en cas de prise non confirmée après 3 rappels
+                {t("plan.rule3RemindersTitle")}
               </span>
               <span className="text-12 text-text-muted">
-                Notification push et ajout en priorité haute au tableau de bord.
+                {t("plan.rule3RemindersDesc")}
               </span>
             </div>
             <Toggle
@@ -226,10 +244,10 @@ export function IntakePlanPage(): React.JSX.Element {
           <div className="flex items-center justify-between py-2 border-b border-border">
             <div>
               <span className="font-bold text-text block">
-                Notifier les prises confirmées en temps réel
+                {t("plan.ruleRealtimeTitle")}
               </span>
               <span className="text-12 text-text-muted">
-                Recevoir une notification in-app dès que la mère valide la prise.
+                {t("plan.ruleRealtimeDesc")}
               </span>
             </div>
             <Toggle
@@ -242,10 +260,10 @@ export function IntakePlanPage(): React.JSX.Element {
           <div className="flex items-center justify-between py-2 border-b border-border">
             <div>
               <span className="font-bold text-text block">
-                Alerte de stagnation si aucun gain sur 14 jours
+                {t("plan.ruleStagnationTitle")}
               </span>
               <span className="text-12 text-text-muted">
-                Déclenche une proposition d'adaptation de la ration et du protocole.
+                {t("plan.ruleStagnationDesc")}
               </span>
             </div>
             <Toggle
@@ -264,7 +282,7 @@ export function IntakePlanPage(): React.JSX.Element {
           size="md"
           onClick={() => navigate(`/soignant/personnes/${personId}`)}
         >
-          Retour au dossier
+          {t("plan.backToRecordBtn")}
         </Button>
         <Button
           variant="primary"
@@ -273,7 +291,7 @@ export function IntakePlanPage(): React.JSX.Element {
           data-testid="save-plan-btn"
           onClick={handleSave}
         >
-          Enregistrer les modifications
+          {t("plan.saveChangesBtn")}
         </Button>
       </div>
     </div>

@@ -1,0 +1,9 @@
+{
+  "summary": "Lot {file_name} ({status}) : {rows_valid} ligne(s) valide(s), {rows_warning} avertissement(s), {rows_error} erreur(s).",
+  "row_valid": "✓ valide",
+  "missing_food_name": "Nom de l'aliment manquant.",
+  "missing_source": "Source obligatoire manquante (identifiant ORKG, DOI ou référence d'article requis).",
+  "out_of_bounds_max": "✕ hors limites (max {max} {unit})",
+  "missing_unit": "⚠ unité manquante"
+}
+

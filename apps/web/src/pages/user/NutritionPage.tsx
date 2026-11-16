@@ -1,48 +1,129 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { normalizeLocale, DEFAULT_LOCALE } from "@tsotsa/i18n";
+import "../../i18n/setup";
 import { AppHeader } from "../../components/AppHeader";
-import {
-  PLUMPY_NUT_REFERENCE,
-  EQUIVALENT_LOCAL_FOODS,
-} from "../../features/nutrition/nutritionData";
-import type {
-  EquivalentLocalFood,
-  RegionFilter,
-} from "../../features/nutrition/types";
+import { useOptionalAuth } from "../../api/authContext";
+import { getLocalizedProducts, getLocalizedEquivalentFoods } from "../../features/nutrition/nutritionI18n";
+import type { ReferenceProduct, EquivalentLocalFood, RegionFilter } from "../../features/nutrition/types";
 import { FoodDetailModal } from "./FoodDetailModal";
+import { ProductSelectorDropdown } from "./ProductSelectorDropdown";
+import { RegionFilterDropdown } from "./RegionFilterDropdown";
+import { EquivalentsTable } from "./EquivalentsTable";
+import { ConfirmIntakeModal } from "./ConfirmIntakeModal";
+import { UserNavTabs } from "./UserNavTabs";
+import { AddChildModal } from "./AddChildModal";
+import { ChildHealthReportModal } from "../health/ChildHealthReportModal";
+import { useUserStore } from "../../features/user/useUserStore";
 
 export const NutritionPage: React.FC = () => {
+  const { t, i18n } = useTranslation("nutrition");
+  const { t: tMedical } = useTranslation("medical");
+  const locale = normalizeLocale(i18n.resolvedLanguage ?? i18n.language) ?? DEFAULT_LOCALE;
   const navigate = useNavigate();
+
+  const [selectedProductId, setSelectedProductId] = useState<string>("plumpy-nut");
+  const [isProductMenuOpen, setIsProductMenuOpen] = useState(false);
   const [regionFilter, setRegionFilter] = useState<RegionFilter>("all");
-  const [selectedFood, setSelectedFood] = useState<EquivalentLocalFood | null>(null);
+  const [isRegionMenuOpen, setIsRegionMenuOpen] = useState(false);
+  const [selectedFoodId, setSelectedFoodId] = useState<string | null>(null);
+  const [giveModalItem, setGiveModalItem] = useState<{ name: string; unit: string } | null>(null);
+  const [isMealHealthModalOpen, setIsMealHealthModalOpen] = useState(false);
   const [mobileMessage, setMobileMessage] = useState<string | null>(null);
+  const [isAddChildOpen, setIsAddChildOpen] = useState(false);
+
+  const { activeChild, customProducts: userCustomProducts, addIntake } = useUserStore();
+
+  useEffect(() => {
+    document.title = t("pageTitle");
+  }, [t]);
+
+  const allProducts = useMemo(() => getLocalizedProducts(t, tMedical, locale), [t, tMedical, locale]);
+  const selectedProduct = useMemo(
+    () => allProducts.find((p) => p.id === selectedProductId) ?? allProducts[0],
+    [allProducts, selectedProductId]
+  );
+  const refProducts = useMemo(() => allProducts.filter((p) => p.category !== "custom"), [allProducts]);
+  const customProducts = useMemo(() => {
+    const defaultCustom = allProducts.filter((p) => p.category === "custom");
+    const userCustom: ReferenceProduct[] = userCustomProducts.map((p) => ({
+      id: p.id,
+      name: p.name,
+      category: "custom" as const,
+      specification: p.specification,
+      nutrients: [
+        { name: "Énergie", value: `${p.nutrients.energyKcal} kcal`, isKey: true },
+        { name: "Protéines", value: `${p.nutrients.proteinG} g`, isKey: true },
+        { name: "Lipides", value: `${p.nutrients.lipidsG} g`, isKey: true },
+        { name: "Fer", value: `${p.nutrients.ironMg} mg`, isKey: true },
+        { name: "Zinc", value: `${p.nutrients.zincMg} mg`, isKey: true },
+        { name: "Calcium", value: `${p.nutrients.calciumMg} mg`, isKey: true },
+      ],
+      costInfo: "—",
+      notice: "Recette personnalisée enregistrée par la famille.",
+    }));
+    return [...defaultCustom, ...userCustom];
+  }, [allProducts, userCustomProducts]);
+  const allFoods = useMemo(() => getLocalizedEquivalentFoods(t, locale), [t, locale]);
+  const selectedFood = useMemo(
+    () => (selectedFoodId ? allFoods.find((f) => f.id === selectedFoodId) ?? null : null),
+    [allFoods, selectedFoodId]
+  );
 
   const displayedFoods = useMemo(() => {
-    if (regionFilter === "west") {
-      return EQUIVALENT_LOCAL_FOODS.filter((food) => food.availableInWestRegion);
-    }
-    return EQUIVALENT_LOCAL_FOODS;
-  }, [regionFilter]);
+    if (regionFilter === "all") return allFoods;
+    if (regionFilter === "west") return allFoods.filter((food) => food.availableInWestRegion);
+    return allFoods.filter((food) =>
+      food.regions ? food.regions.includes(regionFilter) : food.availableInWestRegion
+    );
+  }, [allFoods, regionFilter]);
 
-  const toggleRegionFilter = () => {
-    setRegionFilter((prev) => (prev === "all" ? "west" : "all"));
+  const activeRegionColumnHeader = useMemo(() => t(`regions.${regionFilter}.shortName`), [t, regionFilter]);
+
+  const isFoodAvailableInCurrentColumn = (food: EquivalentLocalFood): boolean => {
+    const targetRegion = regionFilter === "all" ? "west" : regionFilter;
+    if (targetRegion === "west") return food.availableInWestRegion;
+    return food.regions ? food.regions.includes(targetRegion) : food.availableInWestRegion;
+  };
+
+  const handleSelectRegion = (region: RegionFilter) => {
+    setRegionFilter(region);
+    setIsRegionMenuOpen(false);
+  };
+
+  const handleSelectProduct = (product: ReferenceProduct) => {
+    setSelectedProductId(product.id);
+    setIsProductMenuOpen(false);
   };
 
   const handleMobileClick = () => {
-    setMobileMessage("Redirection vers la version mobile...");
+    setMobileMessage(t("equivalentsCard.mobileRedirectToast"));
     setTimeout(() => {
       setMobileMessage(null);
       navigate("/dev/catalog");
     }, 800);
   };
 
+  const authContext = useOptionalAuth();
+  const handleLogout = () => {
+    authContext?.logout();
+    navigate("/connexion");
+  };
+
+  const handleViewCaregiverSide = () => {
+    authContext?.setSession(
+      { id: "usr-care-demo", name: "Prof. Félicité Ngeufack", role: "caregiver", isVerifiedCaregiver: true },
+      "token-session",
+      "refresh-session"
+    );
+    navigate("/soignant/personnes/A-014");
+  };
+
   return (
     <div className="min-h-screen bg-[#F1F3F2] font-sans">
-      <AppHeader
-        space="user"
-        spaceTitle="Espace utilisateur (web)"
-        userName="Compte démo · Amina"
-      />
+      <AppHeader space="user" onLogout={handleLogout} />
+      <UserNavTabs onOpenAddChild={() => setIsAddChildOpen(true)} />
 
       <main className="mx-auto max-w-[1440px] px-7 py-6">
         {mobileMessage && (
@@ -55,45 +136,36 @@ export const NutritionPage: React.FC = () => {
         )}
 
         <div className="flex flex-col gap-6 lg:flex-row items-start justify-between">
-          {/* Card 1: Produit de référence (Plumpy'Nut) */}
+          {/* Card 1: Produit de référence */}
           <section
             data-testid="product-card"
             className="w-full lg:w-[524px] min-h-[570px] rounded-[9px] border border-[#D5DEDA] bg-white p-5 flex flex-col justify-between shadow-sm"
           >
             <div>
-              <h2 className="text-[16px] font-bold text-[#5B6B66] mb-2">Produit</h2>
-              <div
-                data-testid="product-selector"
-                className="h-[51px] w-full rounded-[7px] border border-[#0F7B5F] bg-white px-4 flex items-center justify-between"
-              >
-                <span className="text-[21px] font-bold text-[#17302A]">
-                  {PLUMPY_NUT_REFERENCE.name} &nbsp;▾
-                </span>
-              </div>
+              <h2 className="text-[16px] font-bold text-[#5B6B66] mb-2">
+                {t("productCard.title")}
+              </h2>
+              <ProductSelectorDropdown
+                selectedProduct={selectedProduct}
+                isOpen={isProductMenuOpen}
+                onToggle={() => setIsProductMenuOpen((prev) => !prev)}
+                onSelect={handleSelectProduct}
+                refProducts={refProducts}
+                customProducts={customProducts}
+              />
 
-              <p className="mt-3 text-[14px] text-[#5B6B66]">
-                {PLUMPY_NUT_REFERENCE.specification}
-              </p>
+              <p className="mt-3 text-[14px] text-[#5B6B66]">{selectedProduct.specification}</p>
 
-              {/* Composition table rows */}
               <div className="mt-2 divide-y divide-[#E5ECE9] rounded-md overflow-hidden text-[16px]">
-                {PLUMPY_NUT_REFERENCE.nutrients.map((n, idx) => (
+                {selectedProduct.nutrients.map((n, idx) => (
                   <div
                     key={n.name}
-                    className={`flex h-[41px] items-center justify-between px-3 ${
-                      idx % 2 === 0 ? "bg-[#F7F9F8]" : "bg-white"
-                    }`}
+                    className={`flex h-[41px] items-center justify-between px-3 ${idx % 2 === 0 ? "bg-[#F7F9F8]" : "bg-white"}`}
                   >
-                    <span
-                      className={`text-[#17302A] ${
-                        n.isKey ? "font-bold" : "font-normal"
-                      }`}
-                    >
+                    <span className={`text-[#17302A] ${n.isKey ? "font-bold" : "font-normal"}`}>
                       {n.name}
                     </span>
-                    <span className="text-right text-[#17302A] font-normal">
-                      {n.value}
-                    </span>
+                    <span className="text-right text-[#17302A] font-normal">{n.value}</span>
                   </div>
                 ))}
               </div>
@@ -101,12 +173,24 @@ export const NutritionPage: React.FC = () => {
 
             <div className="space-y-3 mt-4">
               <div className="h-[51px] rounded-[7px] bg-[#F1F3F2] px-4 flex items-center text-[16px] text-[#5B6B66]">
-                {PLUMPY_NUT_REFERENCE.costInfo}
+                {selectedProduct.costInfo}
               </div>
-
               <div className="min-h-[80px] rounded-[7px] bg-[#FFF4D6] p-4 flex items-center text-[14px] text-[#7A5300] leading-snug">
-                {PLUMPY_NUT_REFERENCE.notice}
+                {selectedProduct.notice}
               </div>
+              <button
+                type="button"
+                data-testid="give-product-btn"
+                onClick={() =>
+                  setGiveModalItem({
+                    name: selectedProduct.name,
+                    unit: selectedProduct.id.startsWith("f-") ? "repas (100 ml)" : "sachet",
+                  })
+                }
+                className="w-full h-[48px] rounded-[9px] bg-[#0F7B5F] hover:bg-[#0c634c] text-white text-[17px] font-bold transition-colors cursor-pointer shadow-sm"
+              >
+                {t("productCard.giveButton", { name: "Hamadou" })}
+              </button>
             </div>
           </section>
 
@@ -116,10 +200,9 @@ export const NutritionPage: React.FC = () => {
             className="w-full lg:w-[838px] min-h-[570px] rounded-[9px] border border-[#D5DEDA] bg-white p-5 flex flex-col justify-between shadow-sm"
           >
             <div>
-              {/* Header: Title and Mobile link */}
               <div className="flex items-center justify-between mb-3">
                 <h1 className="text-[22px] font-bold text-[#17302A]">
-                  Aliments locaux équivalents
+                  {t("equivalentsCard.title")}
                 </h1>
                 <button
                   type="button"
@@ -127,92 +210,105 @@ export const NutritionPage: React.FC = () => {
                   onClick={handleMobileClick}
                   className="text-[17px] font-bold text-[#0F7B5F] hover:underline"
                 >
-                  ← Version mobile
+                  {t("equivalentsCard.mobileVersion")}
                 </button>
               </div>
 
-              {/* Filter Pills */}
               <div className="flex flex-wrap items-center gap-3 mb-4">
                 <span
                   data-testid="nutrients-pill"
                   className="inline-flex items-center rounded-full bg-[#E7F4EE] px-4 py-1.5 text-[13px] font-bold text-[#0F7B5F]"
                 >
-                  Nutriments : protéines, lipides, fer
+                  {selectedProduct.keyNutrientsSummary ?? t("equivalentsCard.defaultNutrientsSummary")}
                 </span>
 
-                <button
-                  type="button"
-                  data-testid="region-filter-btn"
-                  onClick={toggleRegionFilter}
-                  className="inline-flex items-center rounded-full bg-[#F1F3F2] px-4 py-1.5 text-[13px] font-bold text-[#17302A] hover:bg-[#E5ECE9] transition-colors"
-                >
-                  {regionFilter === "all" ? "Toutes régions ▾" : "Région Ouest ▾"}
-                </button>
+                <RegionFilterDropdown
+                  regionFilter={regionFilter}
+                  isOpen={isRegionMenuOpen}
+                  onToggle={() => setIsRegionMenuOpen((prev) => !prev)}
+                  onSelect={handleSelectRegion}
+                />
               </div>
 
-              {/* Table of equivalents */}
-              <div className="overflow-x-auto rounded-md" data-testid="ranked-foods-table">
-                <table className="w-full text-left text-[14px] border-collapse">
-                  <thead>
-                    <tr className="h-[39px] bg-[#0F7B5F] text-white font-bold">
-                      <th className="px-3 w-[40px]">#</th>
-                      <th className="px-3">Aliment local</th>
-                      <th className="px-2 w-[70px]">Commun</th>
-                      <th className="px-2 w-[90px]">En plus</th>
-                      <th className="px-2 w-[85px]">Protéines</th>
-                      <th className="px-2 w-[85px]">Lipides</th>
-                      <th className="px-2 w-[75px]">Fer</th>
-                      <th className="px-3 w-[100px]">Région Ouest</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {displayedFoods.map((food, idx) => (
-                      <tr
-                        key={food.id}
-                        data-testid={`food-row-${food.id}`}
-                        onClick={() => setSelectedFood(food)}
-                        className={`h-[50px] cursor-pointer transition-colors hover:bg-[#EDF5F2] ${
-                          idx % 2 === 0 ? "bg-[#F7F9F8]" : "bg-white"
-                        }`}
-                      >
-                        <td className="px-3 text-[#17302A] text-[16px]">{food.rank}</td>
-                        <td className="px-3 font-bold text-[16px]">
-                          <span
-                            className={
-                              food.id === "arachide"
-                                ? "text-[#0F7B5F] underline"
-                                : "text-[#17302A]"
-                            }
-                          >
-                            {food.name}
-                          </span>
-                        </td>
-                        <td className="px-2 text-[#17302A] text-[16px]">{food.commonNutrientsCount}</td>
-                        <td className="px-2 text-[#17302A] text-[16px]">{food.extraNutrient}</td>
-                        <td className="px-2 text-[#17302A] text-[16px]">{food.proteins}</td>
-                        <td className="px-2 text-[#17302A] text-[16px]">{food.lipids}</td>
-                        <td className="px-2 text-[#17302A] text-[16px]">{food.iron}</td>
-                        <td className="px-3 text-[#17302A] text-[16px]">
-                          {food.availableInWestRegion ? "✓" : "—"}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+              <EquivalentsTable
+                displayedFoods={displayedFoods}
+                activeRegionColumnHeader={activeRegionColumnHeader}
+                locale={locale}
+                onSelectFood={(id) => setSelectedFoodId(id)}
+                isFoodAvailableInCurrentColumn={isFoodAvailableInCurrentColumn}
+              />
             </div>
 
-            <p className="mt-4 text-[13px] italic text-[#5B6B66]">
-              Valeurs pour 100 g. Démo : USDA indicatives ; en production : base aliments extraite d'ORKG et validée.
-            </p>
+            <div className="mt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <p className="text-[13px] italic text-[#5B6B66]">
+                {t("equivalentsCard.footnote")}
+              </p>
+              <button
+                type="button"
+                data-testid="give-equivalent-btn"
+                onClick={() =>
+                  setGiveModalItem({
+                    name: displayedFoods[0]?.name ?? selectedProduct.name,
+                    unit: "portion",
+                  })
+                }
+                className="shrink-0 h-[44px] px-5 rounded-[9px] bg-[#0F7B5F] hover:bg-[#0c634c] text-white text-[15px] font-bold transition-colors cursor-pointer"
+              >
+                {t("equivalentsCard.confirmIntakeBtn")}
+              </button>
+            </div>
           </section>
         </div>
       </main>
 
-      <FoodDetailModal food={selectedFood} onClose={() => setSelectedFood(null)} />
+      <FoodDetailModal
+        food={selectedFood}
+        onClose={() => setSelectedFoodId(null)}
+        onGiveFood={(food) => setGiveModalItem({ name: food.name, unit: "portion" })}
+      />
+
+      <ConfirmIntakeModal
+        isOpen={!!giveModalItem}
+        personName={activeChild?.firstName || "Hamadou"}
+        itemName={giveModalItem?.name ?? selectedProduct.name}
+        defaultUnit={giveModalItem?.unit ?? "sachet"}
+        onClose={() => setGiveModalItem(null)}
+        onViewCaregiverSide={handleViewCaregiverSide}
+        onReportIncident={() => {
+          setGiveModalItem(null);
+          setIsMealHealthModalOpen(true);
+        }}
+        onConfirmIntake={(details) => {
+          if (activeChild) {
+            addIntake({
+              childId: activeChild.id,
+              childName: activeChild.firstName,
+              foodName: details.foodName,
+              quantity: details.quantity,
+              unit: details.unit,
+              time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+              date: "Aujourd'hui",
+              consumption: details.consumption,
+              status: "given",
+            });
+          }
+        }}
+      />
+
+      <ChildHealthReportModal
+        isOpen={isMealHealthModalOpen}
+        onClose={() => setIsMealHealthModalOpen(false)}
+        personId={activeChild?.id || ""}
+        personName={activeChild?.firstName || "Hamadou"}
+        declarationContext="during_meal"
+      />
+
+      <AddChildModal
+        isOpen={isAddChildOpen}
+        onClose={() => setIsAddChildOpen(false)}
+      />
     </div>
   );
 };
 
 export default NutritionPage;
-

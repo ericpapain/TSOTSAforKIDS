@@ -1,0 +1,37 @@
+{
+  "reminder": {
+    "title": "Rappel de prise pour {first_name}",
+    "body": "Il est l'heure de donner la prise de {product_name} ({quantity} {unit}) à {first_name}.",
+    "actions": [
+      { "id": "given", "label": "C'est donné" },
+      { "id": "later", "label": "Plus tard" },
+      { "id": "not_given", "label": "Pas donné" }
+    ]
+  },
+  "caregiver_reminder": {
+    "title": "Rappel suivi : {first_name}",
+    "body": "Prise prévue à {local_time} pour {first_name}."
+  },
+  "reminder_followup": {
+    "title": "Relance : prise de traitement",
+    "body": "La prise prévue n'a pas encore été confirmée.",
+    "actions": [
+      { "id": "given", "label": "C'est donné" },
+      { "id": "later", "label": "Plus tard" },
+      { "id": "not_given", "label": "Pas donné" }
+    ]
+  },
+  "intake_unconfirmed": {
+    "title": "Alerte : prise non confirmée",
+    "body": "Un enfant suivi n'a pas pris son traitement dans les 30 minutes prévues."
+  },
+  "intake_confirmed": {
+    "title": "Prise confirmée",
+    "body": "Prise de {product_name} ({quantity} {unit}) confirmée pour {first_name}."
+  },
+  "reminders_disabled": {
+    "title": "Alerte : rappels désactivés",
+    "body": "Le représentant légal de {first_name} a désactivé les rappels de prises."
+  }
+}
+

@@ -14,7 +14,7 @@ test.describe("Parcours Utilisateur Web TSOTSA Kids (W01)", () => {
   }) => {
     // 1. En-tête et cartes principales
     await expect(page.getByText("Espace utilisateur (web)")).toBeVisible();
-    await expect(page.getByText("Compte démo · Amina")).toBeVisible();
+    await expect(page.getByText("Compte démo · Hamadou")).toBeVisible();
     await expect(page.getByTestId("product-card")).toBeVisible();
     await expect(page.getByTestId("equivalents-card")).toBeVisible();
 
@@ -37,6 +37,7 @@ test.describe("Parcours Utilisateur Web TSOTSA Kids (W01)", () => {
     const regionFilterBtn = page.getByTestId("region-filter-btn");
     await expect(regionFilterBtn).toContainText("Toutes régions ▾");
     await regionFilterBtn.click();
+    await page.getByTestId("region-option-west").click();
     await expect(regionFilterBtn).toContainText("Région Ouest ▾");
 
     // Sésame n'est pas disponible pour l'Ouest, Arachide oui
@@ -45,6 +46,7 @@ test.describe("Parcours Utilisateur Web TSOTSA Kids (W01)", () => {
 
     // Réinitialiser le filtre
     await regionFilterBtn.click();
+    await page.getByTestId("region-option-all").click();
     await expect(regionFilterBtn).toContainText("Toutes régions ▾");
     await expect(page.getByText("Sésame")).toBeVisible();
 

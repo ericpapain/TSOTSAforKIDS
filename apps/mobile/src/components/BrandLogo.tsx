@@ -119,7 +119,7 @@ export function BrandLogo({
               },
             ]}
           >
-            KIDS
+            4KIDS
           </Text>
         </View>
       )}
