@@ -65,7 +65,9 @@ async def test_migration_promotes_target_admin_safely(db_session):
     uid = user_row[0]
 
     # Update role to admin
-    admin_role_id = role_map["admin"].id
+    admin_row = (await conn.execute(text("SELECT id FROM roles WHERE code = 'admin'"))).fetchone()
+    assert admin_row is not None
+    admin_role_id = admin_row[0]
     await conn.execute(
         text("UPDATE user_roles SET role_id = :role_id WHERE user_id = :uid"),
         {"role_id": admin_role_id, "uid": uid},
