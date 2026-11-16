@@ -9,9 +9,9 @@ and `docker compose up`.
 from __future__ import annotations
 
 from pathlib import Path
+import re
 import subprocess
 import sys
-import yaml
 
 COMPOSE_FILE = Path("docker-compose.yml")
 
@@ -21,23 +21,15 @@ def verify_compose_volume_declaration(compose_path: Path = COMPOSE_FILE) -> tupl
     if not compose_path.is_file():
         return False, f"File {compose_path} not found"
 
-    try:
-        content = yaml.safe_load(compose_path.read_text(encoding="utf-8"))
-    except Exception as err:
-        return False, f"YAML parse error: {err}"
+    content = compose_path.read_text(encoding="utf-8")
 
-    services = content.get("services", {})
-    mysql_svc = services.get("mysql", {})
-    volumes = mysql_svc.get("volumes", [])
-
-    has_named_volume = any("mysql_data:/var/lib/mysql" in str(v) for v in volumes)
-    top_volumes = content.get("volumes", {})
-    has_top_volume_decl = "mysql_data" in top_volumes
+    has_named_volume = bool(re.search(r"-\s+['\"]?mysql_data:/var/lib/mysql['\"]?", content))
+    has_top_volume = bool(re.search(r"^volumes:\s*\n(?:\s+.*\n)*?\s+mysql_data:", content, re.MULTILINE))
 
     if not has_named_volume:
         return False, "mysql service does not mount named volume 'mysql_data:/var/lib/mysql'"
 
-    if not has_top_volume_decl:
+    if not has_top_volume:
         return False, "top-level 'volumes' section does not declare 'mysql_data'"
 
     return True, "docker-compose.yml correctly declares persistent 'mysql_data' volume"
@@ -104,4 +96,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
-
