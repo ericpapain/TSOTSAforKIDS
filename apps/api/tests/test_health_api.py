@@ -145,7 +145,7 @@ async def test_get_symptom_catalog(
         resp = await ac.get("/v1/health/symptoms/catalog", headers=headers)
         assert resp.status_code == 200
         data = resp.json()
-        assert len(data) >= 12
+        assert len(data) >= 19
         danger_codes = [s["code"] for s in data if s["is_danger_sign"]]
         assert "convulsions" in danger_codes
         assert "vomits_everything" in danger_codes

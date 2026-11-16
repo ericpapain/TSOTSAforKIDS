@@ -109,7 +109,14 @@ async def seed_symptom_catalog(session: AsyncSession) -> dict[str, str]:
         ("diarrhea", "digestive", "Diarrhée", False, 13),
         ("vomiting", "digestive", "Vomissements", False, 14),
         ("reduced_eating", "digestive", "Mange moins", False, 15),
+        ("reduced_drinking", "digestive", "Boit moins", False, 16),
+        ("fatigue", "general", "Fatigue inhabituelle", False, 17),
+        ("irritability", "general", "Irritable ou pleurs inhabituels", False, 18),
+        ("edema_both_feet", "nutritional", "Gonflement des deux pieds", False, 19),
+        ("weight_loss", "nutritional", "Perte de poids visible", False, 20),
         ("skin_rash", "skin", "Éruption cutanée", False, 21),
+        ("localized_pain", "pain", "Douleur localisée", False, 22),
+        ("other_change", "general", "Autre changement", False, 30),
     ]
     catalog_map = {}
     for code, cat, label, is_danger, order in items:
