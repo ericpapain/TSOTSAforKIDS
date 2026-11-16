@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
+import { FaTimes } from "react-icons/fa";
 import {
   getSymptomCatalog,
   createHealthEvent,
@@ -27,7 +29,8 @@ export const ChildHealthReportModal: React.FC<ChildHealthReportModalProps> = ({
   intakeId,
   onSuccess,
 }) => {
-  const displayName = childName || personName || "l'enfant";
+  const { t } = useTranslation(["medical", "common", "mobile"]);
+  const displayName = childName || personName || t("medical:childReport.fallbackChild", "l'enfant");
   const [step, setStep] = useState<number>(1);
   const [loading, setLoading] = useState(false);
   const [catalog, setCatalog] = useState<SymptomCatalogItem[]>([]);
@@ -48,12 +51,12 @@ export const ChildHealthReportModal: React.FC<ChildHealthReportModalProps> = ({
       setSelectedSymptomCode("");
       setFeedbackMessage(null);
       setIsDanger(false);
-      setDuringMeal(Boolean(intakeId));
+      setDuringMeal(declarationContext === "during_meal" || Boolean(intakeId));
       getSymptomCatalog()
         .then(setCatalog)
         .catch(() => {});
     }
-  }, [isOpen, intakeId]);
+  }, [isOpen, intakeId, declarationContext]);
 
   if (!isOpen) return null;
 
@@ -101,12 +104,12 @@ export const ChildHealthReportModal: React.FC<ChildHealthReportModalProps> = ({
       };
 
       const res = await createHealthEvent(payload);
-      setFeedbackMessage(res.parent_guidance_message || "Signalement enregistré.");
+      setFeedbackMessage(res.parent_guidance_message || t("medical:childReport.savedSuccess", "Signalement enregistré."));
       setIsDanger(res.priority === "urgent" || res.has_danger_sign);
       setStep(5);
       if (onSuccess) onSuccess();
     } catch {
-      setFeedbackMessage("Erreur lors de l'enregistrement. Veuillez réessayer.");
+      setFeedbackMessage(t("medical:childReport.savedError", "Erreur lors de l'enregistrement. Veuillez réessayer."));
     } finally {
       setLoading(false);
     }
@@ -122,13 +125,15 @@ export const ChildHealthReportModal: React.FC<ChildHealthReportModalProps> = ({
       <div className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-xl">
         <div className="mb-4 flex items-center justify-between border-b pb-3">
           <h2 className="text-xl font-bold text-slate-800">
-            Santé et bien-être · {displayName}
+            {t("medical:childReport.modalTitle", "Santé et bien-être · {{name}}", { name: displayName })}
           </h2>
           <button
+            type="button"
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 font-bold text-lg"
+            aria-label={t("common:actions.close", "Fermer")}
+            className="text-gray-400 hover:text-gray-600 p-1"
           >
-            ✕
+            <FaTimes size={16} />
           </button>
         </div>
 
@@ -138,13 +143,14 @@ export const ChildHealthReportModal: React.FC<ChildHealthReportModalProps> = ({
             className="mb-4 rounded-xl bg-red-100 border border-red-300 p-4 text-red-900 animate-pulse"
           >
             <div className="flex items-start gap-3">
+              {/* eslint-disable-next-line i18next/no-literal-string */}
               <span className="text-2xl">⚠️</span>
               <div>
                 <p className="font-extrabold text-sm uppercase tracking-wide">
-                  URGENCE VITALE : Signe de danger vital détecté
+                  {t("medical:childReport.vitalDangerDetected", "URGENCE VITALE : Signe de danger vital détecté")}
                 </p>
                 <p className="mt-1 text-xs">
-                  Conduisez immédiatement l'enfant au centre de santé ou à l'hôpital le plus proche.
+                  {t("medical:childReport.vitalDangerAdvice", "Conduisez immédiatement l'enfant au centre de santé ou à l'hôpital le plus proche.")}
                 </p>
               </div>
             </div>
@@ -155,7 +161,7 @@ export const ChildHealthReportModal: React.FC<ChildHealthReportModalProps> = ({
         {step === 1 && (
           <div>
             <p className="mb-3 text-sm text-slate-600 font-medium">
-              Quel problème ou changement observez-vous chez votre enfant ?
+              {t("medical:childReport.step1Question", "Quel problème ou changement observez-vous chez votre enfant ?")}
             </p>
             <div className="max-h-64 space-y-2 overflow-y-auto pr-1">
               {catalog.map((sym) => (
@@ -175,7 +181,7 @@ export const ChildHealthReportModal: React.FC<ChildHealthReportModalProps> = ({
                   <span>{sym.label_fr}</span>
                   {sym.is_danger_sign && (
                     <span className="rounded bg-red-200 px-2 py-0.5 text-xs font-bold text-red-800">
-                      Urgent
+                      {t("medical:childReport.urgentBadge", "Urgent")}
                     </span>
                   )}
                 </button>
@@ -187,7 +193,7 @@ export const ChildHealthReportModal: React.FC<ChildHealthReportModalProps> = ({
                 onClick={onClose}
                 className="rounded-xl border px-4 py-2 text-sm text-slate-600 hover:bg-slate-50"
               >
-                Annuler
+                {t("common:actions.cancel", "Annuler")}
               </button>
               <button
                 type="button"
@@ -196,7 +202,7 @@ export const ChildHealthReportModal: React.FC<ChildHealthReportModalProps> = ({
                 onClick={() => setStep(2)}
                 className="rounded-xl bg-blue-600 px-5 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50"
               >
-                Continuer
+                {t("common:actions.continue", "Continuer")}
               </button>
             </div>
           </div>
@@ -207,24 +213,24 @@ export const ChildHealthReportModal: React.FC<ChildHealthReportModalProps> = ({
           <div data-testid="step-2-view" className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">
-                Depuis combien de temps ce problème est-il présent ?
+                {t("medical:childReport.step2DurationQuestion", "Depuis combien de temps ce problème est-il présent ?")}
               </label>
               <select
                 value={durationKey}
                 onChange={(e) => setDurationKey(e.target.value)}
                 className="w-full rounded-xl border border-slate-300 p-2.5 text-sm"
               >
-                <option value="less_than_24h">Moins de 24 heures</option>
-                <option value="1_to_3_days">1 à 3 jours</option>
-                <option value="4_to_13_days">4 à 13 jours</option>
-                <option value="14_days_or_more">14 jours ou plus</option>
+                <option value="less_than_24h">{t("medical:childReport.durationLessThan24h", "Moins de 24 heures")}</option>
+                <option value="1_to_3_days">{t("medical:childReport.duration1to3Days", "1 à 3 jours")}</option>
+                <option value="4_to_13_days">{t("medical:childReport.duration4to13Days", "4 à 13 jours")}</option>
+                <option value="14_days_or_more">{t("medical:childReport.duration14DaysPlus", "14 jours ou plus")}</option>
               </select>
             </div>
 
             {selectedSymptomCode === "fever" && (
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">
-                  Température mesurée (°C, facultatif)
+                  {t("medical:childReport.tempCelsiusLabel", "Température mesurée (°C, facultatif)")}
                 </label>
                 <input
                   type="number"
@@ -233,7 +239,7 @@ export const ChildHealthReportModal: React.FC<ChildHealthReportModalProps> = ({
                   max="43"
                   value={tempCelsius}
                   onChange={(e) => setTempCelsius(e.target.value)}
-                  placeholder="Ex: 38.5"
+                  placeholder="38.5"
                   className="w-full rounded-xl border border-slate-300 p-2.5 text-sm"
                 />
               </div>
@@ -243,7 +249,7 @@ export const ChildHealthReportModal: React.FC<ChildHealthReportModalProps> = ({
               <div className="space-y-2">
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">
-                    Nombre de selles liquides aujourd'hui
+                    {t("medical:childReport.stoolsPerDayLabel", "Nombre de selles liquides aujourd'hui")}
                   </label>
                   <input
                     type="number"
@@ -251,7 +257,7 @@ export const ChildHealthReportModal: React.FC<ChildHealthReportModalProps> = ({
                     max="30"
                     value={stoolsPerDay}
                     onChange={(e) => setStoolsPerDay(e.target.value)}
-                    placeholder="Ex: 4"
+                    placeholder="4"
                     className="w-full rounded-xl border border-slate-300 p-2.5 text-sm"
                   />
                 </div>
@@ -262,7 +268,7 @@ export const ChildHealthReportModal: React.FC<ChildHealthReportModalProps> = ({
                     onChange={(e) => setHasBloodStools(e.target.checked)}
                     className="rounded border-slate-300 text-blue-600"
                   />
-                  <span>Présence de sang visible dans les selles</span>
+                  <span>{t("medical:childReport.bloodInStoolsLabel", "Présence de sang visible dans les selles")}</span>
                 </label>
               </div>
             )}
@@ -270,7 +276,7 @@ export const ChildHealthReportModal: React.FC<ChildHealthReportModalProps> = ({
             {selectedSymptomCode === "vomiting" && (
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">
-                  Nombre de vomissements aujourd'hui
+                  {t("medical:childReport.vomitPerDayLabel", "Nombre de vomissements aujourd'hui")}
                 </label>
                 <input
                   type="number"
@@ -278,7 +284,7 @@ export const ChildHealthReportModal: React.FC<ChildHealthReportModalProps> = ({
                   max="30"
                   value={vomitPerDay}
                   onChange={(e) => setVomitPerDay(e.target.value)}
-                  placeholder="Ex: 3"
+                  placeholder="3"
                   className="w-full rounded-xl border border-slate-300 p-2.5 text-sm"
                 />
               </div>
@@ -290,7 +296,7 @@ export const ChildHealthReportModal: React.FC<ChildHealthReportModalProps> = ({
                 onClick={() => setStep(1)}
                 className="rounded-xl border px-4 py-2 text-sm text-slate-600"
               >
-                Retour
+                {t("common:actions.back", "Retour")}
               </button>
               <button
                 type="button"
@@ -298,7 +304,7 @@ export const ChildHealthReportModal: React.FC<ChildHealthReportModalProps> = ({
                 onClick={() => setStep(3)}
                 className="rounded-xl bg-blue-600 px-5 py-2 text-sm font-semibold text-white hover:bg-blue-700"
               >
-                Continuer
+                {t("common:actions.continue", "Continuer")}
               </button>
             </div>
           </div>
@@ -315,19 +321,19 @@ export const ChildHealthReportModal: React.FC<ChildHealthReportModalProps> = ({
                   onChange={(e) => setDuringMeal(e.target.checked)}
                   className="rounded border-slate-300 text-blue-600"
                 />
-                <span>Ce problème est survenu pendant ou juste après un repas</span>
+                <span>{t("medical:childReport.occurredDuringMeal", "Ce problème est survenu pendant ou juste après un repas")}</span>
               </label>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">
-                Remarques ou détails supplémentaires pour le soignant
+                {t("medical:childReport.commentLabel", "Remarques ou détails supplémentaires pour le soignant")}
               </label>
               <textarea
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
                 rows={3}
-                placeholder="Décrivez avec vos propres mots ce que vous avez remarqué..."
+                placeholder={t("medical:childReport.commentPlaceholder", "Décrivez avec vos propres mots ce que vous avez remarqué...")}
                 className="w-full rounded-xl border border-slate-300 p-2.5 text-sm"
               />
             </div>
@@ -338,7 +344,7 @@ export const ChildHealthReportModal: React.FC<ChildHealthReportModalProps> = ({
                 onClick={() => setStep(2)}
                 className="rounded-xl border px-4 py-2 text-sm text-slate-600"
               >
-                Retour
+                {t("common:actions.back", "Retour")}
               </button>
               <button
                 type="button"
@@ -346,7 +352,7 @@ export const ChildHealthReportModal: React.FC<ChildHealthReportModalProps> = ({
                 onClick={() => setStep(4)}
                 className="rounded-xl bg-blue-600 px-5 py-2 text-sm font-semibold text-white hover:bg-blue-700"
               >
-                Récapitulatif
+                {t("medical:childReport.summaryStepBtn", "Récapitulatif")}
               </button>
             </div>
           </div>
@@ -357,13 +363,13 @@ export const ChildHealthReportModal: React.FC<ChildHealthReportModalProps> = ({
           <div data-testid="step-4-view" className="space-y-4">
             <div className="rounded-xl bg-slate-50 border p-4 space-y-2 text-sm text-slate-700">
               <p>
-                <strong>Problème :</strong> {currentSymptom?.label_fr}
+                <strong>{t("medical:childReport.problemLabel", "Problème")} :</strong> {currentSymptom?.label_fr}
               </p>
               <p>
-                <strong>Durée :</strong> {durationKey === "less_than_24h" ? "< 24h" : durationKey}
+                <strong>{t("medical:childReport.durationLabel", "Durée")} :</strong> {durationKey === "less_than_24h" ? "< 24h" : durationKey}
               </p>
-              {duringMeal && <p className="text-amber-700 font-medium">Incident associé à la prise de repas</p>}
-              {comment && <p><strong>Commentaire :</strong> {comment}</p>}
+              {duringMeal && <p className="text-amber-700 font-medium">{t("medical:childReport.mealIncidentNotice", "Incident associé à la prise de repas")}</p>}
+              {comment && <p><strong>{t("medical:childReport.commentLabelShort", "Commentaire")} :</strong> {comment}</p>}
             </div>
 
             <div className="flex justify-between pt-3">
@@ -372,7 +378,7 @@ export const ChildHealthReportModal: React.FC<ChildHealthReportModalProps> = ({
                 onClick={() => setStep(3)}
                 className="rounded-xl border px-4 py-2 text-sm text-slate-600"
               >
-                Modifier
+                {t("common:actions.edit", "Modifier")}
               </button>
               <button
                 type="button"
@@ -381,7 +387,7 @@ export const ChildHealthReportModal: React.FC<ChildHealthReportModalProps> = ({
                 onClick={handleSubmit}
                 className="rounded-xl bg-green-600 px-5 py-2 text-sm font-semibold text-white hover:bg-green-700 disabled:opacity-50"
               >
-                {loading ? "Envoi en cours..." : "Confirmer et envoyer"}
+                {loading ? t("medical:childReport.sending", "Envoi en cours...") : t("medical:childReport.confirmAndSend", "Confirmer et envoyer")}
               </button>
             </div>
           </div>
@@ -390,9 +396,10 @@ export const ChildHealthReportModal: React.FC<ChildHealthReportModalProps> = ({
         {/* STEP 5: Final Result */}
         {step === 5 && (
           <div data-testid="step-5-guidance-view" className="text-center py-4 space-y-4">
+            {/* eslint-disable-next-line i18next/no-literal-string */}
             <div className="text-4xl">{isDanger ? "🚨" : "✅"}</div>
             <h3 className="text-lg font-bold text-slate-800">
-              {isDanger ? "Orientation d'urgence" : "Signalement bien enregistré"}
+              {isDanger ? t("medical:childReport.emergencyOrientationTitle", "Orientation d'urgence") : t("medical:childReport.recordedSuccessTitle", "Signalement bien enregistré")}
             </h3>
             <p className="text-sm text-slate-600 bg-slate-50 rounded-xl p-4 border">
               {feedbackMessage}
@@ -402,7 +409,7 @@ export const ChildHealthReportModal: React.FC<ChildHealthReportModalProps> = ({
               onClick={onClose}
               className="w-full rounded-xl bg-blue-600 py-2.5 text-sm font-semibold text-white hover:bg-blue-700"
             >
-              Fermer
+              {t("common:actions.close", "Fermer")}
             </button>
           </div>
         )}
@@ -410,4 +417,3 @@ export const ChildHealthReportModal: React.FC<ChildHealthReportModalProps> = ({
     </div>
   );
 };
-

@@ -216,6 +216,7 @@ export const ConfirmIntakeModal: React.FC<ConfirmIntakeModalProps> = ({
                   onClick={onReportIncident}
                   className="w-full py-2.5 px-3 rounded-[9px] bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 text-[13px] font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer mt-1"
                 >
+                  {/* eslint-disable-next-line i18next/no-literal-string */}
                   <span aria-hidden="true">⚠️</span>
                   <span>{t("confirmIntakeModal.reportIncident", "Signaler un problème de santé pendant ce repas")}</span>
                 </button>
