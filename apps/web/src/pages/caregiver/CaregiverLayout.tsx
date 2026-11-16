@@ -64,6 +64,14 @@ export function CaregiverLayout({ children }: { children: React.ReactNode }): Re
 
   const displayName = session?.name || session?.email || "Soignant";
 
+  React.useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const viewAsParam = params.get("viewAs");
+    if (viewAsParam && authContext?.viewAsCaregiver && !session?.viewAsCaregiverId) {
+      authContext.viewAsCaregiver("dr-view-as", viewAsParam);
+    }
+  }, [location.search, authContext, session?.viewAsCaregiverId]);
+
   return (
     <>
       <ViewAsBanner />

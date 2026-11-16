@@ -19,7 +19,7 @@ export const RoleSelector: React.FC<RoleSelectorProps> = ({ selectedRole, onSele
   const { t } = useTranslation("auth");
 
   return (
-    <div className="mb-6">
+    <div className="mb-6" data-testid="role-selector">
       <label className="block text-xs font-semibold uppercase tracking-wider text-text-secondary mb-2 text-left">
         {t("login.whoAreYou")}
       </label>

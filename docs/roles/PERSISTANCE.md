@@ -78,3 +78,36 @@ Toute opération sensible fait l'objet d'un enregistrement en ajout seul (`appen
    curl https://www.tsotsa-for-kids.com/api/health
    ```
 
+---
+
+## 5. Validation du Test de Persistance Docker (`docker compose down` / `docker compose up`)
+
+### A. Déclaration Contractuelle du Volume
+Le fichier d'orchestration `docker-compose.yml` déclare explicitement un volume nommé persistant `mysql_data` rattaché au chemin de stockage interne MySQL `/var/lib/mysql` :
+```yaml
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: tsotsa-mysql
+    volumes:
+      - mysql_data:/var/lib/mysql
+volumes:
+  mysql_data:
+```
+
+### B. Cycle de Vie et Préservation des Données
+- Lors de l'arrêt des conteneurs via la commande standard :
+  ```bash
+  docker compose down
+  ```
+  Le conteneur applicatif est arrêté et retiré, mais le volume nommé `mysql_data` reste **strictement conservé** sur l'hôte (seule l'option destructive `-v` détruirait le volume, formellement interdite).
+- Lors de la relance :
+  ```bash
+  docker compose up -d
+  ```
+  Le conteneur MySQL remonte instantanément les données existantes contenues dans `/var/lib/mysql`. L'intégralité des tables, comptes, profils soignants et dossiers enfants est immédiatement disponible sans altération.
+
+### C. Script Automatisé de Vérification
+Le script [`scripts/test_docker_persistence.py`](../../scripts/test_docker_persistence.py) permet de vérifier automatiquement l'intégrité de cette configuration et d'exécuter un test de cycle complet de persistance.
+
+
