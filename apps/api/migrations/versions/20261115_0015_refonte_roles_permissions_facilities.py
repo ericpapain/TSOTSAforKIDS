@@ -254,3 +254,4 @@ def downgrade() -> None:
     op.drop_table("permission_grants")
     op.drop_table("role_permissions")
     op.drop_table("permissions")
+

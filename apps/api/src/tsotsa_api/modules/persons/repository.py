@@ -62,6 +62,9 @@ class PersonsRepository:
         region_id: str | None = None,
         pseudonym: str | None = None,
         created_by: str | None = None,
+        status: str = "pending",
+        validated_by: str | None = None,
+        validated_at: datetime | None = None,
     ) -> Person:
         pseudo = pseudonym.strip() if pseudonym else await self.generate_next_pseudonym()
         person = Person(
@@ -70,6 +73,9 @@ class PersonsRepository:
             birth_date=birth_date,
             sex=sex.strip().upper(),
             region_id=region_id,
+            status=status,
+            validated_by=validated_by,
+            validated_at=validated_at,
             created_by=created_by,
         )
         self.session.add(person)

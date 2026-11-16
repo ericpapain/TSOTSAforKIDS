@@ -154,10 +154,7 @@ async def test_cli_create_admin_success(db_session):
     assert user.status == "active"
 
     # Verify identity and bcrypt hash in same session
-    stmt = (
-        select(UserIdentity)
-        .where(UserIdentity.email == "test.admin.cli@tsotsa-for-kids.com")
-    )
+    stmt = select(UserIdentity).where(UserIdentity.email == "test.admin.cli@tsotsa-for-kids.com")
     res = await db_session.execute(stmt)
     identity = res.scalar_one_or_none()
     assert identity is not None

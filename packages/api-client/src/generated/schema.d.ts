@@ -286,6 +286,166 @@ export interface paths {
         patch: operations["patch_me_v1_me_patch"];
         trace?: never;
     };
+    "/v1/staff/pending": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Lister le personnel en attente de validation
+         * @description Retrieve caregivers and field agents awaiting validation.
+         */
+        get: operations["list_pending_staff_v1_staff_pending_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/staff/{user_id}/validate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Valider ou refuser un compte soignant ou agent de terrain
+         * @description Validate or refuse a pending staff account.
+         */
+        post: operations["validate_staff_v1_staff__user_id__validate_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/staff/{user_id}/suspend": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Suspendre un compte utilisateur
+         * @description Suspend user account.
+         */
+        post: operations["suspend_user_v1_staff__user_id__suspend_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/staff/{user_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Supprimer (soft delete) un compte utilisateur
+         * @description Soft delete user account.
+         */
+        delete: operations["delete_user_v1_staff__user_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/permissions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Lister toutes les permissions canoniques
+         * @description List system permissions.
+         */
+        get: operations["list_permissions_v1_permissions_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/permissions/users/{user_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Lister les droits délégués d'un utilisateur
+         * @description List granted permissions for a target user.
+         */
+        get: operations["list_user_grants_v1_permissions_users__user_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/permissions/grant": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Déléguer un droit à un utilisateur
+         * @description Delegate a permission.
+         */
+        post: operations["grant_permission_v1_permissions_grant_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/permissions/revoke": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Révoquer un droit délégué
+         * @description Revoke a permission grant.
+         */
+        post: operations["revoke_permission_v1_permissions_revoke_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/nutrients": {
         parameters: {
             query?: never;
@@ -1244,6 +1404,66 @@ export interface paths {
         get: operations["get_caregiver_establishment_person_v1_caregiver_organizations__org_id__persons__person_id__get"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/patients/pending": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Pending Patients
+         * @description List patients awaiting validation (requires patients.validate).
+         */
+        get: operations["list_pending_patients_v1_patients_pending_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/patients/{person_id}/validate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Validate Patient
+         * @description Validate or refuse a pending patient (requires patients.validate).
+         */
+        post: operations["validate_patient_v1_patients__person_id__validate_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/patients/{person_id}/assign": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Assign Patient Caregiver
+         * @description Assign patient to an approved caregiver (requires patients.assign).
+         */
+        post: operations["assign_patient_caregiver_v1_patients__person_id__assign_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -2876,7 +3096,31 @@ export interface components {
              */
             password: string;
             /** Display Name */
-            display_name: string;
+            display_name?: string | null;
+            /** First Name */
+            first_name?: string | null;
+            /** Last Name */
+            last_name?: string | null;
+            /**
+             * Role
+             * @default parent
+             * @enum {string}
+             */
+            role: "parent" | "field_agent" | "caregiver";
+            /** Region Id */
+            region_id?: string | null;
+            /** Locality */
+            locality?: string | null;
+            /** Phone */
+            phone?: string | null;
+            /** Facility Id */
+            facility_id?: string | null;
+            /** Speciality */
+            speciality?: string | null;
+            /** Order Number */
+            order_number?: string | null;
+            /** Structure Name */
+            structure_name?: string | null;
         };
         /**
          * EmailVerifyRequest
@@ -4327,6 +4571,112 @@ export interface components {
             new_password: string;
         };
         /**
+         * PatientAssignRequest
+         * @description Payload to assign a patient to a healthcare caregiver in an organization.
+         */
+        PatientAssignRequest: {
+            /** Caregiver Id */
+            caregiver_id: string;
+            /** Organization Id */
+            organization_id: string;
+            /** Reason */
+            reason?: string | null;
+        };
+        /**
+         * PatientValidationRequest
+         * @description Payload to validate or refuse a pending patient registration.
+         */
+        PatientValidationRequest: {
+            /**
+             * Decision
+             * @enum {string}
+             */
+            decision: "validated" | "refused";
+            /** Refusal Reason */
+            refusal_reason?: string | null;
+        };
+        /**
+         * PendingPatientRead
+         * @description Detailed representation of a patient pending validation.
+         */
+        PendingPatientRead: {
+            /** Id */
+            id: string;
+            /** Pseudonym */
+            pseudonym: string;
+            /** First Name */
+            first_name: string;
+            /**
+             * Birth Date
+             * Format: date
+             */
+            birth_date: string;
+            /** Sex */
+            sex: string;
+            /** Region Id */
+            region_id?: string | null;
+            /** Status */
+            status: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Validated At */
+            validated_at?: string | null;
+            /** Refusal Reason */
+            refusal_reason?: string | null;
+        };
+        /**
+         * PermissionGrantRequest
+         * @description Request payload to delegate a permission to another user.
+         */
+        PermissionGrantRequest: {
+            /** Target User Id */
+            target_user_id: string;
+            /** Permission Code */
+            permission_code: string;
+            /** Reason */
+            reason?: string | null;
+            /** Valid To */
+            valid_to?: string | null;
+        };
+        /**
+         * PermissionGrantResponse
+         * @description Representation of an active or historical permission grant.
+         */
+        PermissionGrantResponse: {
+            /** Id */
+            id: string;
+            /** User Id */
+            user_id: string;
+            /** Permission Code */
+            permission_code: string;
+            /** Granted By */
+            granted_by: string;
+            /** Reason */
+            reason?: string | null;
+            /**
+             * Valid From
+             * Format: date-time
+             */
+            valid_from: string;
+            /** Valid To */
+            valid_to?: string | null;
+            /** Is Active */
+            is_active: boolean;
+        };
+        /**
+         * PermissionRevokeRequest
+         * @description Request payload to revoke a delegated permission.
+         */
+        PermissionRevokeRequest: {
+            /** Target User Id */
+            target_user_id: string;
+            /** Permission Code */
+            permission_code: string;
+        };
+        /**
          * PersonCreate
          * @description Payload to register a new family member.
          */
@@ -4893,6 +5243,19 @@ export interface components {
             url?: string | null;
         };
         /**
+         * StaffValidationRequest
+         * @description Request payload to approve or reject a staff member account.
+         */
+        StaffValidationRequest: {
+            /**
+             * Decision
+             * @enum {string}
+             */
+            decision: "approved" | "rejected";
+            /** Refusal Reason */
+            refusal_reason?: string | null;
+        };
+        /**
          * TokenRefreshRequest
          * @description Request a fresh access token using a valid refresh token.
          */
@@ -4933,6 +5296,12 @@ export interface components {
             id: string;
             /** Display Name */
             display_name: string;
+            /** First Name */
+            first_name?: string | null;
+            /** Last Name */
+            last_name?: string | null;
+            /** Locality */
+            locality?: string | null;
             /** Language */
             language: string;
             /**
@@ -4945,6 +5314,8 @@ export interface components {
             status: string;
             /** Roles */
             roles?: string[];
+            /** Permissions */
+            permissions?: string[];
             /**
              * Is Verified Caregiver
              * @default false
@@ -5469,6 +5840,242 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["UserProfileResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_pending_staff_v1_staff_pending_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserProfileResponse"][];
+                };
+            };
+        };
+    };
+    validate_staff_v1_staff__user_id__validate_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                user_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StaffValidationRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MessageResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    suspend_user_v1_staff__user_id__suspend_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                user_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MessageResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_user_v1_staff__user_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                user_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MessageResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_permissions_v1_permissions_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: string | null;
+                    }[];
+                };
+            };
+        };
+    };
+    list_user_grants_v1_permissions_users__user_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                user_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PermissionGrantResponse"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    grant_permission_v1_permissions_grant_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PermissionGrantRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MessageResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    revoke_permission_v1_permissions_revoke_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PermissionRevokeRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MessageResponse"];
                 };
             };
             /** @description Validation Error */
@@ -7149,6 +7756,98 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["CaregiverPersonRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_pending_patients_v1_patients_pending_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PendingPatientRead"][];
+                };
+            };
+        };
+    };
+    validate_patient_v1_patients__person_id__validate_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                person_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PatientValidationRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PendingPatientRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    assign_patient_caregiver_v1_patients__person_id__assign_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                person_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PatientAssignRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: string;
+                    };
                 };
             };
             /** @description Validation Error */

@@ -16,3 +16,4 @@ __all__ = ["create_admin_account", "main"]
 
 if __name__ == "__main__":
     main()
+

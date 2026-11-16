@@ -71,7 +71,17 @@ class EmailRegisterRequest(BaseModel):
             description="Password between 8 and 72 characters",
         ),
     ]
-    display_name: Annotated[str, Field(min_length=2, max_length=150)]
+    display_name: Annotated[str | None, Field(max_length=150, default=None)] = None
+    first_name: Annotated[str | None, Field(max_length=100, default=None)] = None
+    last_name: Annotated[str | None, Field(max_length=100, default=None)] = None
+    role: Literal["parent", "field_agent", "caregiver"] = "parent"
+    region_id: Annotated[str | None, Field(default=None)] = None
+    locality: Annotated[str | None, Field(max_length=150, default=None)] = None
+    phone: Annotated[str | None, Field(default=None)] = None
+    facility_id: Annotated[str | None, Field(default=None)] = None
+    speciality: Annotated[str | None, Field(max_length=150, default=None)] = None
+    order_number: Annotated[str | None, Field(max_length=100, default=None)] = None
+    structure_name: Annotated[str | None, Field(max_length=200, default=None)] = None
 
 
 class EmailLoginRequest(BaseModel):
@@ -133,10 +143,14 @@ class UserProfileResponse(BaseModel):
 
     id: str
     display_name: str
+    first_name: str | None = None
+    last_name: str | None = None
+    locality: str | None = None
     language: str
     preferred_locale: Literal["fr", "en"] = "fr"
     status: str
     roles: list[str] = Field(default_factory=list)
+    permissions: list[str] = Field(default_factory=list)
     is_verified_caregiver: bool = False
 
 

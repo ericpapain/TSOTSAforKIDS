@@ -10,6 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from tsotsa_api.core.errors import ForbiddenError, NotFoundError, ValidationError
 from tsotsa_api.core.security import generate_random_token, hash_token
 from tsotsa_api.modules.audit.service import AuditService
+from tsotsa_api.modules.identity.permissions_service import PermissionsService
 from tsotsa_api.modules.persons.care_service import PersonsCareService
 from tsotsa_api.modules.persons.models import Person, PersonCare, PersonLink
 from tsotsa_api.modules.persons.repository import PersonsRepository
@@ -35,12 +36,20 @@ class PersonsService:
     async def create_family_member(
         self, user_id: str, payload: PersonCreate, ip: str | None = None
     ) -> PersonRead:
+        # Check if creator has permission to validate patients directly (staff / field agent)
+        perms_svc = PermissionsService(self.session)
+        can_validate = await perms_svc.has_permission(user_id, "patients.validate")
+        now = datetime.now(UTC)
+
         person = await self.repo.create_person(
             first_name=payload.first_name,
             birth_date=payload.birth_date,
             sex=payload.sex,
             region_id=payload.region_id,
             created_by=user_id,
+            status="validated" if can_validate else "pending",
+            validated_by=user_id if can_validate else None,
+            validated_at=now if can_validate else None,
         )
         link = await self.repo.create_person_link(
             person_id=person.id,

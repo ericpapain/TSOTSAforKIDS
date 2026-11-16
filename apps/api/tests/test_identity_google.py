@@ -34,7 +34,7 @@ async def test_google_login_success_and_subsequent_login(
         assert "access_token" in body
         assert "refresh_token" in body
         assert body["user"]["display_name"] == "Jeanne Parent"
-        assert "user" in body["user"]["roles"]
+        assert any(r in body["user"]["roles"] for r in ("parent", "user"))
         first_user_id = body["user"]["id"]
 
         # Verify DB records
