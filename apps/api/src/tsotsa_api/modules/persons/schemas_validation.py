@@ -40,4 +40,3 @@ class PendingPatientRead(BaseModel):
     created_at: datetime
     validated_at: datetime | None = None
     refusal_reason: str | None = None
-

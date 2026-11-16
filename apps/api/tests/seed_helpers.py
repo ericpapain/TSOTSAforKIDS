@@ -91,4 +91,3 @@ async def seed_test_catalog(session: AsyncSession) -> dict[str, Role]:
 
     await session.flush()
     return role_map
-
