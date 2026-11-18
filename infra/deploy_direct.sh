@@ -18,14 +18,32 @@ git pull origin "${BRANCH}"
 SHA="$(git rev-parse --short HEAD)"
 export IMAGE_TAG="latest"
 
-echo "== 2. Vérification du fichier .env..."
+echo "== 2. Vérification du fichier .env et des secrets..."
 if [ ! -f ".env" ]; then
   echo "Fichier .env absent : copie depuis infra/.env.production.example"
   cp infra/.env.production.example .env
 fi
 
+mkdir -p secrets
+if [ ! -f "secrets/jwt_private.pem" ] || [ ! -f "secrets/jwt_public.pem" ]; then
+  echo "Génération automatique des clés RSA JWT..."
+  openssl genrsa -out secrets/jwt_private.pem 2048 2>/dev/null
+  openssl rsa -in secrets/jwt_private.pem -pubout -out secrets/jwt_public.pem 2>/dev/null
+  chmod 600 secrets/jwt_private.pem
+  chmod 644 secrets/jwt_public.pem
+fi
+
+# S'assurer que les chemins JWT sont configurés dans .env
+if grep -q "JWT_PRIVATE_KEY_PATH=$" .env 2>/dev/null || ! grep -q "JWT_PRIVATE_KEY_PATH=" .env 2>/dev/null; then
+  sed -i 's|^JWT_PRIVATE_KEY_PATH=.*|JWT_PRIVATE_KEY_PATH=/run/secrets/jwt_private.pem|' .env 2>/dev/null || echo "JWT_PRIVATE_KEY_PATH=/run/secrets/jwt_private.pem" >> .env
+fi
+if grep -q "JWT_PUBLIC_KEY_PATH=$" .env 2>/dev/null || ! grep -q "JWT_PUBLIC_KEY_PATH=" .env 2>/dev/null; then
+  sed -i 's|^JWT_PUBLIC_KEY_PATH=.*|JWT_PUBLIC_KEY_PATH=/run/secrets/jwt_public.pem|' .env 2>/dev/null || echo "JWT_PUBLIC_KEY_PATH=/run/secrets/jwt_public.pem" >> .env
+fi
+
 echo "== 3. Sauvegarde de la base de données..."
 if [ -f "./infra/backup.sh" ]; then
+  chmod +x ./infra/backup.sh 2>/dev/null || true
   ./infra/backup.sh "before-${SHA}" || echo "Sauvegarde ignorée."
 fi
 
