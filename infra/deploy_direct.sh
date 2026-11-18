@@ -71,6 +71,9 @@ echo "== 6. Application des migrations Alembic..."
 docker compose -f docker-compose.prod.yml exec -T mysql mysql -uroot -pTsotsaProd2026RootSecret! tsotsa_prod -e "CREATE TABLE IF NOT EXISTS alembic_version (version_num VARCHAR(128) NOT NULL PRIMARY KEY); ALTER TABLE alembic_version MODIFY version_num VARCHAR(128) NOT NULL;" 2>/dev/null || true
 docker compose -f docker-compose.prod.yml run --rm api alembic upgrade head
 
+echo "== 6.1. Création des comptes de démonstration et d'administration..."
+docker compose -f docker-compose.prod.yml run --rm api python /app/scripts/seed_demo_accounts.py || true
+
 echo "== 7. Démarrage des conteneurs de production..."
 docker compose -f docker-compose.prod.yml up -d --remove-orphans
 

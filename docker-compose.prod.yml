@@ -34,6 +34,7 @@ services:
         required: false
     volumes:
       - ${SECRETS_DIR:-/opt/tsotsa-kids/secrets}:/run/secrets:ro
+      - ./scripts:/app/scripts:ro
     depends_on:
       mysql:
         condition: service_healthy
@@ -54,6 +55,7 @@ services:
         required: false
     volumes:
       - ${SECRETS_DIR:-/opt/tsotsa-kids/secrets}:/run/secrets:ro
+      - ./scripts:/app/scripts:ro
     depends_on:
       api:
         condition: service_healthy
