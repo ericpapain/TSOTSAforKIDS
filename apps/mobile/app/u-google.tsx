@@ -92,7 +92,7 @@ export default function GoogleAuthScreen(): React.JSX.Element {
           {t("google.chooseAccount", { defaultValue: "Choisir un compte" })}
         </Text>
         <Text style={styles.subtitle}>
-          {t("google.toContinue", { defaultValue: "pour continuer vers TSOTSA4Kids" })}
+          {t("google.toContinue", { defaultValue: "pour continuer vers TSOTSA for Kids" })}
         </Text>
 
         {/* Error message */}
@@ -165,7 +165,7 @@ export default function GoogleAuthScreen(): React.JSX.Element {
         {/* Disclaimer */}
         <Text style={styles.disclaimer}>
           {t("google.disclaimer", {
-            defaultValue: "Google partagera votre nom, votre adresse e-mail et votre photo avec TSOTSA4Kids.",
+            defaultValue: "Google partagera votre nom, votre adresse e-mail et votre photo avec TSOTSA for Kids.",
           })}
         </Text>
       </View>

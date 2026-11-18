@@ -44,7 +44,7 @@ for rel_path in files_to_update:
     with open(rel_path, "r", encoding="utf-8") as f:
         content = f.read()
     
-    new_content = content.replace("TSOTSA Kids", "TSOTSA4Kids")
+    new_content = content.replace("TSOTSA4Kids", "TSOTSA for Kids")
     if rel_path.endswith("BrandLogo.tsx") or rel_path.endswith("BrandLogo.test.tsx"):
         new_content = new_content.replace(">KIDS<", ">4KIDS<").replace("('KIDS')", "('4KIDS')").replace('("KIDS")', '("4KIDS")').replace('"KIDS"', '"4KIDS"')
 

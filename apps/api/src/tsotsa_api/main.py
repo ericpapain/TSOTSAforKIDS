@@ -1,4 +1,4 @@
-"""Application factory and root API routes for TSOTSA4Kids backend."""
+"""Application factory and root API routes for TSOTSA for Kids backend."""
 
 from __future__ import annotations
 
@@ -88,7 +88,7 @@ def _build_v1_router() -> APIRouter:
 
     @v1_router.get("/", tags=["Root"])
     async def v1_root() -> dict[str, str]:
-        return {"message": "TSOTSA4Kids API v1", "status": "active"}
+        return {"message": "TSOTSA for Kids API v1", "status": "active"}
 
     v1_router.include_router(auth_router)
     v1_router.include_router(profile_router)
@@ -147,7 +147,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         logger.info("Application shutting down", env=cfg.APP_ENV)
 
     app = FastAPI(
-        title="TSOTSA4Kids API",
+        title="TSOTSA for Kids API",
         version="0.1.0",
         description="Infant nutrition platform backend API",
         docs_url="/docs",

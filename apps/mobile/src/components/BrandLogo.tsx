@@ -25,15 +25,10 @@ export function BrandLogo({
   const isDark = variant === "dark";
 
   const textColor = isDark ? colors.white : colors.text;
-  const pillBg = isDark ? colors.white : colors.brand;
-  const pillTextColor = isDark ? colors.brand : colors.white;
 
   // Proportions according to specification
   const symbolGap = Math.round(0.45 * h);
   const wordFontSize = Math.round(0.6 * h);
-  const pillGap = Math.round(0.22 * h);
-  const pillHeight = Math.round(0.72 * h);
-  const pillFontSize = Math.round(0.42 * h);
   const diskSize = Math.round(1.24 * h);
 
   if (mode === "image") {
@@ -81,52 +76,56 @@ export function BrandLogo({
         </View>
       )}
 
-      {/* TSOTSA Word */}
-      {showWord && (
-        <Text
-          testID="brand-logo-text"
-          style={[
-            styles.brandWord,
-            {
-              color: textColor,
-              fontSize: wordFontSize,
-              lineHeight: Math.round(wordFontSize * 1.2),
-              marginLeft: showSymbol ? symbolGap - Math.max(0, Math.round((diskSize - h) / 2)) : 0,
-              letterSpacing: wordFontSize * 0.04,
-            },
-          ]}
-        >
-          TSOTSA
-        </Text>
-      )}
-
-      {/* KIDS Pill */}
+      {/* TSOTSA for Kids */}
       {showWord && (
         <View
-          testID="brand-logo-pill"
+          testID="brand-logo-wordmark"
           style={[
-            styles.pill,
-            {
-              backgroundColor: pillBg,
-              height: pillHeight,
-              borderRadius: pillHeight / 2,
-              marginLeft: pillGap,
-              paddingHorizontal: Math.round(pillHeight * 0.4),
-            },
+            styles.wordRow,
+            { marginLeft: showSymbol ? symbolGap - Math.max(0, Math.round((diskSize - h) / 2)) : 0 },
           ]}
         >
           <Text
+            testID="brand-logo-text"
             style={[
-              styles.pillText,
+              styles.brandWord,
               {
-                color: pillTextColor,
-                fontSize: pillFontSize,
-                lineHeight: Math.round(pillFontSize * 1.2),
-                letterSpacing: pillFontSize * 0.08,
+                color: textColor,
+                fontSize: wordFontSize,
+                lineHeight: Math.round(wordFontSize * 1.2),
+                letterSpacing: wordFontSize * 0.04,
               },
             ]}
           >
-            4KIDS
+            TSOTSA
+          </Text>
+          <Text
+            testID="brand-logo-for"
+            style={[
+              styles.forWord,
+              {
+                color: isDark ? colors.white : colors.brand,
+                fontSize: Math.round(wordFontSize * 0.88),
+                lineHeight: Math.round(wordFontSize * 1.2),
+                marginHorizontal: Math.round(wordFontSize * 0.22),
+              },
+            ]}
+          >
+            for
+          </Text>
+          <Text
+            testID="brand-logo-kids"
+            style={[
+              styles.kidsWord,
+              {
+                color: textColor,
+                fontSize: wordFontSize,
+                lineHeight: Math.round(wordFontSize * 1.2),
+                letterSpacing: wordFontSize * 0.04,
+              },
+            ]}
+          >
+            Kids
           </Text>
         </View>
       )}
@@ -138,6 +137,10 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
+  },
+  wordRow: {
+    flexDirection: "row",
+    alignItems: "baseline",
   },
   symbolContainer: {
     justifyContent: "center",
@@ -151,11 +154,11 @@ const styles = StyleSheet.create({
     fontFamily: fontFamilies.bold,
     fontWeight: "700",
   },
-  pill: {
-    justifyContent: "center",
-    alignItems: "center",
+  forWord: {
+    fontFamily: fontFamilies.bold,
+    fontWeight: "700",
   },
-  pillText: {
+  kidsWord: {
     fontFamily: fontFamilies.bold,
     fontWeight: "700",
   },

@@ -32,15 +32,10 @@ export function BrandLogo({
   const isDark = variant === "dark";
 
   const textColor = isDark ? "#FFFFFF" : "#17302A";
-  const pillBg = isDark ? "#FFFFFF" : "#F26142";
-  const pillTextColor = isDark ? "#F26142" : "#FFFFFF";
 
   // Proportions
   const symbolGap = Math.round(0.45 * h);
   const wordFontSize = Math.round(0.6 * h);
-  const pillGap = Math.round(0.22 * h);
-  const pillHeight = Math.round(0.72 * h);
-  const pillFontSize = Math.round(0.42 * h);
   const diskSize = Math.round(1.24 * h);
 
   const activeMode = display ? (display === "wordmark" ? "word" : display) : (mode || "full");
@@ -66,7 +61,7 @@ export function BrandLogo({
       data-testid={testID}
       className={`inline-flex items-center select-none ${className}`}
       role="img"
-      aria-label="TSOTSA4Kids Logo"
+      aria-label="TSOTSA for Kids Logo"
     >
       {/* Symbol */}
       {showSymbol && (
@@ -103,13 +98,15 @@ export function BrandLogo({
         </div>
       )}
 
-      {/* TSOTSA + KIDS */}
+      {/* TSOTSA for Kids */}
       {showWord && (
         <div
-          className="inline-flex items-center font-bold"
+          data-testid="brand-logo-wordmark"
+          className="inline-flex items-baseline font-bold"
           style={{ marginLeft: showSymbol ? symbolGap : 0 }}
         >
           <span
+            data-testid="brand-logo-text"
             style={{
               fontSize: wordFontSize,
               color: textColor,
@@ -120,19 +117,28 @@ export function BrandLogo({
             TSOTSA
           </span>
           <span
-            className="inline-flex items-center justify-center font-bold uppercase rounded-pill"
+            data-testid="brand-logo-for"
             style={{
-              marginLeft: pillGap,
-              height: pillHeight,
-              paddingLeft: Math.round(0.28 * h),
-              paddingRight: Math.round(0.28 * h),
-              backgroundColor: pillBg,
-              color: pillTextColor,
-              fontSize: pillFontSize,
+              fontSize: Math.round(wordFontSize * 0.88),
+              color: isDark ? "#FFFFFF" : "#F26142",
+              marginLeft: Math.round(0.24 * wordFontSize),
+              marginRight: Math.round(0.24 * wordFontSize),
+              fontWeight: 700,
               lineHeight: 1,
             }}
           >
-            4KIDS
+            for
+          </span>
+          <span
+            data-testid="brand-logo-kids"
+            style={{
+              fontSize: wordFontSize,
+              color: textColor,
+              letterSpacing: "0.02em",
+              lineHeight: 1,
+            }}
+          >
+            Kids
           </span>
         </div>
       )}

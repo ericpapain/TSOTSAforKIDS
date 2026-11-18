@@ -5,7 +5,7 @@ import { colors } from "../../theme/colors";
 import { BrandLogo } from "../BrandLogo";
 
 describe("BrandLogo", () => {
-  it("renders light variant with dark text and brand pill", () => {
+  it("renders light variant with TSOTSA for Kids and brand orange for", () => {
     const { getByTestId, queryByTestId } = render(
       <BrandLogo size={44} variant="light" />
     );
@@ -19,10 +19,19 @@ describe("BrandLogo", () => {
       ])
     );
 
-    const pill = getByTestId("brand-logo-pill");
-    expect(pill.props.style).toEqual(
+    const forWord = getByTestId("brand-logo-for");
+    expect(forWord.props.children).toBe("for");
+    expect(forWord.props.style).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ backgroundColor: colors.brand }),
+        expect.objectContaining({ color: colors.brand }),
+      ])
+    );
+
+    const kidsWord = getByTestId("brand-logo-kids");
+    expect(kidsWord.props.children).toBe("Kids");
+    expect(kidsWord.props.style).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ color: colors.text }),
       ])
     );
 
@@ -30,7 +39,7 @@ describe("BrandLogo", () => {
     expect(queryByTestId("brand-logo-dark-disk")).toBeNull();
   });
 
-  it("renders dark variant with white text, white pill and white disk", () => {
+  it("renders dark variant with white text and white disk", () => {
     const { getByTestId } = render(
       <BrandLogo size={44} variant="dark" />
     );
@@ -57,10 +66,17 @@ describe("BrandLogo", () => {
       ])
     );
 
-    const pill = getByTestId("brand-logo-pill");
-    expect(pill.props.style).toEqual(
+    const forWord = getByTestId("brand-logo-for");
+    expect(forWord.props.style).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ backgroundColor: colors.white }),
+        expect.objectContaining({ color: colors.white }),
+      ])
+    );
+
+    const kidsWord = getByTestId("brand-logo-kids");
+    expect(kidsWord.props.style).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ color: colors.white }),
       ])
     );
   });
