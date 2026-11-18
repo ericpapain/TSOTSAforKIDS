@@ -68,6 +68,7 @@ for attempt in $(seq 1 30); do
 done
 
 echo "== 6. Application des migrations Alembic..."
+docker compose -f docker-compose.prod.yml exec -T mysql mysql -uroot -pTsotsaProd2026RootSecret! tsotsa_prod -e "CREATE TABLE IF NOT EXISTS alembic_version (version_num VARCHAR(128) NOT NULL PRIMARY KEY); ALTER TABLE alembic_version MODIFY version_num VARCHAR(128) NOT NULL;" 2>/dev/null || true
 docker compose -f docker-compose.prod.yml run --rm api alembic upgrade head
 
 echo "== 7. Démarrage des conteneurs de production..."
