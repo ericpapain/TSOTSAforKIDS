@@ -29,9 +29,10 @@ if [ ! -f "secrets/jwt_private.pem" ] || [ ! -f "secrets/jwt_public.pem" ]; then
   echo "Génération automatique des clés RSA JWT..."
   openssl genrsa -out secrets/jwt_private.pem 2048 2>/dev/null
   openssl rsa -in secrets/jwt_private.pem -pubout -out secrets/jwt_public.pem 2>/dev/null
-  chmod 600 secrets/jwt_private.pem
+  chmod 644 secrets/jwt_private.pem
   chmod 644 secrets/jwt_public.pem
 fi
+chmod 644 secrets/jwt_*.pem 2>/dev/null || true
 
 # S'assurer que les chemins JWT sont configurés dans .env
 if grep -q "JWT_PRIVATE_KEY_PATH=$" .env 2>/dev/null || ! grep -q "JWT_PRIVATE_KEY_PATH=" .env 2>/dev/null; then
