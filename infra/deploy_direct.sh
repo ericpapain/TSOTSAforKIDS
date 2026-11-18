@@ -18,25 +18,44 @@ git pull origin "${BRANCH}"
 SHA="$(git rev-parse --short HEAD)"
 export IMAGE_TAG="latest"
 
-echo "== 2. Sauvegarde de la base de données..."
+echo "== 2. Vérification du fichier .env..."
+if [ ! -f ".env" ]; then
+  echo "Fichier .env absent : copie depuis infra/.env.production.example"
+  cp infra/.env.production.example .env
+fi
+
+echo "== 3. Sauvegarde de la base de données..."
 if [ -f "./infra/backup.sh" ]; then
   ./infra/backup.sh "before-${SHA}" || echo "Sauvegarde ignorée."
 fi
 
-echo "== 3. Construction des images Docker locales..."
+echo "== 4. Construction des images Docker locales..."
 echo "--> Image API..."
 docker build -f infra/docker/api.Dockerfile -t ghcr.io/ericpapain/tsotsa-kids-api:latest .
 
 echo "--> Image Web..."
 docker build -f infra/docker/web.Dockerfile -t ghcr.io/ericpapain/tsotsa-kids-web:latest .
 
-echo "== 4. Migrations Alembic..."
+echo "== 5. Démarrage de la base de données MySQL..."
+docker compose -f docker-compose.prod.yml up -d mysql
+
+echo "Attente de l'initialisation de MySQL..."
+for attempt in $(seq 1 30); do
+  status="$(docker inspect --format='{{json .State.Health.Status}}' tsotsa-mysql-prod 2>/dev/null || echo 'starting')"
+  if [ "$status" = '"healthy"' ]; then
+    echo "MySQL est opérationnel (tentative ${attempt}/30) !"
+    break
+  fi
+  sleep 2
+done
+
+echo "== 6. Application des migrations Alembic..."
 docker compose -f docker-compose.prod.yml run --rm api alembic upgrade head
 
-echo "== 5. Redémarrage des conteneurs..."
+echo "== 7. Démarrage des conteneurs de production..."
 docker compose -f docker-compose.prod.yml up -d --remove-orphans
 
-echo "== 6. Vérification de santé..."
+echo "== 8. Vérification de santé de l'API..."
 HEALTHY=false
 for attempt in $(seq 1 30); do
   if curl -fsS http://127.0.0.1:8000/health >/dev/null 2>&1; then
@@ -53,11 +72,13 @@ if [ "$HEALTHY" = false ]; then
   exit 1
 fi
 
-echo "== 7. Rechargement de Nginx..."
+echo "== 9. Rechargement de Nginx..."
 if command -v nginx >/dev/null 2>&1; then
   nginx -t && systemctl reload nginx || true
 fi
 
 echo "=========================================================="
 echo "  Déploiement terminé avec succès (commit ${SHA}) !       "
+echo "  API: http://127.0.0.1:8000/health                       "
+echo "  Web: http://127.0.0.1:3000                              "
 echo "=========================================================="

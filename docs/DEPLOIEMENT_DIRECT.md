@@ -71,3 +71,4 @@ Pour générer le binaire Android (APK) sans passer par GitHub Actions :
 # Depuis votre machine locale dans le dépôt :
 pnpm --filter @tsotsa/mobile exec eas build -p android --profile preview
 ```
+

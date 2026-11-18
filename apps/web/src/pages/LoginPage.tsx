@@ -77,11 +77,10 @@ export const LoginPage: React.FC = () => {
               aria-selected={activeTab === "login"}
               data-testid="tab-login"
               onClick={() => setActiveTab("login")}
-              className={`flex-1 py-2 text-xs font-bold border-b-2 transition-colors ${
-                activeTab === "login"
+              className={`flex-1 py-2 text-xs font-bold border-b-2 transition-colors ${activeTab === "login"
                   ? "border-primary text-primary"
                   : "border-transparent text-text-secondary hover:text-text-primary"
-              }`}
+                }`}
             >
               {t("login.tabs.login")}
             </button>
@@ -91,11 +90,10 @@ export const LoginPage: React.FC = () => {
               aria-selected={activeTab === "register"}
               data-testid="tab-register"
               onClick={() => setActiveTab("register")}
-              className={`flex-1 py-2 text-xs font-bold border-b-2 transition-colors ${
-                activeTab === "register"
+              className={`flex-1 py-2 text-xs font-bold border-b-2 transition-colors ${activeTab === "register"
                   ? "border-primary text-primary"
                   : "border-transparent text-text-secondary hover:text-text-primary"
-              }`}
+                }`}
             >
               {t("login.tabs.register")}
             </button>
