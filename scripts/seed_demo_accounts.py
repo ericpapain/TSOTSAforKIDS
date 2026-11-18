@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Script de création des comptes de démonstration et d'administration TSOTSA Kids.
 
-Utilise du SQL direct via SQLAlchemy pour éviter les dépendances circulaires d'ORM.
+Insère ou met à jour les comptes avec SQL direct.
 """
 
 from __future__ import annotations
@@ -126,9 +126,10 @@ async def seed() -> None:
                 )
                 await conn.execute(
                     text(
-                        "INSERT INTO user_roles (user_id, role_id) VALUES (:uid, :rid)"
+                        "INSERT INTO user_roles (user_id, role_id, created_at) "
+                        "VALUES (:uid, :rid, :now)"
                     ),
-                    {"uid": user_id, "rid": role_id},
+                    {"uid": user_id, "rid": role_id, "now": now},
                 )
                 print(f"[✓] Compte mis à jour : {email} ({role_code})")
             else:
@@ -169,10 +170,31 @@ async def seed() -> None:
 
                 await conn.execute(
                     text(
-                        "INSERT INTO user_roles (user_id, role_id) VALUES (:uid, :rid)"
+                        "INSERT INTO user_roles (user_id, role_id, created_at) "
+                        "VALUES (:uid, :rid, :now)"
                     ),
-                    {"uid": user_id, "rid": role_id},
+                    {"uid": user_id, "rid": role_id, "now": now},
                 )
+
+                if role_code in ("caregiver", "super_caregiver"):
+                    await conn.execute(
+                        text(
+                            "INSERT INTO caregiver_profiles (user_id, speciality, order_number, "
+                            "verification_status, created_at, updated_at) "
+                            "VALUES (:uid, 'Pédiatrie nutritionnelle', 'ORD-2026-001', 'approved', :now, :now)"
+                        ),
+                        {"uid": user_id, "now": now},
+                    )
+                elif role_code == "field_agent":
+                    await conn.execute(
+                        text(
+                            "INSERT INTO field_agent_profiles (user_id, phone, structure_name, "
+                            "verification_status, created_at, updated_at) "
+                            "VALUES (:uid, '+237690000000', 'Croix-Rouge Cameroun', 'approved', :now, :now)"
+                        ),
+                        {"uid": user_id, "now": now},
+                    )
+
                 print(f"[+] Compte créé : {email} ({role_code})")
 
     await engine.dispose()
