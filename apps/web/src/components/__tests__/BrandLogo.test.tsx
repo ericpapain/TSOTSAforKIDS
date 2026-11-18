@@ -3,13 +3,19 @@ import { render, screen } from '@testing-library/react';
 import { BrandLogo } from '../BrandLogo';
 
 describe('BrandLogo', () => {
-  it('renders the brand logo with TSOTSA for Kids and orange for', () => {
+  it('renders the brand logo with TSOTSA for KIDS in Bleu Nuit and Orange', () => {
     render(<BrandLogo variant="light" size={34} />);
-    expect(screen.getByText('TSOTSA')).toBeInTheDocument();
+    const tsotsa = screen.getByText('TSOTSA');
+    expect(tsotsa).toBeInTheDocument();
+    expect(tsotsa).toHaveStyle({ color: '#092D73' });
+
     const forElement = screen.getByText('for');
     expect(forElement).toBeInTheDocument();
-    expect(forElement).toHaveStyle({ color: '#F26142' });
-    expect(screen.getByText('Kids')).toBeInTheDocument();
+    expect(forElement).toHaveStyle({ color: '#F38B1F' });
+
+    const kids = screen.getByText('KIDS');
+    expect(kids).toBeInTheDocument();
+    expect(kids).toHaveStyle({ color: '#092D73' });
   });
 
   it('renders in dark variant with white text and disk', () => {
@@ -17,7 +23,7 @@ describe('BrandLogo', () => {
     expect(container.querySelector('svg')).toBeInTheDocument();
     expect(screen.getByText('TSOTSA')).toHaveStyle({ color: '#FFFFFF' });
     expect(screen.getByText('for')).toHaveStyle({ color: '#FFFFFF' });
-    expect(screen.getByText('Kids')).toHaveStyle({ color: '#FFFFFF' });
+    expect(screen.getByText('KIDS')).toHaveStyle({ color: '#FFFFFF' });
   });
 
   it('renders symbol only', () => {
@@ -30,7 +36,7 @@ describe('BrandLogo', () => {
     render(<BrandLogo variant="light" mode="word" />);
     expect(screen.getByText('TSOTSA')).toBeInTheDocument();
     expect(screen.getByText('for')).toBeInTheDocument();
-    expect(screen.getByText('Kids')).toBeInTheDocument();
+    expect(screen.getByText('KIDS')).toBeInTheDocument();
     expect(screen.queryByTestId('brand-logo-symbol')).toBeNull();
   });
 

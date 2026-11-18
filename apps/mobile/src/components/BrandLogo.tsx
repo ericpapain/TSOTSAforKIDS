@@ -24,7 +24,9 @@ export function BrandLogo({
   const h = size;
   const isDark = variant === "dark";
 
-  const textColor = isDark ? colors.white : colors.text;
+  // Bleu Nuit #092D73 for TSOTSA and KIDS, Orange #F38B1F for 'for'
+  const textColor = isDark ? colors.white : colors.bleuNuit;
+  const forColor = isDark ? colors.white : colors.brand;
 
   // Proportions according to specification
   const symbolGap = Math.round(0.45 * h);
@@ -104,7 +106,7 @@ export function BrandLogo({
             style={[
               styles.forWord,
               {
-                color: isDark ? colors.white : colors.brand,
+                color: forColor,
                 fontSize: Math.round(wordFontSize * 0.88),
                 lineHeight: Math.round(wordFontSize * 1.2),
                 marginHorizontal: Math.round(wordFontSize * 0.22),
@@ -125,7 +127,7 @@ export function BrandLogo({
               },
             ]}
           >
-            Kids
+            KIDS
           </Text>
         </View>
       )}

@@ -5,7 +5,7 @@ import { colors } from "../../theme/colors";
 import { BrandLogo } from "../BrandLogo";
 
 describe("BrandLogo", () => {
-  it("renders light variant with TSOTSA for Kids and brand orange for", () => {
+  it("renders light variant with TSOTSA for KIDS in Bleu Nuit and Orange", () => {
     const { getByTestId, queryByTestId } = render(
       <BrandLogo size={44} variant="light" />
     );
@@ -15,7 +15,7 @@ describe("BrandLogo", () => {
     expect(word.props.children).toBe("TSOTSA");
     expect(word.props.style).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ color: colors.text }),
+        expect.objectContaining({ color: colors.bleuNuit }),
       ])
     );
 
@@ -28,10 +28,10 @@ describe("BrandLogo", () => {
     );
 
     const kidsWord = getByTestId("brand-logo-kids");
-    expect(kidsWord.props.children).toBe("Kids");
+    expect(kidsWord.props.children).toBe("KIDS");
     expect(kidsWord.props.style).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ color: colors.text }),
+        expect.objectContaining({ color: colors.bleuNuit }),
       ])
     );
 
@@ -74,6 +74,7 @@ describe("BrandLogo", () => {
     );
 
     const kidsWord = getByTestId("brand-logo-kids");
+    expect(kidsWord.props.children).toBe("KIDS");
     expect(kidsWord.props.style).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ color: colors.white }),

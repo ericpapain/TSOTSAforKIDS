@@ -41,10 +41,30 @@ export const LoginPage: React.FC = () => {
       </div>
 
       <Card className="w-full max-w-[520px] p-6 sm:p-8 text-center shadow-lg border border-border">
-        <div className="flex justify-center mb-4">
-          <BrandLogo variant="light" size={48} />
+        {/* Logo officiel agrandi */}
+        <div className="flex justify-center mb-3">
+          <BrandLogo variant="light" size={96} mode="symbol" />
         </div>
-        <h1 className="text-2xl font-bold text-text-primary mb-1">{t("login.title")}</h1>
+
+        {/* Marque officielle : TSOTSA for KIDS (Bleu Nuit #092D73 et Orange #F38B1F) */}
+        <div className="flex items-baseline justify-center font-bold tracking-tight text-3xl sm:text-4xl mb-1 select-none">
+          <span style={{ color: "#092D73" }}>TSOTSA</span>
+          <span className="mx-2" style={{ color: "#F38B1F" }}>
+            for
+          </span>
+          <span style={{ color: "#092D73" }}>KIDS</span>
+        </div>
+
+        {/* Devise officielle : — Bien nourrir, bien suivre — */}
+        <div
+          className="flex items-center justify-center space-x-2 text-sm sm:text-base italic font-semibold mb-3 select-none"
+          style={{ color: "#092D73" }}
+        >
+          <span className="w-8 sm:w-10 h-[2px] rounded" style={{ backgroundColor: "#F38B1F" }} />
+          <span>Bien nourrir, bien suivre</span>
+          <span className="w-8 sm:w-10 h-[2px] rounded" style={{ backgroundColor: "#F38B1F" }} />
+        </div>
+
         <p className="text-xs text-text-secondary mb-5">{t("login.subtitle")}</p>
 
         <RoleSelector selectedRole={selectedRole} onSelectRole={handleRoleChange} />
