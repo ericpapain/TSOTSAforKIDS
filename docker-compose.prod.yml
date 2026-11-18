@@ -1,6 +1,30 @@
 services:
+  mysql:
+    image: mysql:8.0
+    container_name: tsotsa-mysql-prod
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-TsotsaProd2026RootSecret!}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-tsotsa_prod}
+      MYSQL_USER: ${MYSQL_USER:-tsotsa_app}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-TsotsaApp2026Secret!}
+    volumes:
+      - mysql_prod_data:/var/lib/mysql
+    command: >
+      --default-authentication-plugin=mysql_native_password
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_0900_ai_ci
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pTsotsaProd2026RootSecret!"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
+
   api:
-    image: ghcr.io/ericpapain/tsotsa-kids-api:${IMAGE_TAG}
+    image: ghcr.io/ericpapain/tsotsa-kids-api:${IMAGE_TAG:-latest}
     container_name: tsotsa-api-prod
     restart: unless-stopped
     ports:
@@ -10,6 +34,10 @@ services:
         required: false
     volumes:
       - ${SECRETS_DIR:-/opt/tsotsa-kids/secrets}:/run/secrets:ro
+      - ./scripts:/app/scripts:ro
+    depends_on:
+      mysql:
+        condition: service_healthy
     healthcheck:
       test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8000/health"]
       interval: 15s
@@ -18,7 +46,7 @@ services:
       start_period: 10s
 
   scheduler:
-    image: ghcr.io/ericpapain/tsotsa-kids-api:${IMAGE_TAG}
+    image: ghcr.io/ericpapain/tsotsa-kids-api:${IMAGE_TAG:-latest}
     container_name: tsotsa-scheduler-prod
     restart: unless-stopped
     command: ["python", "-m", "tsotsa_api.modules.notifications.runner"]
@@ -27,12 +55,13 @@ services:
         required: false
     volumes:
       - ${SECRETS_DIR:-/opt/tsotsa-kids/secrets}:/run/secrets:ro
+      - ./scripts:/app/scripts:ro
     depends_on:
       api:
         condition: service_healthy
 
   web:
-    image: ghcr.io/ericpapain/tsotsa-kids-web:${IMAGE_TAG}
+    image: ghcr.io/ericpapain/tsotsa-kids-web:${IMAGE_TAG:-latest}
     container_name: tsotsa-web-prod
     restart: unless-stopped
     ports:
@@ -44,3 +73,5 @@ services:
       retries: 3
       start_period: 5s
 
+volumes:
+  mysql_prod_data:

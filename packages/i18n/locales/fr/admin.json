@@ -9,11 +9,11 @@
     "optimization": "Optimisation",
     "modules": "Modules",
     "notifications": "Notifications",
-    "teamName": "Équipe TSOTSA4Kids",
+    "teamName": "Équipe TSOTSA for Kids",
     "shortTeamName": "Équipe TSOTSA"
   },
   "dashboard": {
-    "pageTitle": "Vue d'ensemble — Administration | TSOTSA4Kids",
+    "pageTitle": "Vue d'ensemble — Administration | TSOTSA for Kids",
     "title": "Vue d'ensemble",
     "kpiCaregiver": "soignant à vérifier",
     "kpiProduct": "produit utilisateur à vérifier",
@@ -31,7 +31,7 @@
     "realDataNotice": "Les chiffres s'afficheront avec les données réelles. Aucune valeur inventée dans l'administration."
   },
   "verify": {
-    "pageTitle": "Vérifications — Administration | TSOTSA4Kids",
+    "pageTitle": "Vérifications — Administration | TSOTSA for Kids",
     "title": "Vérifications",
     "pendingCaregiversTitle": "Soignants en attente",
     "emptyCaregivers": "Aucun soignant en attente de vérification.",
@@ -66,7 +66,7 @@
     }
   },
   "accounts": {
-    "pageTitle": "Comptes — Administration | TSOTSA4Kids",
+    "pageTitle": "Comptes — Administration | TSOTSA for Kids",
     "title": "Comptes",
     "filters": { "Tous": "Tous", "Utilisateurs": "Utilisateurs", "Soignants": "Soignants", "Administrateurs": "Administrateurs" },
     "columns": { "account": "Compte", "provider": "Connexion", "role": "Rôle", "facility": "Établissement", "status": "Statut" },
@@ -85,7 +85,7 @@
     "createdFeedback": "Compte {{name}} créé et invitation préparée."
   },
   "foods": {
-    "pageTitle": "Base aliments — Administration | TSOTSA4Kids",
+    "pageTitle": "Base aliments — Administration | TSOTSA for Kids",
     "title": "Base aliments (extraite d'ORKG)",
     "importFileBtn": "Importer un fichier",
     "manualEntryBtn": "Saisie manuelle",
@@ -122,7 +122,7 @@
     }
   },
   "foodNew": {
-    "pageTitle": "Nouvel aliment · saisie manuelle — Administration | TSOTSA4Kids",
+    "pageTitle": "Nouvel aliment · saisie manuelle — Administration | TSOTSA for Kids",
     "title": "Nouvel aliment · saisie manuelle",
     "nameLabel": "Nom",
     "nameEnLabel": "Nom anglais (facultatif)",
@@ -152,7 +152,7 @@
     "controlsSummary": "Contrôles : unités ✓ valeurs plausibles ✓ source ✓"
   },
   "import": {
-    "pageTitle": "Importer un fichier — Administration | TSOTSA4Kids",
+    "pageTitle": "Importer un fichier — Administration | TSOTSA for Kids",
     "title": "Importer un fichier (Excel ou CSV)",
     "downloadTemplateLink": "Télécharger le gabarit vide ›",
     "steps": { "step1": "1 Fichier ✓", "step2": "2 Colonnes ✓", "step3": "3 Contrôles", "step4": "4 Validation" },
@@ -185,7 +185,7 @@
     }
   },
   "products": {
-    "pageTitle": "Produits de référence — Administration | TSOTSA4Kids",
+    "pageTitle": "Produits de référence — Administration | TSOTSA for Kids",
     "title": "Produits de référence",
     "addProductBtn": "+ Ajouter un produit",
     "columns": { "product": "Produit", "base": "Base", "nutrients": "Nutriments essentiels", "source": "Source", "status": "Statut" },
@@ -203,7 +203,7 @@
     "viewUserSideLink": "Voir côté utilisateur ›"
   },
   "prices": {
-    "pageTitle": "Prix par région — Administration | TSOTSA4Kids",
+    "pageTitle": "Prix par région — Administration | TSOTSA for Kids",
     "title": "Prix par région",
     "addPriceBtn": "+ Ajouter un relevé",
     "columns": { "region": "Région", "item": "Produit ou aliment", "price": "Prix (FCFA)", "unit": "Unité", "date": "Date du relevé", "source": "Source" },
@@ -211,7 +211,7 @@
     "footnote": "Sans relevé, l'application affiche « prix non renseigné ». Chaque prix a une date et une source (relevé de marché, partenaire)."
   },
   "optim": {
-    "pageTitle": "Optimisation des rations — Administration | TSOTSA4Kids",
+    "pageTitle": "Optimisation des rations — Administration | TSOTSA for Kids",
     "title": "Optimisation des rations · préparation",
     "engineBadge": "Moteur : phase 2 (non activé)",
     "tabs": { "cibles": "Cibles nutritionnelles", "limites": "Limites par aliment", "parametres": "Paramètres" },
@@ -234,7 +234,7 @@
     }
   },
   "modules": {
-    "pageTitle": "Modules — Administration | TSOTSA4Kids",
+    "pageTitle": "Modules — Administration | TSOTSA for Kids",
     "title": "Modules",
     "items": {
       "nutrition": { "name": "Nutrition infantile", "activeSub": "Actif · visible par tous", "inactiveSub": "Inactif · masqué" },
@@ -244,7 +244,7 @@
     "seeUserEffectBtn": "Voir l'effet côté utilisateur"
   },
   "notifications": {
-    "pageTitle": "Notifications · réglages de la plateforme — Administration | TSOTSA4Kids",
+    "pageTitle": "Notifications · réglages de la plateforme — Administration | TSOTSA for Kids",
     "title": "Notifications · réglages de la plateforme",
     "enabledToggleLabel": "Notifications activées",
     "columns": { "channel": "Canal", "service": "Service", "state": "État", "sent7d": "Envoyées (7 j)", "failures": "Échecs" },

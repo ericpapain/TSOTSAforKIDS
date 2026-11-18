@@ -15,7 +15,7 @@ AppEnv = Literal["development", "test", "staging", "production"]
 
 
 class Settings(BaseSettings):
-    """Configuration settings for TSOTSA4Kids API."""
+    """Configuration settings for TSOTSA for Kids API."""
 
     model_config = SettingsConfigDict(
         env_file=".env",
@@ -52,7 +52,7 @@ class Settings(BaseSettings):
 
     EMAIL_PROVIDER: str = "console"
     EMAIL_API_KEY: str = ""
-    EMAIL_FROM: str = "TSOTSA4Kids <no-reply@tsotsa-for-kids.com>"
+    EMAIL_FROM: str = "TSOTSA for Kids <no-reply@tsotsa-for-kids.com>"
 
     EXPO_ACCESS_TOKEN: str = ""
     NOTIFICATION_REMINDER_DELAY_MINUTES: int = Field(default=30, ge=1)
@@ -85,8 +85,9 @@ class Settings(BaseSettings):
         """Enforce strict production configuration checks."""
         if self.is_production:
             missing: list[str] = []
-            if not self.DATABASE_SSL_CA_PATH:
-                missing.append("DATABASE_SSL_CA_PATH (TLS CA certificate is mandatory)")
+            is_local_db = any(h in (self.DATABASE_URL or "") for h in ("@mysql:", "@127.0.0.1", "@localhost"))
+            if not self.DATABASE_SSL_CA_PATH and not is_local_db:
+                missing.append("DATABASE_SSL_CA_PATH (TLS CA certificate is mandatory for external database)")
             if not self.JWT_PRIVATE_KEY_PATH:
                 missing.append("JWT_PRIVATE_KEY_PATH")
             if not self.JWT_PUBLIC_KEY_PATH:

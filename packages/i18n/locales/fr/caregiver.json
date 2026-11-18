@@ -6,7 +6,7 @@
     "settings": "Réglages"
   },
   "dashboard": {
-    "pageTitle": "Tableau de bord — Espace soignant | TSOTSA4Kids",
+    "pageTitle": "Tableau de bord — Espace soignant | TSOTSA for Kids",
     "title": "Tableau de bord — Espace soignant",
     "subtitle": "CMA de Kousséri · {{count}} personnes suivies actives",
     "kpi": {
@@ -42,7 +42,7 @@
     }
   },
   "persons": {
-    "pageTitle": "Personnes suivies — Espace soignant | TSOTSA4Kids",
+    "pageTitle": "Personnes suivies — Espace soignant | TSOTSA for Kids",
     "title": "Personnes suivies ({{count}})",
     "subtitle": "Registre actif des enfants suivis pour malnutrition",
     "newAdmissionBtn": "+ Nouvelle admission",
@@ -124,7 +124,7 @@
     }
   },
   "record": {
-    "pageTitle": "Dossier {{name}} (#{{id}}) — Espace soignant | TSOTSA4Kids",
+    "pageTitle": "Dossier {{name}} (#{{id}}) — Espace soignant | TSOTSA for Kids",
     "girlAge": "Fille · {{months}} mois",
     "backToDashboardBtn": "Retour au tableau de bord",
     "finishDemoBtn": "Terminer la démo ›",
@@ -167,7 +167,7 @@
     }
   },
   "assessment": {
-    "pageTitle": "Nouvelle évaluation — {{name}} (#{{id}}) | TSOTSA4Kids",
+    "pageTitle": "Nouvelle évaluation — {{name}} (#{{id}}) | TSOTSA for Kids",
     "breadcrumbNew": "Nouvelle évaluation",
     "title": "Nouvelle évaluation clinique — {{name}} (#{{id}})",
     "subtitle": "Fille · Née le {{birthDate}}",
@@ -198,7 +198,7 @@
     "dailyGainLabel": "Gain journalier"
   },
   "plan": {
-    "pageTitle": "Plan de prises — {{name}} (#{{id}}) | TSOTSA4Kids",
+    "pageTitle": "Plan de prises — {{name}} (#{{id}}) | TSOTSA for Kids",
     "breadcrumb": "Plan de prises",
     "title": "Plan de prises et rappels — {{name}} (#{{id}})",
     "subtitle": "Prescription active · {{count}} prises quotidiennes",
