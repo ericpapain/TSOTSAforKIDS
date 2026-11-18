@@ -1,28 +1,21 @@
 #!/usr/bin/env python3
 """Script de création des comptes de démonstration et d'administration TSOTSA Kids.
 
-Crée ou met à jour un compte actif pour chacun des 5 rôles utilisateurs :
-- Administrateur : admin@tsotsa-for-kids.com et ericpapainmezatio@gmail.com
-- Super soignant : supersoignant@tsotsa-for-kids.com
-- Soignant : soignant@tsotsa-for-kids.com
-- Agent de terrain : terrain@tsotsa-for-kids.com
-- Parent : parent@tsotsa-for-kids.com
+Utilise du SQL direct via SQLAlchemy pour éviter les dépendances circulaires d'ORM.
 """
 
 from __future__ import annotations
 
 import asyncio
+from datetime import UTC, datetime
 import os
-import sys
+import uuid
 
-from sqlalchemy import select, text
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
+import bcrypt
+from sqlalchemy import text
+from sqlalchemy.ext.asyncio import create_async_engine
 
 from tsotsa_api.core.config import get_settings
-from tsotsa_api.core.security import hash_password
-from tsotsa_api.modules.identity.models import User, UserIdentity
-from tsotsa_api.modules.identity.models_roles import Role, UserRole
-from tsotsa_api.modules.identity.models_staff import CaregiverProfile, FieldAgentProfile
 from tsotsa_api.shared.types import generate_uuid7
 
 DEMO_PASSWORD = os.getenv("DEMO_ACCOUNTS_PASSWORD", "Tsotsa2026!Demo")
@@ -73,98 +66,117 @@ DEMO_USERS = [
 ]
 
 
+def hash_pwd(pwd: str) -> str:
+    salt = bcrypt.gensalt(rounds=12)
+    return bcrypt.hashpw(pwd.encode("utf-8"), salt).decode("utf-8")
+
+
 async def seed() -> None:
     settings = get_settings()
     engine = create_async_engine(settings.DATABASE_URL, echo=False)
-    pwd_hash = hash_password(DEMO_PASSWORD)
+    pwd_hash = hash_pwd(DEMO_PASSWORD)
+    now = datetime.now(UTC)
 
-    async with AsyncSession(engine) as session:
-        # Load roles
-        roles_res = await session.execute(select(Role))
-        roles_map = {r.code: r for r in roles_res.scalars().all()}
+    async with engine.begin() as conn:
+        # Load roles map: code -> id (BINARY(16))
+        roles_rows = (await conn.execute(text("SELECT id, code FROM roles"))).fetchall()
+        roles_map = {row[1]: row[0] for row in roles_rows}
 
-        for user_data in DEMO_USERS:
-            email = user_data["email"].lower().strip()
-            role_code = user_data["role"]
-            role_obj = roles_map.get(role_code)
+        for u in DEMO_USERS:
+            email = u["email"].lower().strip()
+            role_code = u["role"]
+            role_id = roles_map.get(role_code)
 
-            if not role_obj:
-                print(f"[!] Role non trouvé : {role_code}")
+            if not role_id:
+                print(f"[!] Role non trouvé dans la base : {role_code}")
                 continue
 
-            # Check if identity exists
-            id_res = await session.execute(
-                select(UserIdentity).where(UserIdentity.email == email)
-            )
-            existing_identity = id_res.scalar_one_or_none()
-
-            if existing_identity:
-                # Update password and activate user
-                existing_identity.password_hash = pwd_hash
-                user_res = await session.execute(
-                    select(User).where(User.id == existing_identity.user_id)
+            # Check if user already exists
+            existing = (
+                await conn.execute(
+                    text(
+                        "SELECT u.id, ui.id FROM users u "
+                        "JOIN user_identities ui ON ui.user_id = u.id "
+                        "WHERE ui.email = :email"
+                    ),
+                    {"email": email},
                 )
-                user = user_res.scalar_one()
-                user.status = "active"
-                user.failed_login_attempts = 0
-                user.locked_until = None
+            ).fetchone()
 
-                # Reassign role
-                await session.execute(
+            if existing:
+                user_id, identity_id = existing[0], existing[1]
+                # Update user and identity
+                await conn.execute(
+                    text(
+                        "UPDATE users SET status = 'active', failed_login_attempts = 0, "
+                        "locked_until = NULL, updated_at = :now WHERE id = :uid"
+                    ),
+                    {"now": now, "uid": user_id},
+                )
+                await conn.execute(
+                    text(
+                        "UPDATE user_identities SET password_hash = :pwd, updated_at = :now "
+                        "WHERE id = :iid"
+                    ),
+                    {"pwd": pwd_hash, "now": now, "iid": identity_id},
+                )
+                await conn.execute(
                     text("DELETE FROM user_roles WHERE user_id = :uid"),
-                    {"uid": user.id},
+                    {"uid": user_id},
                 )
-                session.add(UserRole(user_id=user.id, role_id=role_obj.id))
+                await conn.execute(
+                    text(
+                        "INSERT INTO user_roles (user_id, role_id) VALUES (:uid, :rid)"
+                    ),
+                    {"uid": user_id, "rid": role_id},
+                )
                 print(f"[✓] Compte mis à jour : {email} ({role_code})")
             else:
-                user_id = generate_uuid7()
-                user = User(
-                    id=user_id,
-                    first_name=user_data["first_name"],
-                    last_name=user_data["last_name"],
-                    display_name=user_data["display_name"],
-                    status="active",
-                    language="fr",
-                    preferred_locale="fr",
+                user_uuid_str = generate_uuid7()
+                user_id = uuid.UUID(user_uuid_str).bytes
+                identity_uuid_str = generate_uuid7()
+                identity_id = uuid.UUID(identity_uuid_str).bytes
+
+                await conn.execute(
+                    text(
+                        "INSERT INTO users (id, first_name, last_name, display_name, "
+                        "language, preferred_locale, status, failed_login_attempts, created_at, updated_at) "
+                        "VALUES (:id, :fn, :ln, :dn, 'fr', 'fr', 'active', 0, :now, :now)"
+                    ),
+                    {
+                        "id": user_id,
+                        "fn": u["first_name"],
+                        "ln": u["last_name"],
+                        "dn": u["display_name"],
+                        "now": now,
+                    },
                 )
-                session.add(user)
-                await session.flush()
 
-                identity = UserIdentity(
-                    id=generate_uuid7(),
-                    user_id=user_id,
-                    provider="email",
-                    provider_subject=email,
-                    email=email,
-                    password_hash=pwd_hash,
+                await conn.execute(
+                    text(
+                        "INSERT INTO user_identities (id, user_id, provider, provider_subject, "
+                        "email, password_hash, created_at, updated_at) "
+                        "VALUES (:id, :uid, 'email', :email, :email, :pwd, :now, :now)"
+                    ),
+                    {
+                        "id": identity_id,
+                        "uid": user_id,
+                        "email": email,
+                        "pwd": pwd_hash,
+                        "now": now,
+                    },
                 )
-                session.add(identity)
-                session.add(UserRole(user_id=user_id, role_id=role_obj.id))
 
-                if role_code in ("caregiver", "super_caregiver"):
-                    session.add(
-                        CaregiverProfile(
-                            user_id=user_id,
-                            speciality="Pédiatrie nutritionnelle",
-                            order_number="ORD-2026-001",
-                            status="validated",
-                        )
-                    )
-                elif role_code == "field_agent":
-                    session.add(
-                        FieldAgentProfile(
-                            user_id=user_id,
-                            structure_name="Croix-Rouge Cameroun",
-                            phone="+237690000000",
-                            status="validated",
-                        )
-                    )
-
+                await conn.execute(
+                    text(
+                        "INSERT INTO user_roles (user_id, role_id) VALUES (:uid, :rid)"
+                    ),
+                    {"uid": user_id, "rid": role_id},
+                )
                 print(f"[+] Compte créé : {email} ({role_code})")
 
-        await session.commit()
     await engine.dispose()
-    print("\nTous les comptes de démonstration sont prêts et actifs !")
+    print("\nTous les comptes de démonstration sont créés et opérationnels !")
 
 
 if __name__ == "__main__":
