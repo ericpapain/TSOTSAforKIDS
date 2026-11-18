@@ -27,4 +27,10 @@ describe('BrandLogo', () => {
     expect(screen.getByText('4KIDS')).toBeInTheDocument();
     expect(screen.queryByTestId('brand-logo-symbol')).toBeNull();
   });
+
+  it('renders full image mode', () => {
+    render(<BrandLogo mode="image" size={48} />);
+    const img = screen.getByRole('img');
+    expect(img).toHaveAttribute('src', '/logo.png');
+  });
 });

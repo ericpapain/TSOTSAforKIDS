@@ -1,6 +1,5 @@
-import React, { useId } from "react";
-import { StyleSheet, Text, View } from "react-native";
-import Svg, { Circle, Defs, Mask, Rect } from "react-native-svg";
+import React from "react";
+import { Image, StyleSheet, Text, View } from "react-native";
 
 import { colors } from "../theme/colors";
 import { fontFamilies } from "../theme/typography";
@@ -10,8 +9,8 @@ export interface BrandLogoProps {
   size?: number;
   /** Variant: "light" (dark text on light bg) or "dark" (white text on dark bg) */
   variant?: "light" | "dark";
-  /** Display mode: full (default), symbol only, or word only */
-  mode?: "full" | "symbol" | "word";
+  /** Display mode: full (default), symbol only, word only, or full image */
+  mode?: "full" | "symbol" | "word" | "image";
   /** Optional testID for automation and testing */
   testID?: string;
 }
@@ -24,8 +23,6 @@ export function BrandLogo({
 }: BrandLogoProps): React.JSX.Element {
   const h = size;
   const isDark = variant === "dark";
-  const uniqueId = useId().replace(/:/g, "_");
-  const maskId = `tsotsa_mask_${uniqueId}`;
 
   const textColor = isDark ? colors.white : colors.text;
   const pillBg = isDark ? colors.white : colors.brand;
@@ -39,6 +36,19 @@ export function BrandLogo({
   const pillFontSize = Math.round(0.42 * h);
   const diskSize = Math.round(1.24 * h);
 
+  if (mode === "image") {
+    const imgWidth = Math.round(h * (800 / 854));
+    return (
+      <View style={styles.container} testID={testID} accessibilityRole="image">
+        <Image
+          source={require("../../assets/logo.png")}
+          style={{ width: imgWidth, height: h }}
+          resizeMode="contain"
+        />
+      </View>
+    );
+  }
+
   const showSymbol = mode === "full" || mode === "symbol";
   const showWord = mode === "full" || mode === "word";
 
@@ -46,7 +56,10 @@ export function BrandLogo({
     <View style={styles.container} testID={testID} accessibilityRole="image">
       {/* Symbol */}
       {showSymbol && (
-        <View style={[styles.symbolContainer, { width: diskSize, height: diskSize }]}>
+        <View
+          testID="brand-logo-symbol"
+          style={[styles.symbolContainer, { width: diskSize, height: diskSize }]}
+        >
           {isDark && (
             <View
               testID="brand-logo-dark-disk"
@@ -60,17 +73,11 @@ export function BrandLogo({
               ]}
             />
           )}
-          <Svg width={h} height={h} viewBox="8 8 84 84">
-            <Defs>
-              <Mask id={maskId}>
-                <Rect width="100" height="100" fill="#fff" />
-                <Rect x="46.9" y="0" width="6.2" height="100" fill="#000" />
-                <Circle cx="50" cy="50" r="11.6" fill="#000" />
-                <Rect x="50" y="46.4" width="50" height="7.2" fill="#000" />
-              </Mask>
-            </Defs>
-            <Circle cx="50" cy="50" r="42" fill={colors.brand} mask={`url(#${maskId})`} />
-          </Svg>
+          <Image
+            source={require("../../assets/logo_symbol.png")}
+            style={{ width: h, height: h }}
+            resizeMode="contain"
+          />
         </View>
       )}
 
