@@ -34,6 +34,7 @@ class Settings(BaseSettings):
     DATABASE_URL: str = "mysql+asyncmy://tsotsa_app:test@127.0.0.1:3306/tsotsa_dev"
     DATABASE_MIGRATIONS_URL: str = "mysql+asyncmy://tsotsa_migrator:test@127.0.0.1:3306/tsotsa_dev"
     DATABASE_SSL_CA_PATH: str | None = None
+    ALLOW_INSECURE_DB: bool = False
     DATABASE_POOL_SIZE: int = Field(default=10, ge=1)
 
     JWT_PRIVATE_KEY_PATH: str | None = None
@@ -85,9 +86,7 @@ class Settings(BaseSettings):
         """Enforce strict production configuration checks."""
         if self.is_production:
             missing: list[str] = []
-            local_hosts = ("@mysql:", "@127.0.0.1", "@localhost")
-            is_local_db = any(h in (self.DATABASE_URL or "") for h in local_hosts)
-            if not self.DATABASE_SSL_CA_PATH and not is_local_db:
+            if not self.DATABASE_SSL_CA_PATH and not self.ALLOW_INSECURE_DB:
                 missing.append("DATABASE_SSL_CA_PATH (TLS CA cert required for external DB)")
             if not self.JWT_PRIVATE_KEY_PATH:
                 missing.append("JWT_PRIVATE_KEY_PATH")
