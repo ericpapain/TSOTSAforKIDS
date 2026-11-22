@@ -20,6 +20,7 @@ export const AuthLoginForm: React.FC<AuthLoginFormProps> = ({ role, onPendingDet
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -44,8 +45,11 @@ export const AuthLoginForm: React.FC<AuthLoginFormProps> = ({ role, onPendingDet
     e.preventDefault();
     setErrorMessage(null);
 
+    const cleanEmail = email.trim();
+    const cleanPassword = password.trim();
+
     // E2E / quick-login mode when email is not typed
-    if (!email.trim()) {
+    if (!cleanEmail) {
       const assignedRole = role === "user" ? "parent" : role;
       const newSession: UserSession = {
         id: `usr-${assignedRole}`,
@@ -91,7 +95,7 @@ export const AuthLoginForm: React.FC<AuthLoginFormProps> = ({ role, onPendingDet
     try {
       const apiClient = getWebApiClient();
       const res = await apiClient.client.POST("/v1/auth/email/login", {
-        body: { email, password },
+        body: { email: cleanEmail, password: cleanPassword },
       });
 
       if (res.error) {
@@ -171,14 +175,24 @@ export const AuthLoginForm: React.FC<AuthLoginFormProps> = ({ role, onPendingDet
         <label className="block text-xs font-semibold text-text-secondary mb-1">
           {t("login.form.password")} *
         </label>
-        <input
-          type="password"
-          data-testid="login-password-input"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder={t("login.form.passwordPlaceholder")}
-          className="w-full px-3 py-2 text-sm border border-border rounded-md focus:outline-none focus:border-primary"
-        />
+        <div className="relative">
+          <input
+            type={showPassword ? "text" : "password"}
+            data-testid="login-password-input"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder={t("login.form.passwordPlaceholder")}
+            className="w-full px-3 py-2 pr-12 text-sm border border-border rounded-md focus:outline-none focus:border-primary"
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword((prev) => !prev)}
+            className="absolute inset-y-0 right-0 pr-3 flex items-center text-xs text-text-muted hover:text-text-primary select-none cursor-pointer"
+            tabIndex={-1}
+          >
+            {showPassword ? t("login.form.hidePassword") : t("login.form.showPassword")}
+          </button>
+        </div>
       </div>
 
       <Button

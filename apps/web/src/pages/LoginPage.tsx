@@ -49,6 +49,7 @@ export const LoginPage: React.FC = () => {
         {/* Marque officielle : TSOTSA for KIDS (Bleu Nuit #092D73 et Orange #F38B1F) */}
         <div className="flex items-baseline justify-center font-bold tracking-tight text-3xl sm:text-4xl mb-1 select-none">
           <span style={{ color: "#092D73" }}>TSOTSA</span>
+          {/* eslint-disable-next-line i18next/no-literal-string */}
           <span className="mx-2" style={{ color: "#F38B1F" }}>
             for
           </span>
@@ -61,7 +62,7 @@ export const LoginPage: React.FC = () => {
           style={{ color: "#092D73" }}
         >
           <span className="w-8 sm:w-10 h-[2px] rounded" style={{ backgroundColor: "#F38B1F" }} />
-          <span>Bien nourrir, bien suivre</span>
+          <span>{t("login.motto")}</span>
           <span className="w-8 sm:w-10 h-[2px] rounded" style={{ backgroundColor: "#F38B1F" }} />
         </div>
 

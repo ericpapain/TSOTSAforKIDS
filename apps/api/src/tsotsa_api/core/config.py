@@ -85,9 +85,10 @@ class Settings(BaseSettings):
         """Enforce strict production configuration checks."""
         if self.is_production:
             missing: list[str] = []
-            is_local_db = any(h in (self.DATABASE_URL or "") for h in ("@mysql:", "@127.0.0.1", "@localhost"))
+            local_hosts = ("@mysql:", "@127.0.0.1", "@localhost")
+            is_local_db = any(h in (self.DATABASE_URL or "") for h in local_hosts)
             if not self.DATABASE_SSL_CA_PATH and not is_local_db:
-                missing.append("DATABASE_SSL_CA_PATH (TLS CA certificate is mandatory for external database)")
+                missing.append("DATABASE_SSL_CA_PATH (TLS CA cert required for external DB)")
             if not self.JWT_PRIVATE_KEY_PATH:
                 missing.append("JWT_PRIVATE_KEY_PATH")
             if not self.JWT_PUBLIC_KEY_PATH:
