@@ -72,10 +72,10 @@ export const AuthRegisterForm: React.FC<AuthRegisterFormProps> = ({
 
       if (role === "caregiver") {
         body.facility_id = facilityId || undefined;
-        body.specialty = specialty;
+        body.speciality = specialty;
         body.order_number = orderNumber.trim() || undefined;
       } else if (role === "field_agent") {
-        body.organization_name = organization.trim() || undefined;
+        body.structure_name = organization.trim() || undefined;
       }
 
       const res = await apiClient.client.POST("/v1/auth/email/register", {
