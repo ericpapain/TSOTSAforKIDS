@@ -171,6 +171,9 @@ function createAuthenticatedFetch(
     if (token && !headers.has("Authorization")) {
       headers.set("Authorization", `Bearer ${token}`);
     }
+    if (init?.body && !headers.has("Content-Type") && !headers.has("content-type")) {
+      headers.set("Content-Type", "application/json");
+    }
 
     const initialRequestInit: RequestInit = { ...init, headers };
     const response = await baseFetch(input, initialRequestInit);

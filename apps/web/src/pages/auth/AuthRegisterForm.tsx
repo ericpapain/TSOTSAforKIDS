@@ -79,7 +79,7 @@ export const AuthRegisterForm: React.FC<AuthRegisterFormProps> = ({
       }
 
       const res = await apiClient.client.POST("/v1/auth/email/register", {
-        body: body as never,
+        body: body as never, headers: { "Content-Type": "application/json" },
       });
 
       if (res.error) {
@@ -97,6 +97,7 @@ export const AuthRegisterForm: React.FC<AuthRegisterFormProps> = ({
           // Active parent account: log in automatically
           const loginRes = await apiClient.client.POST("/v1/auth/email/login", {
             body: { email, password },
+            headers: { "Content-Type": "application/json" },
           });
           if (loginRes.data) {
             const data = loginRes.data;

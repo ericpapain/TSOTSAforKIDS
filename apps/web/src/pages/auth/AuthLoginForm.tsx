@@ -174,6 +174,7 @@ export const AuthLoginForm: React.FC<AuthLoginFormProps> = ({ role, onPendingDet
       const apiClient = getWebApiClient();
       const res = await apiClient.client.POST("/v1/auth/email/login", {
         body: { email: cleanEmail, password: cleanPassword },
+        headers: { "Content-Type": "application/json" },
       });
 
       if (res.error) {
