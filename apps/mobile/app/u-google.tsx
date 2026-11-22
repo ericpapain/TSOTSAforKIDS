@@ -28,7 +28,9 @@ export default function GoogleAuthScreen(): React.JSX.Element {
     try {
       // eslint-disable-next-line @typescript-eslint/no-var-requires
       const { GoogleSignin } = require("@react-native-google-signin/google-signin");
-      const webClientId = process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID || (process.env.NODE_ENV === "test" ? "test-client-id" : undefined);
+      const env = typeof process !== "undefined" ? process.env : undefined;
+      const webClientId = (env ? env["EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID"] : undefined) ||
+        (process.env.NODE_ENV === "test" ? "test-client-id" : undefined);
       if (!webClientId) {
         setErrorMessage(
           t("google.notConfigured", {
