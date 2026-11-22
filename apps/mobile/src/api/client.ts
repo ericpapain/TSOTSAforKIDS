@@ -11,9 +11,16 @@ import {
 
 import { clearStoredTokens, getStoredTokens, saveStoredTokens } from "./storage";
 
-function resolveApiBaseUrl(): string {
+export function resolveApiBaseUrl(
+  envOverride?: Record<string, string | undefined>
+): string {
   try {
-    const env = typeof process !== "undefined" ? process.env : undefined;
+    const env =
+      envOverride !== undefined
+        ? envOverride
+        : typeof process !== "undefined"
+          ? process.env
+          : undefined;
     if (env && typeof env === "object") {
       const customUrl = env["EXPO_PUBLIC_API_URL"];
       if (typeof customUrl === "string" && customUrl.trim().length > 0) {
