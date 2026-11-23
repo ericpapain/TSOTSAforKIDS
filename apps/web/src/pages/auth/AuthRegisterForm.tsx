@@ -156,7 +156,7 @@ export const AuthRegisterForm: React.FC<AuthRegisterFormProps> = ({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-3.5 text-left" data-testid="auth-register-form">
+    <form noValidate onSubmit={handleSubmit} className="space-y-3.5 text-left" data-testid="auth-register-form">
       {errorMessage && (
         <Notice variant="danger">
           <p className="text-xs text-red-600 font-medium">{errorMessage}</p>
