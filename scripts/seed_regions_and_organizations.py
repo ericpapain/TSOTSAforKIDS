@@ -30,37 +30,37 @@ REGIONS = [
 ORGANIZATIONS = [
     {
         "name": "CMA de Kousséri",
-        "type": "hospital",
+        "type": "cma",
         "region_code": "EN",
         "address": "Centre Médical d'Arrondissement, Kousséri",
     },
     {
         "name": "Hôpital Central de Yaoundé",
-        "type": "hospital",
+        "type": "hopital",
         "region_code": "CE",
         "address": "Quartier Melen, Yaoundé",
     },
     {
         "name": "Hôpital Général de Douala",
-        "type": "hospital",
+        "type": "hopital",
         "region_code": "LT",
         "address": "Zone Bépanda, Douala",
     },
     {
         "name": "Hôpital Régional de Bafoussam",
-        "type": "hospital",
+        "type": "hopital",
         "region_code": "OU",
         "address": "Bafoussam Centre, Ouest",
     },
     {
         "name": "Hôpital Régional de Garoua",
-        "type": "hospital",
+        "type": "hopital",
         "region_code": "NO",
         "address": "Garoua Plateau, Nord",
     },
     {
         "name": "Centre Médical de Bafang",
-        "type": "health_center",
+        "type": "centre_de_sante",
         "region_code": "OU",
         "address": "Bafang, Ouest",
     },
