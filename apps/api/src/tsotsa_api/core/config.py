@@ -15,7 +15,7 @@ AppEnv = Literal["development", "test", "staging", "production"]
 
 
 class Settings(BaseSettings):
-    """Configuration settings for TSOTSA4Kids API."""
+    """Configuration settings for TSOTSA for Kids API."""
 
     model_config = SettingsConfigDict(
         env_file=".env",
@@ -34,6 +34,7 @@ class Settings(BaseSettings):
     DATABASE_URL: str = "mysql+asyncmy://tsotsa_app:test@127.0.0.1:3306/tsotsa_dev"
     DATABASE_MIGRATIONS_URL: str = "mysql+asyncmy://tsotsa_migrator:test@127.0.0.1:3306/tsotsa_dev"
     DATABASE_SSL_CA_PATH: str | None = None
+    ALLOW_INSECURE_DB: bool = False
     DATABASE_POOL_SIZE: int = Field(default=10, ge=1)
 
     JWT_PRIVATE_KEY_PATH: str | None = None
@@ -52,7 +53,7 @@ class Settings(BaseSettings):
 
     EMAIL_PROVIDER: str = "console"
     EMAIL_API_KEY: str = ""
-    EMAIL_FROM: str = "TSOTSA4Kids <no-reply@tsotsa-for-kids.com>"
+    EMAIL_FROM: str = "TSOTSA for Kids <no-reply@tsotsa-for-kids.com>"
 
     EXPO_ACCESS_TOKEN: str = ""
     NOTIFICATION_REMINDER_DELAY_MINUTES: int = Field(default=30, ge=1)
@@ -85,8 +86,8 @@ class Settings(BaseSettings):
         """Enforce strict production configuration checks."""
         if self.is_production:
             missing: list[str] = []
-            if not self.DATABASE_SSL_CA_PATH:
-                missing.append("DATABASE_SSL_CA_PATH (TLS CA certificate is mandatory)")
+            if not self.DATABASE_SSL_CA_PATH and not self.ALLOW_INSECURE_DB:
+                missing.append("DATABASE_SSL_CA_PATH (TLS CA cert required for external DB)")
             if not self.JWT_PRIVATE_KEY_PATH:
                 missing.append("JWT_PRIVATE_KEY_PATH")
             if not self.JWT_PUBLIC_KEY_PATH:

@@ -25,6 +25,7 @@ RUN uv pip install --system -r pyproject.toml
 
 # Copy API codebase and install in non-editable mode
 COPY apps/api /app/apps/api
+COPY scripts /app/scripts
 RUN uv pip install --system --no-deps .
 
 RUN chown -R tsotsa:tsotsa /app

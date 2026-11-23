@@ -65,8 +65,9 @@ export const colors = {
   "admin-50": "#EEF1F5",
   admin50: "#EEF1F5",
 
-  // Brand: Reserved for TSOTSA Logo
-  brand: "#F26142",
+  // Brand: Reserved for TSOTSA Logo (Bleu Nuit #092D73 & Orange #F38B1F)
+  brand: "#F38B1F",
+  bleuNuit: "#092D73",
 
   // Specific contexts
   lockscreen: "#1E3A33",

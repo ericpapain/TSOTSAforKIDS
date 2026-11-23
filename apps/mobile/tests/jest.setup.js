@@ -70,7 +70,8 @@ jest.mock("@expo/vector-icons", () => {
   };
 });
 
-// Google Sign-In
+// Google Sign-In & Environment
+process.env.EXPO_PUBLIC_API_URL = "https://www.tsotsa-for-kids.com/api";
 process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID = "test-web-client-id";
 jest.mock("@react-native-google-signin/google-signin", () => ({
   GoogleSignin: {

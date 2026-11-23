@@ -9,7 +9,8 @@ describe("WelcomeScreen (M01)", () => {
     const { getByText, getByTestId } = render(<WelcomeScreen />);
 
     expect(getByText("TSOTSA")).toBeTruthy();
-    expect(getByText("4KIDS")).toBeTruthy();
+    expect(getByText("for")).toBeTruthy();
+    expect(getByText("KIDS")).toBeTruthy();
     expect(getByText("Bien nourrir, bien suivre.")).toBeTruthy();
     expect(getByText("Continuer avec Google")).toBeTruthy();
     expect(getByText("Continuer avec mon téléphone")).toBeTruthy();

@@ -44,8 +44,23 @@ export const AuthRegisterForm: React.FC<AuthRegisterFormProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isLoading) return;
     setErrorMessage(null);
 
+    const cleanEmail = email.trim();
+    const cleanFirstName = firstName.trim();
+    const cleanLastName = lastName.trim();
+    const cleanPhone = phone.trim();
+
+    if (!cleanFirstName || !cleanLastName || !cleanEmail || !password || !confirmPassword) {
+      setErrorMessage(t("login.notices.requiredFields"));
+      return;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(cleanEmail)) {
+      setErrorMessage(t("login.notices.invalidEmailFormat"));
+      return;
+    }
     if (password !== confirmPassword) {
       setErrorMessage(t("login.notices.passwordMismatch"));
       return;
@@ -54,38 +69,52 @@ export const AuthRegisterForm: React.FC<AuthRegisterFormProps> = ({
       setErrorMessage(t("login.notices.passwordTooShort"));
       return;
     }
+    if (role === "field_agent" && !cleanPhone) {
+      setErrorMessage("Le téléphone est obligatoire pour un agent de terrain.");
+      return;
+    }
+    if (role === "caregiver" && (!cleanPhone || !specialty.trim() || !facilityId)) {
+      setErrorMessage("Téléphone, établissement et spécialité sont obligatoires pour un soignant.");
+      return;
+    }
 
     setIsLoading(true);
 
     try {
       const apiClient = getWebApiClient();
       const body: Record<string, unknown> = {
-        email,
+        email: cleanEmail,
         password,
         role: role === "user" ? "parent" : role,
-        first_name: firstName,
-        last_name: lastName,
+        first_name: cleanFirstName,
+        last_name: cleanLastName,
         region_id: regionCode,
         locality: locality.trim() || undefined,
-        phone: phone.trim() || undefined,
+        phone: cleanPhone || undefined,
       };
 
       if (role === "caregiver") {
         body.facility_id = facilityId || undefined;
-        body.specialty = specialty;
+        body.speciality = specialty.trim();
         body.order_number = orderNumber.trim() || undefined;
       } else if (role === "field_agent") {
-        body.organization_name = organization.trim() || undefined;
+        body.structure_name = organization.trim() || undefined;
       }
 
       const res = await apiClient.client.POST("/v1/auth/email/register", {
         body: body as never,
+        headers: { "Content-Type": "application/json" },
       });
 
       if (res.error) {
-        setErrorMessage(
-          (res.error as { detail?: string })?.detail || t("login.notices.invalidCredentials")
-        );
+        const err = res.error as Record<string, unknown>;
+        const innerErr = err?.error as Record<string, unknown> | undefined;
+        const errorMsg =
+          (typeof err?.detail === "string" ? err.detail : null) ||
+          (typeof innerErr?.message === "string" ? innerErr.message : null) ||
+          (typeof err?.message === "string" ? err.message : null) ||
+          t("login.notices.serverError");
+        setErrorMessage(errorMsg);
         setIsLoading(false);
         return;
       }
@@ -96,36 +125,38 @@ export const AuthRegisterForm: React.FC<AuthRegisterFormProps> = ({
         } else {
           // Active parent account: log in automatically
           const loginRes = await apiClient.client.POST("/v1/auth/email/login", {
-            body: { email, password },
+            body: { email: cleanEmail, password },
+            headers: { "Content-Type": "application/json" },
           });
           if (loginRes.data) {
             const data = loginRes.data;
+            const primaryRole = (data.user.roles?.[0] as UserRole) || "parent";
             const newSession: UserSession = {
               id: data.user.id,
               userId: data.user.id,
-              email,
-              phone: phone || undefined,
-              role: "parent",
+              email: cleanEmail,
+              phone: cleanPhone || undefined,
+              role: primaryRole,
               status: "active",
-              permissions: ["patients.register"],
-              name: `${firstName} ${lastName}`.trim(),
+              permissions: data.user.permissions || ["patients.register"],
+              name: data.user.display_name || `${cleanFirstName} ${cleanLastName}`.trim(),
             };
             setSession(newSession, data.access_token, data.refresh_token);
-            navigate("/famille", { replace: true });
+            navigate("/nutrition/produits/plumpy-nut", { replace: true });
           } else {
             navigate("/connexion", { replace: true });
           }
         }
       }
     } catch {
-      setErrorMessage(t("login.notices.invalidCredentials"));
+      setErrorMessage(t("login.notices.networkError"));
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-3.5 text-left" data-testid="auth-register-form">
+    <form noValidate onSubmit={handleSubmit} className="space-y-3.5 text-left" data-testid="auth-register-form">
       {errorMessage && (
         <Notice variant="danger">
           <p className="text-xs text-red-600 font-medium">{errorMessage}</p>

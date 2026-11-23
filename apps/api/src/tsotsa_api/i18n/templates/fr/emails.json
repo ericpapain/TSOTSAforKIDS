@@ -1,14 +1,14 @@
 {
   "invitation": {
-    "subject": "Invitation à rejoindre TSOTSA4Kids",
-    "body": "Bonjour {display_name}, vous êtes invité(e) à rejoindre TSOTSA4Kids en tant que {role}. Utilisez votre lien d'invitation : {token}"
+    "subject": "Invitation à rejoindre TSOTSA for Kids",
+    "body": "Bonjour {display_name}, vous êtes invité(e) à rejoindre TSOTSA for Kids en tant que {role}. Utilisez votre lien d'invitation : {token}"
   },
   "password_reset": {
-    "subject": "Réinitialisation de votre mot de passe TSOTSA4Kids",
+    "subject": "Réinitialisation de votre mot de passe TSOTSA for Kids",
     "body": "Pour réinitialiser votre mot de passe, utilisez ce lien valable 30 minutes : {token}"
   },
   "email_verify": {
-    "subject": "Vérification de votre adresse e-mail TSOTSA4Kids",
+    "subject": "Vérification de votre adresse e-mail TSOTSA for Kids",
     "body": "Bonjour {display_name}, confirmez votre adresse e-mail avec ce lien : {token}"
   }
 }

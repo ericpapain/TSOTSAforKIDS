@@ -1,4 +1,4 @@
-"""Application factory and root API routes for TSOTSA4Kids backend."""
+"""Application factory and root API routes for TSOTSA for Kids backend."""
 
 from __future__ import annotations
 
@@ -88,7 +88,7 @@ def _build_v1_router() -> APIRouter:
 
     @v1_router.get("/", tags=["Root"])
     async def v1_root() -> dict[str, str]:
-        return {"message": "TSOTSA4Kids API v1", "status": "active"}
+        return {"message": "TSOTSA for Kids API v1", "status": "active"}
 
     v1_router.include_router(auth_router)
     v1_router.include_router(profile_router)
@@ -132,6 +132,23 @@ def _build_v1_router() -> APIRouter:
     return v1_router
 
 
+class EnsureJsonContentTypeMiddleware:
+    """Ensure POST/PUT/PATCH requests default to application/json if Content-Type is missing or text/plain."""
+
+    def __init__(self, app: Any) -> None:
+        self.app = app
+
+    async def __call__(self, scope: Any, receive: Any, send: Any) -> None:
+        if scope["type"] == "http" and scope.get("method") in ("POST", "PUT", "PATCH"):
+            headers = dict(scope.get("headers", []))
+            ct = headers.get(b"content-type", b"").decode("latin1").lower()
+            if not ct or "text/plain" in ct:
+                new_headers = [(k, v) for k, v in scope.get("headers", []) if k.lower() != b"content-type"]
+                new_headers.append((b"content-type", b"application/json"))
+                scope["headers"] = new_headers
+        await self.app(scope, receive, send)
+
+
 def create_app(settings: Settings | None = None) -> FastAPI:
     """Create and configure the FastAPI application instance."""
     cfg = settings or get_settings()
@@ -147,7 +164,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         logger.info("Application shutting down", env=cfg.APP_ENV)
 
     app = FastAPI(
-        title="TSOTSA4Kids API",
+        title="TSOTSA for Kids API",
         version="0.1.0",
         description="Infant nutrition platform backend API",
         docs_url="/docs",
@@ -156,6 +173,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         lifespan=lifespan,
     )
 
+    app.add_middleware(EnsureJsonContentTypeMiddleware)
     app.add_middleware(
         CORSMiddleware,
         allow_origins=cfg.cors_origins_list,

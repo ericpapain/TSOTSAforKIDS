@@ -3,8 +3,9 @@
 from __future__ import annotations
 
 from datetime import UTC, datetime
+import uuid
 
-from sqlalchemy import select, update
+from sqlalchemy import select, text, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -38,6 +39,44 @@ class IdentityRepository(TokenRepository):
         )
         res = await self.session.execute(stmt)
         return res.scalar_one_or_none()
+
+    async def resolve_region_id(self, region_val: str | None) -> str | None:
+        """Resolve region code (e.g. 'OU', 'CE') or UUID string to valid region UUID."""
+        if not region_val or not str(region_val).strip():
+            return None
+        cleaned = str(region_val).strip()
+        try:
+            val_uuid = uuid.UUID(cleaned)
+            stmt = text("SELECT id FROM regions WHERE id = :rid")
+            row = (await self.session.execute(stmt, {"rid": val_uuid.bytes})).scalar_one_or_none()
+            return str(val_uuid) if row else None
+        except ValueError:
+            pass
+        stmt = text(
+            "SELECT id FROM regions WHERE UPPER(code) = UPPER(:c) OR UPPER(name) = UPPER(:c) LIMIT 1"
+        )
+        res = (await self.session.execute(stmt, {"c": cleaned})).scalar_one_or_none()
+        if res:
+            return str(uuid.UUID(bytes=res)) if isinstance(res, bytes) else str(res)
+        return None
+
+    async def resolve_organization_id(self, org_val: str | None) -> str | None:
+        """Resolve organization ID safely to ensure it is a valid existing UUID."""
+        if not org_val or not str(org_val).strip():
+            return None
+        cleaned = str(org_val).strip()
+        try:
+            val_uuid = uuid.UUID(cleaned)
+            stmt = text("SELECT id FROM organizations WHERE id = :oid")
+            row = (await self.session.execute(stmt, {"oid": val_uuid.bytes})).scalar_one_or_none()
+            return str(val_uuid) if row else None
+        except ValueError:
+            pass
+        stmt = text("SELECT id FROM organizations WHERE UPPER(name) = UPPER(:n) LIMIT 1")
+        res = (await self.session.execute(stmt, {"n": cleaned})).scalar_one_or_none()
+        if res:
+            return str(uuid.UUID(bytes=res)) if isinstance(res, bytes) else str(res)
+        return None
 
     async def create_user(
         self,

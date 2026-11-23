@@ -1,6 +1,6 @@
 {
   "caregiverPage": {
-    "pageTitle": "Caregiver notifications | TSOTSA4Kids",
+    "pageTitle": "Caregiver notifications | TSOTSA for Kids",
     "title": "Caregiver notifications",
     "subtitle": "Clinical alerts and intake monitoring center",
     "markAllReadBtn": "Mark all as read",
@@ -28,7 +28,7 @@
     }
   },
   "settingsPage": {
-    "pageTitle": "Caregiver notification settings | TSOTSA4Kids",
+    "pageTitle": "Caregiver notification settings | TSOTSA for Kids",
     "breadcrumbNotifications": "Notifications",
     "breadcrumbSettings": "Settings",
     "title": "Caregiver notification settings",
