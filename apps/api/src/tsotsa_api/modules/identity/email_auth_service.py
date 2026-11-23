@@ -92,11 +92,12 @@ class EmailAuthService:
         d_name = display_name or f"{first_name or ''} {last_name or ''}".strip() or clean_email
         pwd_hash = hash_password(password, rounds=self.settings.BCRYPT_ROUNDS)
 
+        resolved_region_id = await self.repository.resolve_region_id(region_id)
         user = await self.repository.create_user(
             display_name=d_name,
             first_name=first_name,
             last_name=last_name,
-            preferred_region_id=region_id,
+            preferred_region_id=resolved_region_id,
             locality=locality,
             status=user_status,
         )
@@ -112,9 +113,10 @@ class EmailAuthService:
         )
 
         if role == "caregiver":
+            resolved_org_id = await self.repository.resolve_organization_id(facility_id)
             await self.repository.create_caregiver_profile(
                 user_id=user.id,
-                organization_id=facility_id,
+                organization_id=resolved_org_id,
                 phone=phone,
                 speciality=speciality,
                 order_number=order_number,
