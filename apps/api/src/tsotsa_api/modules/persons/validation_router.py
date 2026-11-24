@@ -12,6 +12,8 @@ from tsotsa_api.modules.identity.dependencies import get_current_user, require_p
 from tsotsa_api.modules.identity.models import User
 from tsotsa_api.modules.persons.schemas_validation import (
     PatientAssignRequest,
+    PatientDeleteRequest,
+    PatientValidateAndAssignRequest,
     PatientValidationRequest,
     PendingPatientRead,
 )
@@ -78,3 +80,45 @@ async def assign_patient_caregiver(
         reason=payload.reason,
     )
     return {"status": "assigned", "person_id": person_id, "caregiver_id": payload.caregiver_id}
+
+
+@patient_validation_router.post(
+    "/{person_id}/validate-and-assign",
+    response_model=PendingPatientRead,
+    dependencies=[Depends(require_permission("patients.validate"))],
+)
+async def validate_and_assign_patient(
+    person_id: str,
+    payload: PatientValidateAndAssignRequest,
+    current_user: Annotated[User, Depends(get_current_user)],
+    session: Annotated[AsyncSession, Depends(get_db_session)],
+) -> PendingPatientRead:
+    """Validate or refuse a patient and assign doctor / field agent."""
+    service = PatientValidationService(session)
+    person = await service.validate_and_assign_patient(
+        actor=current_user,
+        person_id=person_id,
+        decision=payload.decision,
+        doctor_id=payload.doctor_id,
+        field_agent_id=payload.field_agent_id,
+        organization_id=payload.organization_id,
+        notes=payload.notes,
+    )
+    return PendingPatientRead.model_validate(person)
+
+
+@patient_validation_router.delete(
+    "/{person_id}",
+    status_code=status.HTTP_200_OK,
+    dependencies=[Depends(require_permission("patients.validate"))],
+)
+async def delete_patient_by_staff(
+    person_id: str,
+    payload: PatientDeleteRequest,
+    current_user: Annotated[User, Depends(get_current_user)],
+    session: Annotated[AsyncSession, Depends(get_db_session)],
+) -> dict[str, str]:
+    """Delete / archive a patient with reason (requires patients.validate)."""
+    service = PatientValidationService(session)
+    await service.delete_patient_with_reason(current_user, person_id, payload.reason)
+    return {"status": "deleted", "person_id": person_id, "reason": payload.reason}

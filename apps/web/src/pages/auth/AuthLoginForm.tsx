@@ -36,7 +36,7 @@ function parseLoginError(resError: unknown, status?: number): string {
   if (code === "ACCOUNT_LOCKED") {
     return "ACCOUNT_LOCKED";
   }
-  if (status === 401) {
+  if (status === 401 || status === 422) {
     return "login.notices.invalidCredentials";
   }
   if (status && status >= 500) {
@@ -64,13 +64,15 @@ export const AuthLoginForm: React.FC<AuthLoginFormProps> = ({ role, onPendingDet
     if (from && from !== "/connexion") {
       navigate(from, { replace: true });
     } else if (userRole === "admin") {
-      navigate("/", { replace: true });
-    } else if (userRole === "caregiver" || userRole === "super_caregiver") {
+      navigate("/admin", { replace: true });
+    } else if (userRole === "super_caregiver") {
+      navigate("/soignant/supervision/validation", { replace: true });
+    } else if (userRole === "caregiver") {
       navigate("/soignant", { replace: true });
     } else if (userRole === "field_agent") {
       navigate("/agent/familles", { replace: true });
     } else {
-      navigate("/nutrition/produits/plumpy-nut", { replace: true });
+      navigate("/famille", { replace: true });
     }
   };
 
@@ -127,6 +129,32 @@ export const AuthLoginForm: React.FC<AuthLoginFormProps> = ({ role, onPendingDet
     access_token: string;
     refresh_token?: string;
   }) => {
+    const userRoles = data.user.roles || [];
+    const requestedRole = role === "user" ? "parent" : role;
+
+    // Strict profile matching: verify that the user possesses the chosen profile role
+    const hasMatchingRole =
+      userRoles.includes(requestedRole) ||
+      (requestedRole === "parent" && userRoles.includes("user"));
+
+    if (!hasMatchingRole) {
+      const roleLabels: Record<string, string> = {
+        parent: "Parent",
+        user: "Parent",
+        field_agent: "Agent de terrain",
+        caregiver: "Soignant",
+        super_caregiver: "Super soignant",
+        admin: "Administrateur",
+      };
+      const primaryUserRole = userRoles[0] || "parent";
+      const actualLabel = roleLabels[primaryUserRole] || primaryUserRole;
+      const requestedLabel = roleLabels[requestedRole] || requestedRole;
+      setErrorMessage(
+        `Ce compte correspond au profil « ${actualLabel} » et non « ${requestedLabel} ». Veuillez cliquer sur le profil « ${actualLabel} » ci-dessus pour vous connecter.`
+      );
+      return;
+    }
+
     const primaryRole = (data.user.roles?.[0] as UserRole) || role;
     const newSession: UserSession = {
       id: data.user.id,

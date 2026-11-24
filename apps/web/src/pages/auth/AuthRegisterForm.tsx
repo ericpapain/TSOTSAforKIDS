@@ -109,12 +109,19 @@ export const AuthRegisterForm: React.FC<AuthRegisterFormProps> = ({
       if (res.error) {
         const err = res.error as Record<string, unknown>;
         const innerErr = err?.error as Record<string, unknown> | undefined;
-        const errorMsg =
-          (typeof err?.detail === "string" ? err.detail : null) ||
-          (typeof innerErr?.message === "string" ? innerErr.message : null) ||
-          (typeof err?.message === "string" ? err.message : null) ||
-          t("login.notices.serverError");
-        setErrorMessage(errorMsg);
+        const errCode = ((err?.code || innerErr?.code || "") as string).toLowerCase();
+        const statusCode = res.response?.status;
+
+        if (statusCode === 409 || errCode.includes("already_exists")) {
+          setErrorMessage("Cette adresse e-mail est déjà utilisée. Si vous possédez déjà un compte, veuillez vous connecter.");
+        } else {
+          const errorMsg =
+            (typeof err?.detail === "string" ? err.detail : null) ||
+            (typeof innerErr?.message === "string" ? innerErr.message : null) ||
+            (typeof err?.message === "string" ? err.message : null) ||
+            t("login.notices.serverError");
+          setErrorMessage(errorMsg);
+        }
         setIsLoading(false);
         return;
       }
@@ -142,7 +149,7 @@ export const AuthRegisterForm: React.FC<AuthRegisterFormProps> = ({
               name: data.user.display_name || `${cleanFirstName} ${cleanLastName}`.trim(),
             };
             setSession(newSession, data.access_token, data.refresh_token);
-            navigate("/nutrition/produits/plumpy-nut", { replace: true });
+            navigate("/famille", { replace: true });
           } else {
             navigate("/connexion", { replace: true });
           }

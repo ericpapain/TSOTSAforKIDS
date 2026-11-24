@@ -6,6 +6,7 @@ from tsotsa_api.modules.persons.models import (
     PersonInvitation,
     PersonLink,
 )
+from tsotsa_api.modules.persons.field_agent_router import field_agent_router
 from tsotsa_api.modules.persons.router import caregiver_persons_router, family_router
 from tsotsa_api.modules.persons.service import PersonsService
 from tsotsa_api.modules.persons.validation_router import patient_validation_router
@@ -18,5 +19,6 @@ __all__ = [
     "PersonsService",
     "caregiver_persons_router",
     "family_router",
+    "field_agent_router",
     "patient_validation_router",
 ]

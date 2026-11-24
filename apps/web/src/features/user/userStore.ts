@@ -173,14 +173,15 @@ export const userStore = {
     state.activeChildId = childId;
     persistAndNotify();
   },
-  addChild: (child: Omit<ChildMember, "id" | "code" | "hasConsent">): ChildMember => {
+  addChild: (child: Partial<ChildMember> & Omit<ChildMember, "id" | "code" | "hasConsent">): ChildMember => {
     const nextNum = state.children.length + 1;
     const initialLetter = child.firstName.charAt(0).toUpperCase() || "E";
     const newChild: ChildMember = {
       ...child,
-      id: `child-${Date.now()}`,
-      code: `#${initialLetter}-${String(nextNum).padStart(3, "0")}`,
+      id: child.id || `child-${Date.now()}`,
+      code: child.code || `#${initialLetter}-${String(nextNum).padStart(3, "0")}`,
       hasConsent: true,
+      validationStatus: child.validationStatus || "pending",
       doctorId: child.doctorId || "doc-felicite",
       doctorName: child.doctorName || "Prof. Félicité Ngeufack",
       doctorFacility: child.doctorFacility || "CMA de démo",
@@ -188,8 +189,8 @@ export const userStore = {
         {
           id: `rep-${Date.now()}`,
           date: "10/11/2026",
-          doctorName: "Prof. Félicité Ngeufack",
-          facility: "CMA de démo",
+          doctorName: child.doctorName || "Prof. Félicité Ngeufack",
+          facility: child.doctorFacility || "CMA de démo",
           title: "Attribution automatique du médecin référent familial",
           targetWeightKg: Math.round(((child.weightKg || 8) * 1.1) * 10) / 10,
           prescription: "Poursuivre l'alimentation diversifiée avec équivalents nutritionnels locaux.",
@@ -201,6 +202,20 @@ export const userStore = {
     state.activeChildId = newChild.id;
     persistAndNotify();
     return newChild;
+  },
+  deleteChild: (childId: string): void => {
+    state.children = state.children.filter((c) => c.id !== childId);
+    if (state.activeChildId === childId && state.children.length > 0) {
+      state.activeChildId = state.children[0].id;
+    }
+    persistAndNotify();
+  },
+  setChildren: (children: ChildMember[]): void => {
+    state.children = children;
+    if (!state.children.some((c) => c.id === state.activeChildId) && state.children.length > 0) {
+      state.activeChildId = state.children[0].id;
+    }
+    persistAndNotify();
   },
   updateChild: (childId: string, updates: Partial<ChildMember>): void => {
     state.children = state.children.map((c) => (c.id === childId ? { ...c, ...updates } : c));

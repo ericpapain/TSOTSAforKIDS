@@ -42,6 +42,9 @@ class Person(Base):
     created_by: Mapped[str | None] = mapped_column(
         BinaryUUID, ForeignKey("users.id"), nullable=True
     )
+    assigned_field_agent_id: Mapped[str | None] = mapped_column(
+        BinaryUUID, ForeignKey("users.id"), nullable=True
+    )
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=lambda: datetime.now(UTC), nullable=False
     )

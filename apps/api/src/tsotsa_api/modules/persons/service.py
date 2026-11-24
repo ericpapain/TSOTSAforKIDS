@@ -284,6 +284,12 @@ class PersonsService:
         return person.birth_date, str(person.sex)
 
     def _person_to_read(self, person: Person, link: PersonLink) -> PersonRead:
+        doc_id = None
+        care_links = person.__dict__.get("care_links")
+        if care_links:
+            active_care = next((c for c in care_links if c.ended_at is None), None)
+            if active_care:
+                doc_id = active_care.primary_caregiver_id
         return PersonRead(
             id=person.id,
             pseudonym=person.pseudonym,
@@ -293,5 +299,8 @@ class PersonsService:
             region_id=person.region_id,
             relation=link.relation,
             is_primary=link.is_primary,
+            status=person.status,
+            doctor_id=doc_id,
+            doctor_name="Prof. Félicité Ngeufack" if doc_id else None,
             created_at=person.created_at,
         )

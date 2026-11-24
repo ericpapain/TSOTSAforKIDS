@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import "../../i18n/setup";
-import { FaPlus, FaEye, FaUtensils, FaCheck } from "react-icons/fa";
+import { FaPlus, FaEye, FaUtensils, FaCheck, FaTrash } from "react-icons/fa";
 import { AppHeader } from "../../components/AppHeader";
 import { UserNavTabs } from "./UserNavTabs";
 import { AddChildModal } from "./AddChildModal";
@@ -10,8 +10,10 @@ import { InviteParentModal } from "./InviteParentModal";
 import { ChildProfileModal } from "./ChildProfileModal";
 import { ChildHealthReportModal } from "../health/ChildHealthReportModal";
 import { useUserStore } from "../../features/user/useUserStore";
+import { userStore } from "../../features/user/userStore";
 import type { ChildMember } from "../../features/user/types";
 import { useOptionalAuth } from "../../api/authContext";
+import { listFamilyMembers, deleteFamilyMember } from "../../api/persons";
 
 export const FamilyPersonsPage: React.FC = () => {
   const { t } = useTranslation(["mobile", "common", "nutrition"]);
@@ -23,6 +25,66 @@ export const FamilyPersonsPage: React.FC = () => {
   const [selectedChildForProfile, setSelectedChildForProfile] = useState<ChildMember | null>(null);
   const [selectedChildForInvite, setSelectedChildForInvite] = useState<ChildMember | null>(null);
   const [selectedChildForHealth, setSelectedChildForHealth] = useState<ChildMember | null>(null);
+
+  useEffect(() => {
+    let isMounted = true;
+    const fetchApiMembers = async () => {
+      try {
+        const members = await listFamilyMembers();
+        if (isMounted && members && members.length > 0) {
+          const currentStoreChildren = userStore.getState().children;
+          const mappedMembers: ChildMember[] = members.map((m) => {
+            const existing = currentStoreChildren.find((c) => c.id === m.id || c.code === m.pseudonym);
+            return {
+              id: m.id,
+              code: m.pseudonym,
+              firstName: m.first_name,
+              birthDate: m.birth_date,
+              sex: m.sex,
+              relation: (m.relation as "mother" | "father" | "guardian" | "other") || "mother",
+              weightKg: existing?.weightKg || 8.5,
+              heightCm: existing?.heightCm || 72,
+              muacMm: existing?.muacMm || 120,
+              edema: existing?.edema || "none",
+              status: existing?.status || "normal",
+              validationStatus: m.status || "pending",
+              doctorId: m.doctor_id || existing?.doctorId,
+              doctorName: m.doctor_name || existing?.doctorName || "En cours d'attribution",
+              facilityName: existing?.facilityName || "Centre médical de référence",
+              hasConsent: true,
+            };
+          });
+
+          // Merge without losing local demo children
+          const merged = [...mappedMembers];
+          for (const c of currentStoreChildren) {
+            if (!merged.some((m) => m.id === c.id || m.code === c.code)) {
+              merged.push(c);
+            }
+          }
+          userStore.setChildren(merged);
+        }
+      } catch {
+        // Offline / fallback silently
+      }
+    };
+    void fetchApiMembers();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const handleDeleteChild = async (childId: string) => {
+    if (!window.confirm("Êtes-vous sûr de vouloir supprimer cet enfant de votre espace famille ?")) {
+      return;
+    }
+    try {
+      await deleteFamilyMember(childId);
+    } catch {
+      // Continue to remove locally even if offline
+    }
+    userStore.deleteChild(childId);
+  };
 
   const handleLogout = () => {
     authContext?.logout();
@@ -103,17 +165,34 @@ export const FamilyPersonsPage: React.FC = () => {
                       </div>
                     </div>
 
-                    <span
-                      className={`text-[11px] font-bold px-2.5 py-0.5 rounded-full ${
-                        child.status === "MAS"
-                          ? "bg-red-100 text-red-700"
-                          : child.status === "MAM"
-                            ? "bg-amber-100 text-amber-800"
-                            : "bg-emerald-100 text-emerald-800"
-                      }`}
-                    >
-                      {child.status}
-                    </span>
+                    <div className="flex flex-col items-end gap-1">
+                      <span
+                        className={`text-[11px] font-bold px-2.5 py-0.5 rounded-full ${
+                          child.status === "MAS"
+                            ? "bg-red-100 text-red-700"
+                            : child.status === "MAM"
+                              ? "bg-amber-100 text-amber-800"
+                              : "bg-emerald-100 text-emerald-800"
+                        }`}
+                      >
+                        {child.status}
+                      </span>
+                      {child.validationStatus === "pending" ? (
+                        <span
+                          data-testid={`badge-pending-${child.id}`}
+                          className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200"
+                        >
+                          En attente
+                        </span>
+                      ) : child.validationStatus === "validated" ? (
+                        <span
+                          data-testid={`badge-validated-${child.id}`}
+                          className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200"
+                        >
+                          Validé
+                        </span>
+                      ) : null}
+                    </div>
                   </div>
 
                   {/* Measurements */}
@@ -215,16 +294,28 @@ export const FamilyPersonsPage: React.FC = () => {
                       </span>
                     )}
 
-                    {!child.secondParentInvite && (
+                    <div className="flex items-center gap-3">
+                      {!child.secondParentInvite && (
+                        <button
+                          type="button"
+                          data-testid={`invite-parent-btn-${child.id}`}
+                          onClick={() => setSelectedChildForInvite(child)}
+                          className="text-[#5B6B66] hover:text-[#17302A] hover:underline"
+                        >
+                          + {t("mobile:profile.inviteSecondParent", "Inviter parent")}
+                        </button>
+                      )}
                       <button
                         type="button"
-                        data-testid={`invite-parent-btn-${child.id}`}
-                        onClick={() => setSelectedChildForInvite(child)}
-                        className="text-[#5B6B66] hover:text-[#17302A] hover:underline"
+                        data-testid={`delete-child-btn-${child.id}`}
+                        onClick={() => handleDeleteChild(child.id)}
+                        className="text-red-500 hover:text-red-700 flex items-center gap-1 font-semibold transition-colors"
+                        title="Supprimer cet enfant"
                       >
-                        + {t("mobile:profile.inviteSecondParent", "Inviter parent")}
+                        <FaTrash size={10} />
+                        <span>Supprimer</span>
                       </button>
-                    )}
+                    </div>
                   </div>
                 </div>
               </div>

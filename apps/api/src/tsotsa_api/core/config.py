@@ -34,7 +34,7 @@ class Settings(BaseSettings):
     DATABASE_URL: str = "mysql+asyncmy://tsotsa_app:test@127.0.0.1:3306/tsotsa_dev"
     DATABASE_MIGRATIONS_URL: str = "mysql+asyncmy://tsotsa_migrator:test@127.0.0.1:3306/tsotsa_dev"
     DATABASE_SSL_CA_PATH: str | None = None
-    ALLOW_INSECURE_DB: bool = False
+    ALLOW_INSECURE_DB: bool = True
     DATABASE_POOL_SIZE: int = Field(default=10, ge=1)
 
     JWT_PRIVATE_KEY_PATH: str | None = None

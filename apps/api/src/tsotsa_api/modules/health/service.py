@@ -9,6 +9,7 @@ from tsotsa_api.core.errors import ForbiddenError, NotFoundError
 from tsotsa_api.modules.audit.service import AuditService
 from tsotsa_api.modules.health.eval_helpers import (
     evaluate_event_rules,
+    resolve_or_create_target_person,
     resolve_user_access_tier,
     to_caregiver_out,
     to_parent_out,
@@ -61,14 +62,14 @@ class HealthService:
         ip: str | None = None,
     ) -> HealthEventParentOut | HealthEventCaregiverOut:
         """Create and triage a new health event."""
+        person = await resolve_or_create_target_person(
+            self.session, actor_id, payload.person_id
+        )
+        payload.person_id = str(person.id)
+
         tier = await resolve_user_access_tier(
             self.session, self.perms, actor_id, payload.person_id
         )
-
-        p_stmt = select(Person).where(Person.id == payload.person_id)
-        person = (await self.session.execute(p_stmt)).scalar_one_or_none()
-        if not person or person.deleted_at is not None:
-            raise NotFoundError("Enfant suivi introuvable.")
 
         rule_inputs = [
             SymptomInput(

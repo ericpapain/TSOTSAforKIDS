@@ -183,3 +183,28 @@ class StaffService:
         user.updated_at = now
         await self.session.flush()
         return user
+
+    async def promote_to_super_caregiver(
+        self, actor: User, target_user_id: str
+    ) -> None:
+        """Promote an active caregiver to Super Caregiver coordinator."""
+        await self._require_perm(actor, "permissions.manage")
+        user = await self.session.get(User, target_user_id)
+        if not user or user.deleted_at is not None:
+            raise NotFoundError("Utilisateur introuvable.")
+
+        role_stmt = select(Role).where(Role.code == "super_caregiver")
+        role = (await self.session.execute(role_stmt)).scalar_one_or_none()
+        if not role:
+            raise NotFoundError("Rôle super_caregiver introuvable.")
+
+        ur_stmt = select(UserRole).where(
+            UserRole.user_id == target_user_id, UserRole.role_id == role.id
+        )
+        existing = (await self.session.execute(ur_stmt)).scalar_one_or_none()
+        if not existing:
+            from tsotsa_api.shared.types import generate_uuid7
+            self.session.add(
+                UserRole(id=generate_uuid7(), user_id=target_user_id, role_id=role.id)
+            )
+            await self.session.flush()

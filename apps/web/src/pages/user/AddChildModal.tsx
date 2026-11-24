@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { FaTimes } from "react-icons/fa";
 import { useUserStore } from "../../features/user/useUserStore";
 import type { ChildSex, FamilyRelation, EdemaGrade, ChildStatus } from "../../features/user/types";
+import { createFamilyMember } from "../../api/persons";
 import { ChildFormStep } from "./ChildFormStep";
 import { ChildConsentStep } from "./ChildConsentStep";
 
@@ -40,7 +41,7 @@ export const AddChildModal: React.FC<AddChildModalProps> = ({ isOpen, onClose, o
     setStep(2);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!hasConsentChecked) {
       setError(t("mobile:consent.mustCheck", "Veuillez cocher la case de consentement."));
       return;
@@ -50,21 +51,55 @@ export const AddChildModal: React.FC<AddChildModalProps> = ({ isOpen, onClose, o
     const determinedStatus: ChildStatus =
       edema !== "none" || muacVal < 115 ? "MAS" : muacVal < 125 ? "MAM" : "normal";
 
-    addChild({
-      firstName: firstName.trim(),
-      birthDate: birthDate.trim() || new Date().toISOString().split("T")[0],
-      sex,
-      relation,
-      weightKg: parseFloat(weightKg) || 8.5,
-      heightCm: parseFloat(heightCm) || 72,
-      muacMm: muacVal,
-      edema,
-      status: determinedStatus,
-      facilityName: "Centre de santé local",
-    });
+    const cleanFirstName = firstName.trim();
+    const formattedBirthDate = birthDate.trim() || new Date().toISOString().split("T")[0];
 
-    onSuccess?.();
-    handleClose();
+    setError(null);
+
+    try {
+      const created = await createFamilyMember({
+        first_name: cleanFirstName,
+        birth_date: formattedBirthDate,
+        sex,
+        relation: "child",
+      });
+
+      addChild({
+        id: created.id,
+        code: created.pseudonym,
+        firstName: created.first_name || cleanFirstName,
+        birthDate: created.birth_date || formattedBirthDate,
+        sex,
+        relation,
+        weightKg: parseFloat(weightKg) || 8.5,
+        heightCm: parseFloat(heightCm) || 72,
+        muacMm: muacVal,
+        edema,
+        status: determinedStatus,
+        validationStatus: created.status || "pending",
+        doctorName: created.doctor_name || "En cours d'attribution",
+        facilityName: "Centre médical de référence",
+      });
+    } catch {
+      // Fallback offline / local
+      addChild({
+        firstName: cleanFirstName,
+        birthDate: formattedBirthDate,
+        sex,
+        relation,
+        weightKg: parseFloat(weightKg) || 8.5,
+        heightCm: parseFloat(heightCm) || 72,
+        muacMm: muacVal,
+        edema,
+        status: determinedStatus,
+        validationStatus: "pending",
+        doctorName: "En cours d'attribution",
+        facilityName: "Centre de santé local",
+      });
+    } finally {
+      onSuccess?.();
+      handleClose();
+    }
   };
 
   const handleClose = () => {

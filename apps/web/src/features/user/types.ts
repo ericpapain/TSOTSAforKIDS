@@ -35,6 +35,7 @@ export interface ChildMember {
   muacMm: number;
   edema: EdemaGrade;
   status: ChildStatus;
+  validationStatus?: "pending" | "validated" | "refused" | "archived";
   facilityName: string;
   doctorId?: string;
   doctorName?: string;

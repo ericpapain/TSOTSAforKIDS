@@ -70,6 +70,7 @@ from tsotsa_api.modules.orkg_sync import orkg_sync_admin_router
 from tsotsa_api.modules.persons import (
     caregiver_persons_router,
     family_router,
+    field_agent_router,
     patient_validation_router,
 )
 from tsotsa_api.modules.pricing import admin_pricing_router, pricing_router
@@ -111,6 +112,7 @@ def _build_v1_router() -> APIRouter:
     v1_router.include_router(users_region_router)
     v1_router.include_router(organizations_admin_router)
     v1_router.include_router(family_router)
+    v1_router.include_router(field_agent_router)
     v1_router.include_router(caregiver_persons_router)
     v1_router.include_router(patient_validation_router)
     v1_router.include_router(consents_router)

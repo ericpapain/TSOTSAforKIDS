@@ -83,19 +83,49 @@ class EmailRegisterRequest(BaseModel):
     order_number: Annotated[str | None, Field(max_length=100, default=None)] = None
     structure_name: Annotated[str | None, Field(max_length=200, default=None)] = None
 
+    @field_validator("email", mode="before")
+    @classmethod
+    def clean_email(cls, v: str) -> str:
+        if isinstance(v, str):
+            return v.strip().lower()
+        return v
+
+    @field_validator("first_name", "last_name", "locality", "speciality", "order_number", "structure_name", mode="before")
+    @classmethod
+    def clean_strings(cls, v: str | None) -> str | None:
+        if isinstance(v, str):
+            cleaned = v.strip()
+            return cleaned or None
+        return v
+
+    @field_validator("phone", mode="before")
+    @classmethod
+    def clean_phone(cls, v: str | None) -> str | None:
+        if isinstance(v, str):
+            cleaned = re.sub(r"[\s\-\.\(\)]", "", v.strip())
+            return cleaned or None
+        return v
+
 
 class EmailLoginRequest(BaseModel):
     """User login with email and password."""
 
-    email: EmailStr
+    email: Annotated[str, Field(min_length=3, max_length=255, description="Email address")]
     password: Annotated[
         str,
         Field(
-            min_length=8,
-            max_length=72,
-            description="Password between 8 and 72 characters",
+            min_length=1,
+            max_length=128,
+            description="Password string",
         ),
     ]
+
+    @field_validator("email", mode="before")
+    @classmethod
+    def clean_login_email(cls, v: str) -> str:
+        if isinstance(v, str):
+            return v.strip().lower()
+        return v
 
 
 class EmailVerifyRequest(BaseModel):

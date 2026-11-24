@@ -16,6 +16,7 @@ import { UserNavTabs } from "./UserNavTabs";
 import { AddChildModal } from "./AddChildModal";
 import { ChildHealthReportModal } from "../health/ChildHealthReportModal";
 import { useUserStore } from "../../features/user/useUserStore";
+import { recordIntake } from "../../api/intakes";
 
 export const NutritionPage: React.FC = () => {
   const { t, i18n } = useTranslation("nutrition");
@@ -290,6 +291,16 @@ export const NutritionPage: React.FC = () => {
               date: "Aujourd'hui",
               consumption: details.consumption,
               status: "given",
+            });
+            void recordIntake({
+              person_id: activeChild.id,
+              item_type: "product",
+              item_id: details.foodName,
+              quantity: details.quantity,
+              unit: details.unit,
+              consumption: details.consumption,
+            }).catch(() => {
+              // Ignore API network errors silently
             });
           }
         }}
