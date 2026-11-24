@@ -1,20 +1,19 @@
 import React, { useState, useEffect } from "react";
-import { useTranslation } from "react-i18next";
 import { Card } from "../../components/Card";
 import { Button } from "../../components/Button";
 import {
   listPendingPatients,
   listPendingStaff,
+  listActiveDoctors,
   promoteSuperCaregiver,
   type PendingPatient,
   type PendingStaffUser,
+  type DoctorUser,
 } from "../../api/persons";
 import { PendingPatientsTable } from "./PendingPatientsTable";
 import { PendingStaffTable } from "./PendingStaffTable";
 
 export const SupervisionValidationPage: React.FC = () => {
-  const { t } = useTranslation("caregiver");
-
   const [activeTab, setActiveTab] = useState<"patients" | "staff" | "promotion">("patients");
   const [pendingPatients, setPendingPatients] = useState<PendingPatient[]>([]);
   const [isLoadingPatients, setIsLoadingPatients] = useState(false);
@@ -23,6 +22,7 @@ export const SupervisionValidationPage: React.FC = () => {
   const [isLoadingStaff, setIsLoadingStaff] = useState(false);
 
   // Promote staff state
+  const [doctors, setDoctors] = useState<DoctorUser[]>([]);
   const [promoteUserId, setPromoteUserId] = useState("");
   const [promoteStatusMsg, setPromoteStatusMsg] = useState<string | null>(null);
 
@@ -50,18 +50,34 @@ export const SupervisionValidationPage: React.FC = () => {
     }
   };
 
+  const fetchDoctors = async () => {
+    try {
+      const data = await listActiveDoctors();
+      setDoctors(data);
+      if (data.length > 0 && !promoteUserId) {
+        setPromoteUserId(data[0].id);
+      }
+    } catch {
+      // offline / fallback
+    }
+  };
+
   useEffect(() => {
     void fetchPatients();
     void fetchStaff();
+    void fetchDoctors();
   }, []);
 
   const handlePromoteSuperCaregiver = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!promoteUserId.trim()) return;
+    if (!promoteUserId) return;
     try {
-      await promoteSuperCaregiver(promoteUserId.trim());
-      setPromoteStatusMsg("Médecin promu avec succès au rang de Super-Soignant.");
-      setPromoteUserId("");
+      await promoteSuperCaregiver(promoteUserId);
+      const selected = doctors.find((d) => d.id === promoteUserId);
+      setPromoteStatusMsg(
+        `Le Dr ${selected?.name || promoteUserId} a été promu avec succès au rang de Super-Soignant.`
+      );
+      await fetchDoctors();
     } catch {
       setPromoteStatusMsg("Erreur lors de la promotion du praticien.");
     }
@@ -70,8 +86,10 @@ export const SupervisionValidationPage: React.FC = () => {
   return (
     <div className="space-y-6" data-testid="supervision-validation-page">
       <div>
-        <h1 className="text-2xl font-bold text-text-primary">{t("supervision.validationTitle")}</h1>
-        <p className="text-xs text-text-secondary mt-1">{t("supervision.validationSubtitle")}</p>
+        <h1 className="text-2xl font-bold text-text-primary">Supervision & Validations</h1>
+        <p className="text-xs text-text-secondary mt-1">
+          Gouvernance globale : validation des enfants, familles, agents de terrain et praticiens.
+        </p>
       </div>
 
       {/* Tabs */}
@@ -131,31 +149,46 @@ export const SupervisionValidationPage: React.FC = () => {
       )}
 
       {activeTab === "promotion" && (
-        <Card className="p-4">
-          <h2 className="text-sm font-bold text-text-primary mb-3">
+        <Card className="p-5 max-w-2xl">
+          <h2 className="text-base font-bold text-text-primary mb-2">
             Nommer un nouveau Super-Soignant (Coordinateur Clinique)
           </h2>
-          <form onSubmit={handlePromoteSuperCaregiver} className="flex gap-3 items-end max-w-xl">
-            <div className="flex-1">
-              <label className="block text-xs font-semibold text-text-secondary mb-1">
-                Identifiant ou Email du Soignant à promouvoir :
+          <p className="text-xs text-text-secondary mb-4">
+            Sélectionnez un praticien soignant actif pour lui déléguer le rôle de supervision,
+            d'attribution des patients et d'approbation du personnel.
+          </p>
+
+          <form onSubmit={handlePromoteSuperCaregiver} className="space-y-4">
+            <div>
+              <label className="block text-xs font-semibold text-text-secondary mb-1.5">
+                Sélectionner le praticien :
               </label>
-              <input
-                type="text"
+              <select
                 required
                 value={promoteUserId}
                 onChange={(e) => setPromoteUserId(e.target.value)}
-                placeholder="ID ou email du soignant"
-                className="w-full px-3 py-1.5 text-sm border rounded focus:border-primary"
-                data-testid="promote-caregiver-input"
-              />
+                className="w-full px-3 py-2 text-sm border rounded focus:border-primary bg-white"
+                data-testid="promote-caregiver-select"
+              >
+                {doctors.map((d) => (
+                  <option key={d.id} value={d.id}>
+                    {d.name} — {d.specialty} ({d.facility}) {d.is_super_caregiver ? "⭐ (Déjà Super-Soignant)" : ""}
+                  </option>
+                ))}
+              </select>
             </div>
-            <Button type="submit" variant="primary" size="sm" testID="promote-caregiver-btn">
-              Nommer Super-Soignant
-            </Button>
+
+            <div className="flex items-center gap-3">
+              <Button type="submit" variant="primary" size="sm" testID="promote-caregiver-btn">
+                Nommer Super-Soignant
+              </Button>
+            </div>
           </form>
+
           {promoteStatusMsg && (
-            <p className="mt-2 text-xs font-semibold text-primary">{promoteStatusMsg}</p>
+            <div className="mt-4 p-2.5 bg-emerald-50 border border-emerald-200 rounded text-xs font-semibold text-emerald-800">
+              {promoteStatusMsg}
+            </div>
           )}
         </Card>
       )}

@@ -135,7 +135,7 @@ def _build_v1_router() -> APIRouter:
 
 
 class EnsureJsonContentTypeMiddleware:
-    """Ensure POST/PUT/PATCH requests default to application/json if Content-Type is missing or text/plain."""
+    """Ensure requests default to application/json if Content-Type is missing or text/plain."""
 
     def __init__(self, app: Any) -> None:
         self.app = app
@@ -145,7 +145,9 @@ class EnsureJsonContentTypeMiddleware:
             headers = dict(scope.get("headers", []))
             ct = headers.get(b"content-type", b"").decode("latin1").lower()
             if not ct or "text/plain" in ct:
-                new_headers = [(k, v) for k, v in scope.get("headers", []) if k.lower() != b"content-type"]
+                new_headers = [
+                    (k, v) for k, v in scope.get("headers", []) if k.lower() != b"content-type"
+                ]
                 new_headers.append((b"content-type", b"application/json"))
                 scope["headers"] = new_headers
         await self.app(scope, receive, send)

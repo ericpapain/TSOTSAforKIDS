@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from datetime import UTC, date, datetime
 import re
+from datetime import UTC, date, datetime
 from typing import Annotated, Literal
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -13,12 +13,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from tsotsa_api.core.database import get_db_session
 from tsotsa_api.core.security import hash_password
-from tsotsa_api.modules.identity.dependencies import get_current_user, require_role
-from tsotsa_api.modules.identity.models import User, UserIdentity
-from tsotsa_api.modules.identity.models_roles import Role, UserRole
-from tsotsa_api.modules.identity.repository import IdentityRepository
 from tsotsa_api.modules.consents.models import Consent
 from tsotsa_api.modules.consents.service import ConsentsService
+from tsotsa_api.modules.identity.dependencies import get_current_user, require_role
+from tsotsa_api.modules.identity.models import User
+from tsotsa_api.modules.identity.repository import IdentityRepository
 from tsotsa_api.modules.persons.models import (
     Person,
     PersonCare,
@@ -90,7 +89,9 @@ async def enroll_family_from_field(
     clean_phone = re.sub(r"[\s\-\.\(\)]", "", payload.parent_phone.strip())
     clean_email = payload.parent_email.lower().strip() if payload.parent_email else None
     if not clean_email:
-        clean_email = f"famille.{clean_phone[-6:]}.{int(datetime.now().timestamp())}@tsotsa-for-kids.com"
+        clean_email = (
+            f"famille.{clean_phone[-6:]}.{int(datetime.now().timestamp())}@tsotsa-for-kids.com"
+        )
 
     resolved_region = await ident_repo.resolve_region_id(payload.region_id)
     parent_user = None
@@ -198,7 +199,11 @@ async def list_enrolled_families(
     person_ids = [p.id for p in persons]
 
     # Resolve parent info via PersonLink -> User
-    link_stmt = select(PersonLink, User).join(User, PersonLink.user_id == User.id).where(PersonLink.person_id.in_(person_ids))
+    link_stmt = (
+        select(PersonLink, User)
+        .join(User, PersonLink.user_id == User.id)
+        .where(PersonLink.person_id.in_(person_ids))
+    )
     link_res = await session.execute(link_stmt)
     parents_map: dict[str, tuple[str, str | None, str | None]] = {}
     for link, u in link_res.all():
@@ -217,7 +222,9 @@ async def list_enrolled_families(
     care_res = await session.execute(care_stmt)
     doctor_map: dict[str, str] = {}
     for care, doc in care_res.all():
-        doctor_map[care.person_id] = doc.display_name or f"Dr. {doc.first_name} {doc.last_name}".strip()
+        doctor_map[care.person_id] = (
+            doc.display_name or f"Dr. {doc.first_name} {doc.last_name}".strip()
+        )
 
     result = []
     for p in persons:

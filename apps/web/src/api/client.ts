@@ -28,6 +28,22 @@ export function getWebApiClient(): TsotsaApiClient {
       baseUrl: API_BASE_URL,
       autoRefresh: true,
     });
+    if (typeof window !== "undefined") {
+      try {
+        const raw = window.sessionStorage.getItem("tsotsa_auth_tokens");
+        if (raw) {
+          const tokens = JSON.parse(raw) as { accessToken?: string; refreshToken?: string };
+          if (tokens?.accessToken) {
+            apiClientInstance.setTokens({
+              accessToken: tokens.accessToken,
+              refreshToken: tokens.refreshToken,
+            });
+          }
+        }
+      } catch {
+        // Storage errors ignored
+      }
+    }
   }
   return apiClientInstance;
 }

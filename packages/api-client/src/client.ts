@@ -158,11 +158,11 @@ class TokenManager {
 function extractHeaders(input: RequestInfo | URL, init?: RequestInit): Headers {
   const headers = new Headers();
   if (typeof Request !== "undefined" && input instanceof Request) {
-    input.headers.forEach((val, key) => headers.set(key, val));
+    input.headers.forEach((val: string, key: string) => headers.set(key, val));
   }
   if (init?.headers) {
     const initHeaders = new Headers(init.headers);
-    initHeaders.forEach((val, key) => headers.set(key, val));
+    initHeaders.forEach((val: string, key: string) => headers.set(key, val));
   }
   return headers;
 }

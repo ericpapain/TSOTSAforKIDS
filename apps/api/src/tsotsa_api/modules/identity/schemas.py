@@ -90,7 +90,15 @@ class EmailRegisterRequest(BaseModel):
             return v.strip().lower()
         return v
 
-    @field_validator("first_name", "last_name", "locality", "speciality", "order_number", "structure_name", mode="before")
+    @field_validator(
+        "first_name",
+        "last_name",
+        "locality",
+        "speciality",
+        "order_number",
+        "structure_name",
+        mode="before",
+    )
     @classmethod
     def clean_strings(cls, v: str | None) -> str | None:
         if isinstance(v, str):

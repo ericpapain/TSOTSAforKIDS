@@ -191,4 +191,71 @@ export async function suspendStaff(userId: string): Promise<{ message: string }>
   return res.data;
 }
 
+export interface NetworkPatient {
+  id: string;
+  code: string;
+  first_name: string;
+  birth_date: string;
+  age: string;
+  gender: string;
+  region: string;
+  facility: string;
+  status: string;
+  assignedDoctorId?: string | null;
+  assignedDoctorName?: string | null;
+}
+
+export interface DoctorUser {
+  id: string;
+  name: string;
+  email: string;
+  facility: string;
+  specialty: string;
+  is_super_caregiver: boolean;
+  canReadAll: boolean;
+  canAssign: boolean;
+  canValidateStaff: boolean;
+}
+
+export async function listAllNetworkPatients(): Promise<NetworkPatient[]> {
+  try {
+    const client = getWebApiClient().client;
+    const res = await (client as unknown as { GET: (url: string) => Promise<{ data: NetworkPatient[] }> })
+      .GET("/v1/patients/all");
+    return res.data || [];
+  } catch {
+    return [];
+  }
+}
+
+export async function listActiveDoctors(): Promise<DoctorUser[]> {
+  try {
+    const client = getWebApiClient().client;
+    const res = await (client as unknown as { GET: (url: string) => Promise<{ data: DoctorUser[] }> })
+      .GET("/v1/staff/doctors");
+    return res.data || [];
+  } catch {
+    return [];
+  }
+}
+
+export async function grantPermission(targetUserId: string, permissionCode: string): Promise<void> {
+  const client = getWebApiClient().client;
+  await (client as unknown as {
+    POST: (url: string, opts: { body: { target_user_id: string; permission_code: string } }) => Promise<unknown>;
+  }).POST("/v1/permissions/grant", {
+    body: { target_user_id: targetUserId, permission_code: permissionCode },
+  });
+}
+
+export async function revokePermission(targetUserId: string, permissionCode: string): Promise<void> {
+  const client = getWebApiClient().client;
+  await (client as unknown as {
+    POST: (url: string, opts: { body: { target_user_id: string; permission_code: string } }) => Promise<unknown>;
+  }).POST("/v1/permissions/revoke", {
+    body: { target_user_id: targetUserId, permission_code: permissionCode },
+  });
+}
+
+
 

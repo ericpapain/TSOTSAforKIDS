@@ -37,6 +37,20 @@ async def list_pending_patients(
     return [PendingPatientRead.model_validate(p) for p in patients]
 
 
+@patient_validation_router.get(
+    "/all",
+    status_code=status.HTTP_200_OK,
+    summary="Lister tous les patients du réseau",
+)
+async def list_all_patients(
+    current_user: Annotated[User, Depends(get_current_user)],
+    session: Annotated[AsyncSession, Depends(get_db_session)],
+) -> list[dict]:
+    """Retrieve all followed patients across the network."""
+    service = PatientValidationService(session)
+    return await service.list_all_patients(current_user)
+
+
 @patient_validation_router.post(
     "/{person_id}/validate",
     response_model=PendingPatientRead,

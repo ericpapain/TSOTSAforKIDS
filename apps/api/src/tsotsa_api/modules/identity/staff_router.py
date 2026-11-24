@@ -56,6 +56,20 @@ async def list_pending_staff(
     ]
 
 
+@staff_router.get(
+    "/doctors",
+    status_code=status.HTTP_200_OK,
+    summary="Lister les praticiens actifs pour nomination et association",
+)
+async def list_doctors(
+    actor: User = Depends(require_permission("staff.validate")),
+    db: AsyncSession = Depends(get_db_session),
+) -> list[dict]:
+    """Retrieve active caregivers and doctors."""
+    service = StaffService(db)
+    return await service.list_doctors(actor)
+
+
 @staff_router.post(
     "/{user_id}/validate",
     response_model=MessageResponse,

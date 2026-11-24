@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 
-from sqlalchemy import func, select
+from sqlalchemy import func, select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -184,9 +184,7 @@ class StaffService:
         await self.session.flush()
         return user
 
-    async def promote_to_super_caregiver(
-        self, actor: User, target_user_id: str
-    ) -> None:
+    async def promote_to_super_caregiver(self, actor: User, target_user_id: str) -> None:
         """Promote an active caregiver to Super Caregiver coordinator."""
         await self._require_perm(actor, "permissions.manage")
         user = await self.session.get(User, target_user_id)
@@ -204,7 +202,79 @@ class StaffService:
         existing = (await self.session.execute(ur_stmt)).scalar_one_or_none()
         if not existing:
             from tsotsa_api.shared.types import generate_uuid7
-            self.session.add(
-                UserRole(id=generate_uuid7(), user_id=target_user_id, role_id=role.id)
-            )
+
+            self.session.add(UserRole(id=generate_uuid7(), user_id=target_user_id, role_id=role.id))
             await self.session.flush()
+
+    async def list_doctors(self, actor: User) -> list[dict]:
+        """List active doctors and caregivers for nomination, assignment, and delegations."""
+        perms = await self.permissions.get_effective_permissions(actor.id)
+        if not ({"permissions.manage", "staff.validate", "patients.assign"} & perms):
+            raise ForbiddenError("Droit de supervision clinique requis.")
+
+        stmt = (
+            select(User)
+            .options(
+                selectinload(User.user_roles).selectinload(UserRole.role),
+                selectinload(User.caregiver_profile),
+                selectinload(User.identities),
+            )
+            .where(User.status == "active", User.deleted_at.is_(None))
+            .order_by(User.first_name, User.last_name)
+        )
+        res = await self.session.execute(stmt)
+        users = list(res.scalars().all())
+
+        caregivers = [
+            u
+            for u in users
+            if any(
+                ur.role and ur.role.code in ("caregiver", "super_caregiver")
+                for ur in u.user_roles
+            )
+        ]
+
+        org_rows = (
+            await self.session.execute(text("SELECT HEX(id), name FROM organizations"))
+        ).all()
+        org_map = {r[0].lower(): r[1] for r in org_rows}
+
+        results = []
+        for u in caregivers:
+            u_perms = await self.permissions.get_effective_permissions(u.id)
+            is_super = any(ur.role and ur.role.code == "super_caregiver" for ur in u.user_roles)
+            org_id_str = (
+                str(u.caregiver_profile.organization_id).replace("-", "").lower()
+                if u.caregiver_profile and u.caregiver_profile.organization_id
+                else None
+            )
+            facility_name = (
+                org_map.get(org_id_str, "Hôpital de référence")
+                if org_id_str
+                else "Non rattaché"
+            )
+            spec = (
+                u.caregiver_profile.speciality
+                if u.caregiver_profile and u.caregiver_profile.speciality
+                else "Pédiatrie nutritionnelle"
+            )
+
+            user_email = ""
+            if u.identities:
+                for ident in u.identities:
+                    if ident.email:
+                        user_email = ident.email
+                        break
+
+            results.append({
+                "id": u.id,
+                "name": u.display_name or f"Dr. {u.first_name} {u.last_name}".strip(),
+                "email": user_email,
+                "facility": facility_name,
+                "specialty": spec,
+                "is_super_caregiver": is_super,
+                "canReadAll": "patients.read_all" in u_perms,
+                "canAssign": "patients.assign" in u_perms,
+                "canValidateStaff": "staff.validate" in u_perms,
+            })
+        return results

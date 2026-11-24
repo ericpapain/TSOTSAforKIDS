@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from datetime import UTC, datetime
 import uuid
+from datetime import UTC, datetime
 
 from sqlalchemy import select, text, update
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -47,17 +47,19 @@ class IdentityRepository(TokenRepository):
         cleaned = str(region_val).strip()
         try:
             val_uuid = uuid.UUID(cleaned)
-            stmt = text("SELECT id FROM regions WHERE id = :rid")
-            row = (await self.session.execute(stmt, {"rid": val_uuid.bytes})).scalar_one_or_none()
-            return str(val_uuid) if row else None
+            return str(val_uuid)
         except ValueError:
             pass
         stmt = text(
-            "SELECT id FROM regions WHERE UPPER(code) = UPPER(:c) OR UPPER(name) = UPPER(:c) LIMIT 1"
+            "SELECT HEX(id) FROM regions "
+            "WHERE UPPER(code) = UPPER(:c) OR UPPER(name) = UPPER(:c) LIMIT 1"
         )
         res = (await self.session.execute(stmt, {"c": cleaned})).scalar_one_or_none()
         if res:
-            return str(uuid.UUID(bytes=res)) if isinstance(res, bytes) else str(res)
+            h = str(res).lower()
+            if len(h) == 32:
+                return f"{h[0:8]}-{h[8:12]}-{h[12:16]}-{h[16:20]}-{h[20:32]}"
+            return str(res)
         return None
 
     async def resolve_organization_id(self, org_val: str | None) -> str | None:
@@ -67,11 +69,17 @@ class IdentityRepository(TokenRepository):
         cleaned = str(org_val).strip()
         try:
             val_uuid = uuid.UUID(cleaned)
-            stmt = text("SELECT id FROM organizations WHERE id = :oid")
-            row = (await self.session.execute(stmt, {"oid": val_uuid.bytes})).scalar_one_or_none()
-            return str(val_uuid) if row else None
+            return str(val_uuid)
         except ValueError:
             pass
+        stmt = text("SELECT HEX(id) FROM organizations WHERE LOWER(name) LIKE LOWER(:n) LIMIT 1")
+        res = (await self.session.execute(stmt, {"n": f"%{cleaned}%"})).scalar_one_or_none()
+        if res:
+            h = str(res).lower()
+            if len(h) == 32:
+                return f"{h[0:8]}-{h[8:12]}-{h[12:16]}-{h[16:20]}-{h[20:32]}"
+            return str(res)
+        return None
         stmt = text("SELECT id FROM organizations WHERE UPPER(name) = UPPER(:n) LIMIT 1")
         res = (await self.session.execute(stmt, {"n": cleaned})).scalar_one_or_none()
         if res:

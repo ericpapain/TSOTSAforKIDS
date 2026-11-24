@@ -149,9 +149,7 @@ class PersonsRepository:
         stmt = (
             select(PersonLink)
             .join(Person, Person.id == PersonLink.person_id)
-            .options(
-                selectinload(PersonLink.person).selectinload(Person.care_links)
-            )
+            .options(selectinload(PersonLink.person).selectinload(Person.care_links))
             .where(PersonLink.user_id == user_id, Person.deleted_at.is_(None))
             .order_by(PersonLink.created_at.desc())
         )

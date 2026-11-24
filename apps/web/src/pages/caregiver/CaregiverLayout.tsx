@@ -43,7 +43,7 @@ export function CaregiverLayout({ children }: { children: React.ReactNode }): Re
 
   if (canValidateStaff) {
     localizedNavItems.push({
-      label: "Validation soignants",
+      label: "Supervision & Validations",
       path: "/soignant/supervision/validation",
       iconName: "verify",
     });

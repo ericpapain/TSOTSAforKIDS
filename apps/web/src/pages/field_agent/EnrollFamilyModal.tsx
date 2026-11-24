@@ -4,15 +4,7 @@ import { Card } from "../../components/Card";
 import { Button } from "../../components/Button";
 import { CAMEROON_REGIONS } from "../../features/reference/cameroonRegions";
 import { enrollFamily } from "../../api/fieldAgent";
-
-interface ChildDraft {
-  first_name: string;
-  birth_date: string;
-  sex: "M" | "F";
-  weight_kg?: number;
-  height_cm?: number;
-  muac_mm?: number;
-}
+import { ChildEnrollmentCard, type ChildDraft } from "./ChildEnrollmentCard";
 
 interface EnrollFamilyModalProps {
   isOpen: boolean;
@@ -67,6 +59,25 @@ export const EnrollFamilyModal: React.FC<EnrollFamilyModalProps> = ({
     e.preventDefault();
     if (!parentFirstName || !parentLastName || !parentPhone) return;
 
+    const filteredChildren = newChildren.filter(
+      (c) => c.first_name.trim().length > 0 || c.birth_date
+    );
+    if (filteredChildren.length === 0) {
+      alert("Veuillez renseigner au moins un enfant (prénom et date de naissance obligatoires).");
+      return;
+    }
+    for (let i = 0; i < filteredChildren.length; i++) {
+      const c = filteredChildren[i];
+      if (c.first_name.trim().length < 2) {
+        alert(`Le prénom de l'enfant #${i + 1} doit comporter au moins 2 caractères.`);
+        return;
+      }
+      if (!c.birth_date) {
+        alert(`La date de naissance de l'enfant #${i + 1} est obligatoire.`);
+        return;
+      }
+    }
+
     try {
       await enrollFamily({
         parent_first_name: parentFirstName.trim(),
@@ -76,7 +87,7 @@ export const EnrollFamilyModal: React.FC<EnrollFamilyModalProps> = ({
         parent_password: parentPassword,
         region_id: regionCode,
         locality: locality.trim() || undefined,
-        children: newChildren.map((c) => ({
+        children: filteredChildren.map((c) => ({
           first_name: c.first_name.trim(),
           birth_date: c.birth_date,
           sex: c.sex,
@@ -88,12 +99,28 @@ export const EnrollFamilyModal: React.FC<EnrollFamilyModalProps> = ({
       onSuccess();
       onClose();
     } catch (err: unknown) {
-      const errObj = err as Record<string, unknown> | undefined;
-      const detail =
-        (Array.isArray(errObj?.detail) ? (errObj?.detail as Array<{ msg?: string }>)[0]?.msg : null) ||
-        (typeof errObj?.detail === "string" ? errObj.detail : null) ||
-        (typeof errObj?.message === "string" ? errObj.message : null) ||
-        (typeof err === "object" ? JSON.stringify(err) : String(err));
+      let detail = "Erreur inattendue du serveur.";
+      if (err && typeof err === "object") {
+        const e = err as Record<string, unknown>;
+        const innerErr = e.error as Record<string, unknown> | undefined;
+        if (Array.isArray(innerErr?.details) && innerErr.details.length > 0) {
+          const d0 = innerErr.details[0] as { msg?: string; message?: string };
+          detail = d0.msg || d0.message || JSON.stringify(d0);
+        } else if (Array.isArray(e.detail) && e.detail.length > 0) {
+          const d0 = e.detail[0] as { msg?: string; message?: string };
+          detail = d0.msg || d0.message || JSON.stringify(d0);
+        } else if (typeof innerErr?.message === "string") {
+          detail = innerErr.message;
+        } else if (typeof e.detail === "string") {
+          detail = e.detail;
+        } else if (typeof e.message === "string") {
+          detail = e.message;
+        } else {
+          detail = JSON.stringify(err);
+        }
+      } else if (typeof err === "string") {
+        detail = err;
+      }
       alert(`Erreur lors de l'enrôlement : ${detail}`);
     }
   };
@@ -209,65 +236,14 @@ export const EnrollFamilyModal: React.FC<EnrollFamilyModalProps> = ({
 
             <div className="space-y-2.5 max-h-[220px] overflow-y-auto pr-1">
               {newChildren.map((c, idx) => (
-                <div key={idx} className="p-2.5 bg-slate-50 border rounded text-xs space-y-2 relative">
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-slate-700">Enfant #{idx + 1}</span>
-                    {newChildren.length > 1 && (
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveChildFromForm(idx)}
-                        className="text-red-500 hover:text-red-700 text-[11px]"
-                      >
-                        Retirer
-                      </button>
-                    )}
-                  </div>
-                  <div className="grid grid-cols-3 gap-2">
-                    <div className="col-span-2">
-                      <input
-                        type="text"
-                        required
-                        placeholder="Prénom"
-                        data-testid={`child-${idx}-firstname`}
-                        value={c.first_name}
-                        onChange={(e) => handleChildFieldChange(idx, "first_name", e.target.value)}
-                        className="w-full px-2 py-1 border rounded bg-white text-xs"
-                      />
-                    </div>
-                    <div>
-                      <select
-                        value={c.sex}
-                        onChange={(e) => handleChildFieldChange(idx, "sex", e.target.value)}
-                        className="w-full px-2 py-1 border rounded bg-white text-xs"
-                      >
-                        <option value="M">Garçon</option>
-                        <option value="F">Fille</option>
-                      </select>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-2">
-                    <div>
-                      <input
-                        type="date"
-                        required
-                        data-testid={`child-${idx}-birthdate`}
-                        value={c.birth_date}
-                        onChange={(e) => handleChildFieldChange(idx, "birth_date", e.target.value)}
-                        className="w-full px-2 py-1 border rounded bg-white text-xs"
-                      />
-                    </div>
-                    <div>
-                      <input
-                        type="text"
-                        data-testid={`child-${idx}-weight`}
-                        placeholder="Poids (kg)"
-                        value={c.weight_kg !== undefined && c.weight_kg !== null ? String(c.weight_kg) : ""}
-                        onChange={(e) => handleChildFieldChange(idx, "weight_kg", e.target.value)}
-                        className="w-full px-2 py-1 border rounded bg-white text-xs"
-                      />
-                    </div>
-                  </div>
-                </div>
+                <ChildEnrollmentCard
+                  key={idx}
+                  child={c}
+                  index={idx}
+                  canRemove={newChildren.length > 1}
+                  onRemove={() => handleRemoveChildFromForm(idx)}
+                  onChange={(field, val) => handleChildFieldChange(idx, field, val)}
+                />
               ))}
             </div>
           </div>
