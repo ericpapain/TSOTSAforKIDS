@@ -31,9 +31,9 @@ export const FamilyPersonsPage: React.FC = () => {
     const fetchApiMembers = async () => {
       try {
         const members = await listFamilyMembers();
-        if (isMounted && members && members.length > 0) {
+        if (isMounted) {
           const currentStoreChildren = userStore.getState().children;
-          const mappedMembers: ChildMember[] = members.map((m) => {
+          const mappedMembers: ChildMember[] = (members || []).map((m) => {
             const existing = currentStoreChildren.find((c) => c.id === m.id || c.code === m.pseudonym);
             return {
               id: m.id,
@@ -49,20 +49,12 @@ export const FamilyPersonsPage: React.FC = () => {
               status: existing?.status || "normal",
               validationStatus: m.status || "pending",
               doctorId: m.doctor_id || existing?.doctorId,
-              doctorName: m.doctor_name || existing?.doctorName || "En cours d'attribution",
+              doctorName: m.doctor_name || existing?.doctorName || (m.status === "validated" ? "Non assigné" : "En cours d'attribution"),
               facilityName: existing?.facilityName || "Centre médical de référence",
               hasConsent: true,
             };
           });
-
-          // Merge without losing local demo children
-          const merged = [...mappedMembers];
-          for (const c of currentStoreChildren) {
-            if (!merged.some((m) => m.id === c.id || m.code === c.code)) {
-              merged.push(c);
-            }
-          }
-          userStore.setChildren(merged);
+          userStore.setChildren(mappedMembers);
         }
       } catch {
         // Offline / fallback silently
@@ -98,7 +90,7 @@ export const FamilyPersonsPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#F1F3F2] font-sans">
-      <AppHeader space="user" onLogout={handleLogout} />
+      <AppHeader space="user" userName={authContext?.session?.name || authContext?.session?.email} onLogout={handleLogout} />
       <UserNavTabs onOpenAddChild={() => setIsAddModalOpen(true)} />
 
       <main className="mx-auto max-w-[1200px] px-7 py-8">
@@ -129,9 +121,37 @@ export const FamilyPersonsPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Children Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {children.map((child) => {
+        {/* Children Grid or Empty State */}
+        {children.length === 0 ? (
+          <div
+            data-testid="family-empty-state"
+            className="bg-white rounded-2xl border border-dashed border-[#D5DEDA] p-12 text-center max-w-xl mx-auto my-8 shadow-sm"
+          >
+            <div className="w-16 h-16 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center text-3xl mx-auto mb-4">
+              👶
+            </div>
+            <h3 className="text-lg font-bold text-[#17302A] mb-2">
+              {t("mobile:persons.emptyTitle", "Aucun enfant enregistré")}
+            </h3>
+            <p className="text-sm text-[#5B6B66] mb-6">
+              {t(
+                "mobile:persons.emptySubtitle",
+                "Ajoutez votre premier enfant pour suivre sa croissance et ses équivalents nutritionnels."
+              )}
+            </p>
+            <button
+              type="button"
+              data-testid="add-first-child-btn"
+              onClick={() => setIsAddModalOpen(true)}
+              className="inline-flex items-center gap-2 px-6 py-3 bg-primary hover:bg-primary-hover text-white text-sm font-bold rounded-xl shadow transition-colors"
+            >
+              <FaPlus size={12} />
+              <span>{t("mobile:persons.addPerson", "Ajouter un enfant")}</span>
+            </button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {children.map((child) => {
             const isActive = child.id === activeChildId;
 
             return (
@@ -224,7 +244,9 @@ export const FamilyPersonsPage: React.FC = () => {
                   <div className="space-y-1.5 text-[12px] text-[#5B6B66] mb-4">
                     <div className="flex justify-between">
                       <span>{t("mobile:profile.attendingDoctor", "Médecin")} :</span>
-                      <span className="font-bold text-primary">{child.doctorName || "Prof. Félicité Ngeufack"}</span>
+                      <span className="font-bold text-primary">
+                        {child.doctorName || (child.validationStatus === "validated" ? "Non assigné" : "En cours d'attribution")}
+                      </span>
                     </div>
                     <div className="flex justify-between">
                       <span>{t("mobile:profile.facility", "Centre")} :</span>
@@ -322,6 +344,7 @@ export const FamilyPersonsPage: React.FC = () => {
             );
           })}
         </div>
+        )}
       </main>
 
       {/* Modals */}

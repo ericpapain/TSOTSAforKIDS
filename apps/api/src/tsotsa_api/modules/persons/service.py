@@ -76,7 +76,14 @@ class PersonsService:
             ip=ip,
             details={"count": len(links)},
         )
-        return [self._person_to_read(link_item.person, link_item) for link_item in links]
+        doc_ids = []
+        for link_item in links:
+            care_links = link_item.person.__dict__.get("care_links") or []
+            active = next((c for c in care_links if c.ended_at is None), None)
+            if active and active.primary_caregiver_id:
+                doc_ids.append(str(active.primary_caregiver_id))
+        doc_map = await self._resolve_doctor_names(doc_ids) if doc_ids else {}
+        return [self._person_to_read(link_item.person, link_item, doc_map) for link_item in links]
 
     async def get_family_member(
         self, user_id: str, person_id: str, ip: str | None = None
@@ -91,7 +98,13 @@ class PersonsService:
             actor_user_id=user_id,
             ip=ip,
         )
-        return self._person_to_read(link.person, link)
+        doc_ids = []
+        care_links = link.person.__dict__.get("care_links") or []
+        active = next((c for c in care_links if c.ended_at is None), None)
+        if active and active.primary_caregiver_id:
+            doc_ids.append(str(active.primary_caregiver_id))
+        doc_map = await self._resolve_doctor_names(doc_ids) if doc_ids else {}
+        return self._person_to_read(link.person, link, doc_map)
 
     async def update_family_member(
         self, user_id: str, person_id: str, payload: PersonUpdate, ip: str | None = None
@@ -283,13 +296,26 @@ class PersonsService:
             return None
         return person.birth_date, str(person.sex)
 
-    def _person_to_read(self, person: Person, link: PersonLink) -> PersonRead:
+    async def _resolve_doctor_names(self, doctor_ids: list[str]) -> dict[str, str]:
+        if not doctor_ids:
+            return {}
+        return await self.repo.get_doctor_names_for_ids(doctor_ids)
+
+    def _person_to_read(
+        self,
+        person: Person,
+        link: PersonLink,
+        doc_map: dict[str, str] | None = None,
+    ) -> PersonRead:
         doc_id = None
+        doc_name = None
         care_links = person.__dict__.get("care_links")
         if care_links:
             active_care = next((c for c in care_links if c.ended_at is None), None)
-            if active_care:
-                doc_id = active_care.primary_caregiver_id
+            if active_care and active_care.primary_caregiver_id:
+                doc_id = str(active_care.primary_caregiver_id)
+                if doc_map:
+                    doc_name = doc_map.get(doc_id) or doc_map.get(doc_id.replace("-", "").lower())
         return PersonRead(
             id=person.id,
             pseudonym=person.pseudonym,
@@ -301,6 +327,6 @@ class PersonsService:
             is_primary=link.is_primary,
             status=person.status,
             doctor_id=doc_id,
-            doctor_name="Prof. Félicité Ngeufack" if doc_id else None,
+            doctor_name=doc_name,
             created_at=person.created_at,
         )

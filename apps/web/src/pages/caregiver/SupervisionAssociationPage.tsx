@@ -55,7 +55,7 @@ export const SupervisionAssociationPage: React.FC = () => {
       await assignPatientCaregiver(
         selectedPatient.id,
         targetDoctorId,
-        "01a20830-0be4-7a1f-b7df-dc987969e39e",
+        "",
         reassignReason || "Réassignation par la supervision clinique"
       );
       setFeedbackMsg(`Patient ${selectedPatient.code} réassigné avec succès.`);

@@ -79,6 +79,7 @@ from tsotsa_api.modules.reference_products import (
     reference_products_admin_router,
 )
 from tsotsa_api.modules.schedules import schedules_router
+import tsotsa_api.modules.food_database.models  # noqa: F401 (ensure Region is in Base.metadata)
 
 logger = get_logger(__name__)
 

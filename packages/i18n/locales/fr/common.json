@@ -7,7 +7,7 @@
       "field_agent": "Espace agent de terrain",
       "admin": "Administration"
     },
-    "defaultUserName": "Compte démo · Hamadou",
+    "defaultUserName": "Espace Famille",
     "notificationsUnread_one": "Notifications ({{count}} non lue)",
     "notificationsUnread_other": "Notifications ({{count}} non lues)",
     "close": "Fermer ✕",

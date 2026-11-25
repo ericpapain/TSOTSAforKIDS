@@ -6,12 +6,14 @@ import type { EquivalentLocalFood } from "../../features/nutrition/types";
 
 interface FoodDetailModalProps {
   food: EquivalentLocalFood | null;
+  personName?: string;
   onClose: () => void;
   onGiveFood?: (food: EquivalentLocalFood) => void;
 }
 
 export const FoodDetailModal: React.FC<FoodDetailModalProps> = ({
   food,
+  personName = "l'enfant",
   onClose,
   onGiveFood,
 }) => {
@@ -120,7 +122,7 @@ export const FoodDetailModal: React.FC<FoodDetailModalProps> = ({
               }}
               className="rounded-lg bg-[#0F7B5F] px-4 py-2 text-sm font-bold text-white hover:bg-[#0c634c] cursor-pointer"
             >
-              {t("foodModal.giveFoodBtn", { food: food.name, person: "Hamadou" })}
+              {t("foodModal.giveFoodBtn", { food: food.name, person: personName })}
             </button>
           )}
         </div>

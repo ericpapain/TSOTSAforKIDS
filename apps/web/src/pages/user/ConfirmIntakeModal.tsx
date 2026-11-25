@@ -27,7 +27,7 @@ const TIME_KEYS: TimeOptionKey[] = ["0800", "1230", "1800", "now"];
 
 export const ConfirmIntakeModal: React.FC<ConfirmIntakeModalProps> = ({
   isOpen,
-  personName = "Hamadou",
+  personName = "l'enfant",
   itemName,
   defaultUnit = "sachet",
   onClose,

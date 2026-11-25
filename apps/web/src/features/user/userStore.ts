@@ -15,110 +15,6 @@ export interface UserState {
   settings: UserSettings;
 }
 
-const defaultChildren: ChildMember[] = [
-  {
-    id: "child-amina",
-    code: "#A-014",
-    firstName: "Amina",
-    birthDate: "2024-05-10",
-    sex: "F",
-    relation: "mother",
-    weightKg: 8.4,
-    heightCm: 72,
-    muacMm: 120,
-    edema: "none",
-    status: "MAS",
-    facilityName: "CMA de démo",
-    doctorId: "doc-felicite",
-    doctorName: "Prof. Félicité Ngeufack",
-    doctorFacility: "CMA de démo",
-    doctorReports: [
-      {
-        id: "rep-amina-1",
-        date: "29/10/2026",
-        doctorName: "Prof. Félicité Ngeufack",
-        facility: "CMA de démo",
-        title: "Protocole de rattrapage nutritionnel MAM",
-        targetWeightKg: 9.2,
-        prescription: "1 portion de bouillie enrichie à l'arachide le matin + 1 sachet de Plumpy'Nut le soir",
-        observations: "Bonne reprise pondérale (+150g en 7j). Poursuivre l'apport protéino-énergétique et surveillance du PB.",
-      },
-    ],
-    lastIntakeTime: "12:30",
-    hasConsent: true,
-  },
-  {
-    id: "child-hamadou",
-    code: "#H-007",
-    firstName: "Hamadou",
-    birthDate: "2022-09-15",
-    sex: "M",
-    relation: "father",
-    weightKg: 14.2,
-    heightCm: 98,
-    muacMm: 145,
-    edema: "none",
-    status: "normal",
-    facilityName: "Hôpital de District",
-    doctorId: "doc-felicite",
-    doctorName: "Prof. Félicité Ngeufack",
-    doctorFacility: "CMA de démo",
-    doctorReports: [
-      {
-        id: "rep-hamadou-1",
-        date: "15/10/2026",
-        doctorName: "Prof. Félicité Ngeufack",
-        facility: "CMA de démo",
-        title: "Suivi de croissance standard",
-        targetWeightKg: 15.0,
-        prescription: "Régime diversifié enrichi aux légumineuses locales.",
-        observations: "Courbe OMS harmonieuse, croissance normale.",
-      },
-    ],
-    lastIntakeTime: "08:00",
-    hasConsent: true,
-  },
-];
-
-const defaultIntakes: IntakeRecord[] = [
-  {
-    id: "intake-1",
-    childId: "child-amina",
-    childName: "Amina",
-    foodName: "Bouillie enrichie à l'arachide",
-    quantity: 1,
-    unit: "portion",
-    time: "12:30",
-    date: "Aujourd'hui",
-    consumption: "all",
-    status: "given",
-  },
-  {
-    id: "intake-2",
-    childId: "child-amina",
-    childName: "Amina",
-    foodName: "Plumpy'Nut",
-    quantity: 1,
-    unit: "sachet",
-    time: "08:00",
-    date: "Aujourd'hui",
-    consumption: "all",
-    status: "given",
-  },
-  {
-    id: "intake-3",
-    childId: "child-hamadou",
-    childName: "Hamadou",
-    foodName: "Gari digari fortifié",
-    quantity: 1,
-    unit: "portion",
-    time: "08:15",
-    date: "Aujourd'hui",
-    consumption: "all",
-    status: "given",
-  },
-];
-
 const defaultSettings: UserSettings = {
   remindersActive: true,
   quietHoursStart: "21:00",
@@ -131,21 +27,22 @@ function loadInitialState(): UserState {
     const raw = window.localStorage.getItem(STORAGE_KEY);
     if (raw) {
       const parsed = JSON.parse(raw) as Partial<UserState>;
+      const children = parsed.children && Array.isArray(parsed.children) ? parsed.children : [];
       return {
-        children: parsed.children && parsed.children.length > 0 ? parsed.children : defaultChildren,
-        activeChildId: parsed.activeChildId || "child-amina",
-        intakes: parsed.intakes || defaultIntakes,
+        children,
+        activeChildId: parsed.activeChildId || (children.length > 0 ? children[0].id : ""),
+        intakes: parsed.intakes && Array.isArray(parsed.intakes) ? parsed.intakes : [],
         customProducts: parsed.customProducts || [],
         settings: { ...defaultSettings, ...(parsed.settings || {}) },
       };
     }
   } catch {
-    // fallback to defaults on storage failure
+    // fallback to clean state on storage failure
   }
   return {
-    children: defaultChildren,
-    activeChildId: "child-amina",
-    intakes: defaultIntakes,
+    children: [],
+    activeChildId: "",
+    intakes: [],
     customProducts: [],
     settings: defaultSettings,
   };
@@ -182,21 +79,10 @@ export const userStore = {
       code: child.code || `#${initialLetter}-${String(nextNum).padStart(3, "0")}`,
       hasConsent: true,
       validationStatus: child.validationStatus || "pending",
-      doctorId: child.doctorId || "doc-felicite",
-      doctorName: child.doctorName || "Prof. Félicité Ngeufack",
-      doctorFacility: child.doctorFacility || "CMA de démo",
-      doctorReports: child.doctorReports || [
-        {
-          id: `rep-${Date.now()}`,
-          date: "10/11/2026",
-          doctorName: child.doctorName || "Prof. Félicité Ngeufack",
-          facility: child.doctorFacility || "CMA de démo",
-          title: "Attribution automatique du médecin référent familial",
-          targetWeightKg: Math.round(((child.weightKg || 8) * 1.1) * 10) / 10,
-          prescription: "Poursuivre l'alimentation diversifiée avec équivalents nutritionnels locaux.",
-          observations: "Dossier rattaché à la patientèle du Prof. Félicité Ngeufack suite au consentement parental.",
-        },
-      ],
+      doctorId: child.doctorId,
+      doctorName: child.doctorName || "En cours d'attribution",
+      doctorFacility: child.doctorFacility || "Centre de santé",
+      doctorReports: child.doctorReports || [],
     };
     state.children = [newChild, ...state.children];
     state.activeChildId = newChild.id;
@@ -207,13 +93,15 @@ export const userStore = {
     state.children = state.children.filter((c) => c.id !== childId);
     if (state.activeChildId === childId && state.children.length > 0) {
       state.activeChildId = state.children[0].id;
+    } else if (state.children.length === 0) {
+      state.activeChildId = "";
     }
     persistAndNotify();
   },
   setChildren: (children: ChildMember[]): void => {
     state.children = children;
-    if (!state.children.some((c) => c.id === state.activeChildId) && state.children.length > 0) {
-      state.activeChildId = state.children[0].id;
+    if (!state.children.some((c) => c.id === state.activeChildId)) {
+      state.activeChildId = state.children.length > 0 ? state.children[0].id : "";
     }
     persistAndNotify();
   },
@@ -263,13 +151,30 @@ export const userStore = {
     state.settings = { ...state.settings, ...updates };
     persistAndNotify();
   },
-  reset: (): void => {
-    state.children = defaultChildren;
-    state.activeChildId = "child-amina";
-    state.intakes = defaultIntakes;
+  clear: (): void => {
+    state.children = [];
+    state.activeChildId = "";
+    state.intakes = [];
     state.customProducts = [];
     state.settings = defaultSettings;
+    try {
+      window.localStorage.removeItem(STORAGE_KEY);
+    } catch {
+      // ignore
+    }
+    listeners.forEach((cb) => cb());
+  },
+  reset: (): void => {
+    state.children = [];
+    state.activeChildId = "";
+    state.intakes = [];
+    state.customProducts = [];
+    state.settings = defaultSettings;
+    try {
+      window.localStorage.removeItem(STORAGE_KEY);
+    } catch {
+      // ignore
+    }
     persistAndNotify();
   },
 };
-

@@ -116,10 +116,17 @@ export const EnrollFamilyModal: React.FC<EnrollFamilyModalProps> = ({
         } else if (typeof e.message === "string") {
           detail = e.message;
         } else {
-          detail = JSON.stringify(err);
+          try {
+            detail = JSON.stringify(err);
+          } catch {
+            detail = String(err);
+          }
         }
       } else if (typeof err === "string") {
         detail = err;
+      }
+      if (detail === "[object Object]" || detail === "{}" || !detail) {
+        detail = "Impossible d'enrôler la famille. Vérifiez les informations saisies.";
       }
       alert(`Erreur lors de l'enrôlement : ${detail}`);
     }
@@ -174,6 +181,7 @@ export const EnrollFamilyModal: React.FC<EnrollFamilyModalProps> = ({
               <label className="block text-xs font-semibold mb-1">E-mail (optionnel)</label>
               <input
                 type="email"
+                data-testid="parent-email-input"
                 value={parentEmail}
                 onChange={(e) => setParentEmail(e.target.value)}
                 placeholder="famille@exemple.com"

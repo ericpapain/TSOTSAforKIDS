@@ -96,8 +96,31 @@ describe("Super Caregiver & Doctor Assignment Features", () => {
   });
 
   it("affiche le médecin référent et les rapports médicaux dans la fiche de l'enfant côté famille", () => {
-    const amina = userStore.getState().children.find((c) => c.firstName === "Amina")!;
-    expect(amina).toBeDefined();
+    const amina = userStore.addChild({
+      firstName: "Amina",
+      birthDate: "2024-05-10",
+      sex: "F",
+      relation: "mother",
+      weightKg: 8.4,
+      heightCm: 72,
+      muacMm: 120,
+      edema: "none",
+      status: "MAS",
+      facilityName: "CMA de démo",
+      doctorName: "Dr. Sarah Ngo",
+      doctorReports: [
+        {
+          id: "rep-amina-1",
+          date: "29/10/2026",
+          doctorName: "Dr. Sarah Ngo",
+          facility: "CMA de démo",
+          title: "Protocole de rattrapage nutritionnel MAM",
+          targetWeightKg: 9.2,
+          prescription: "1 portion de bouillie enrichie à l'arachide le matin + 1 sachet de Plumpy'Nut le soir",
+          observations: "Bonne reprise pondérale (+150g en 7j).",
+        },
+      ],
+    });
 
     render(
       <BrowserRouter>
@@ -111,13 +134,13 @@ describe("Super Caregiver & Doctor Assignment Features", () => {
     );
 
     expect(screen.getAllByText("Médecin référent").length).toBeGreaterThan(0);
-    expect(screen.getAllByText("Prof. Félicité Ngeufack").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Dr. Sarah Ngo").length).toBeGreaterThan(0);
     expect(screen.getByTestId("doctor-reports-section")).toBeInTheDocument();
     expect(screen.getByText("Protocole de rattrapage nutritionnel MAM")).toBeInTheDocument();
     expect(screen.getByText(/Poids cible : 9.2 kg/i)).toBeInTheDocument();
   });
 
-  it("associe automatiquement le médecin référent familial lors de l'ajout d'un nouvel enfant", () => {
+  it("associe l'état initial en attente lors de l'ajout d'un nouvel enfant", () => {
     const newChild = userStore.addChild({
       firstName: "Salif",
       birthDate: "2024-01-15",
@@ -131,10 +154,8 @@ describe("Super Caregiver & Doctor Assignment Features", () => {
       facilityName: "CMA de démo",
     });
 
-    expect(newChild.doctorName).toBe("Prof. Félicité Ngeufack");
-    expect(newChild.doctorId).toBe("doc-felicite");
-    expect(newChild.doctorReports).toBeDefined();
-    expect(newChild.doctorReports?.length).toBeGreaterThan(0);
+    expect(newChild.doctorName).toBe("En cours d'attribution");
+    expect(newChild.validationStatus).toBe("pending");
   });
 
   it("affiche le guide des repères cliniques et normes OMS avec tableau MAM, MAS, Normal", () => {

@@ -4,6 +4,7 @@ import type { UserRole, UserSession } from "../types";
 import { getWebApiClient } from "./client";
 import { changeAppLanguage } from "../i18n/setup";
 import { normalizeLocale } from "@tsotsa/i18n";
+import { userStore } from "../features/user/userStore";
 
 const PROFESSIONAL_ROLES: UserRole[] = ["admin", "super_caregiver", "caregiver", "field_agent"];
 export const INACTIVITY_TIMEOUT_MS = 30 * 60 * 1000; // 30 minutes
@@ -157,10 +158,14 @@ export function AuthProvider({ children }: { children: ReactNode }): React.JSX.E
       }
     }
 
+    if (!newSession) {
+      userStore.clear();
+    }
     setSessionState(newSession);
   }, []);
 
   const logout = useCallback(() => {
+    userStore.clear();
     const currentRefresh = inMemoryRefreshToken;
     if (currentRefresh) {
       const apiClient = getWebApiClient();

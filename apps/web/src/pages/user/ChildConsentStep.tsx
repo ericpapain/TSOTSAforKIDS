@@ -70,9 +70,8 @@ export const ChildConsentStep: React.FC<ChildConsentStepProps> = ({
 
       <div className="p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-[12px] font-semibold">
         {t(
-          "mobile:profile.doctorAssignedNotice",
-          "Suivi médical assuré par le {{doctor}} ({{facility}}).",
-          { doctor: "Prof. Félicité Ngeufack", facility: "CMA de démo" }
+          "mobile:consent.doctorNotice",
+          "Un médecin référent et un centre de santé seront attribués lors de la validation du dossier par l'équipe médicale."
         )}
       </div>
 

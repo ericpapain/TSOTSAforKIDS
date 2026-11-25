@@ -3,9 +3,10 @@
 from __future__ import annotations
 
 import re
+import uuid
 from datetime import UTC, date, datetime
 
-from sqlalchemy import desc, func, select
+from sqlalchemy import desc, func, select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -166,6 +167,32 @@ class PersonsRepository:
         if link:
             await self.session.delete(link)
             await self.session.flush()
+
+    async def get_doctor_names_for_ids(self, caregiver_ids: list[str]) -> dict[str, str]:
+        """Fetch caregiver display names for person care links."""
+        if not caregiver_ids:
+            return {}
+        clean_ids = []
+        for cid in caregiver_ids:
+            try:
+                clean_ids.append(uuid.UUID(str(cid)).bytes)
+            except Exception:
+                pass
+        if not clean_ids:
+            return {}
+        stmt = text(
+            "SELECT HEX(id), display_name, first_name, last_name "
+            "FROM users WHERE id IN :ids"
+        )
+        res = await self.session.execute(stmt, {"ids": tuple(clean_ids)})
+        mapping: dict[str, str] = {}
+        for row in res.all():
+            h = str(row[0]).lower()
+            formatted = f"{h[0:8]}-{h[8:12]}-{h[12:16]}-{h[16:20]}-{h[20:32]}"
+            name = row[1] or f"Dr. {row[2] or ''} {row[3] or ''}".strip()
+            mapping[formatted] = name
+            mapping[str(row[0]).lower()] = name
+        return mapping
 
     async def create_person_care(
         self,

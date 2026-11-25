@@ -201,9 +201,7 @@ class StaffService:
         )
         existing = (await self.session.execute(ur_stmt)).scalar_one_or_none()
         if not existing:
-            from tsotsa_api.shared.types import generate_uuid7
-
-            self.session.add(UserRole(id=generate_uuid7(), user_id=target_user_id, role_id=role.id))
+            self.session.add(UserRole(user_id=target_user_id, role_id=role.id))
             await self.session.flush()
 
     async def list_doctors(self, actor: User) -> list[dict]:

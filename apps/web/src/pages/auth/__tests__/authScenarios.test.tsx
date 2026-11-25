@@ -13,6 +13,7 @@ const TestApp = ({ initialEntry = "/connexion" }: { initialEntry?: string }) => 
     <MemoryRouter initialEntries={[initialEntry]}>
       <Routes>
         <Route path="/connexion" element={<AuthLoginForm role="admin" />} />
+        <Route path="/admin" element={<TestDashboard />} />
         <Route
           path="/"
           element={
