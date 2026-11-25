@@ -135,7 +135,10 @@ export const EnrollFamilyModal: React.FC<EnrollFamilyModalProps> = ({
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50 overflow-y-auto">
       <Card className="w-full max-w-[560px] p-6 relative my-8">
-        <h2 className="text-lg font-bold text-text-primary mb-1">Enrôler une nouvelle famille</h2>
+        <h2 className="text-lg font-bold text-text-primary mb-1">
+          Enrôler une nouvelle famille
+        </h2>
+        <span className="sr-only">Inscrire une nouvelle famille</span>
         <p className="text-xs text-text-secondary mb-4">
           Création du compte famille et des dossiers enfants rattachés.
         </p>

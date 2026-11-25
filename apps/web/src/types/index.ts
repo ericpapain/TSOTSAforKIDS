@@ -64,7 +64,7 @@ export interface ZScorePoint {
 
 export interface ColumnDef<T> {
   key?: string;
-  header: string;
+  header: ReactNode;
   width?: string;
   render?: (row: T, index: number) => ReactNode;
   accessor?: keyof T | ((row: T) => ReactNode);

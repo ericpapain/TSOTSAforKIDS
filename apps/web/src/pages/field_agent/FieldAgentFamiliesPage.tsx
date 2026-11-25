@@ -164,6 +164,7 @@ export const FieldAgentFamiliesPage: React.FC = () => {
     <div className="space-y-6" data-testid="field-agent-families-page">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
+          <div className="text-xs font-semibold text-primary uppercase tracking-wider mb-0.5">Familles inscrites</div>
           <h1 className="text-2xl font-bold text-text-primary">Enrôlement & Suivi des Familles</h1>
           <p className="text-xs text-text-secondary mt-1">
             Enregistrez les familles sur le terrain et suivez l'état de validation de leurs dossiers cliniques.
