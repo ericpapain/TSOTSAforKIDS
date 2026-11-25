@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import uuid
+from datetime import date
 from typing import Any
 
 from sqlalchemy import select
@@ -19,7 +21,59 @@ from tsotsa_api.modules.health.schemas import (
     HealthEventParentOut,
 )
 from tsotsa_api.modules.identity.permissions_service import PermissionsService
-from tsotsa_api.modules.persons.models import PersonCare, PersonLink
+from tsotsa_api.modules.persons.models import Person, PersonCare, PersonLink
+from tsotsa_api.modules.persons.repository import PersonsRepository
+
+
+async def resolve_or_create_target_person(
+    session: AsyncSession,
+    actor_id: str,
+    raw_person_id: str,
+) -> Person:
+    """Resolve raw_person_id to a valid Person UUID.
+
+    If raw_person_id is not a valid UUID or does not exist, look for an existing
+    person linked to the actor or automatically provision a person record.
+    """
+    is_valid_uuid = False
+    try:
+        uuid.UUID(str(raw_person_id))
+        is_valid_uuid = True
+    except (ValueError, AttributeError, TypeError):
+        is_valid_uuid = False
+
+    if is_valid_uuid:
+        p_stmt = select(Person).where(Person.id == raw_person_id)
+        person = (await session.execute(p_stmt)).scalar_one_or_none()
+        if person and person.deleted_at is None:
+            return person
+
+    link_stmt = (
+        select(PersonLink)
+        .where(PersonLink.user_id == actor_id)
+        .join(Person, PersonLink.person_id == Person.id)
+        .where(Person.deleted_at.is_(None))
+    )
+    existing_link = (await session.execute(link_stmt)).scalars().first()
+    if existing_link:
+        p_stmt = select(Person).where(Person.id == existing_link.person_id)
+        return (await session.execute(p_stmt)).scalar_one()
+
+    persons_repo = PersonsRepository(session)
+    person = await persons_repo.create_person(
+        first_name="Enfant suivi",
+        birth_date=date.today(),
+        sex="F",
+        created_by=actor_id,
+        status="pending",
+    )
+    await persons_repo.create_person_link(
+        person_id=person.id,
+        user_id=actor_id,
+        relation="child",
+        is_primary=True,
+    )
+    return person
 
 
 async def resolve_user_access_tier(

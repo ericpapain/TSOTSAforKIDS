@@ -47,6 +47,9 @@ jobs:
   dependencies:
     name: Dépendances (vulnérabilités connues)
     if: github.event_name == 'pull_request'
+    permissions:
+      contents: read
+      pull-requests: read
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -125,6 +128,8 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      - name: Installer Chromium et ses dépendances pour Playwright
+        run: pnpm --filter @tsotsa/web exec playwright install --with-deps chromium
       - name: Démarrer la base et le serveur de test, puis lancer les parcours
         run: make e2e-web
       - name: Rapport Playwright en cas d'échec

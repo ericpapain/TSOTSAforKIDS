@@ -280,15 +280,23 @@ async def test_cascade_delete_health_event_removes_sub_entities(db_session):
     await db_session.commit()
 
     symptoms = (
-        await db_session.execute(
-            select(HealthEventSymptom).where(HealthEventSymptom.health_event_id == event.id)
+        (
+            await db_session.execute(
+                select(HealthEventSymptom).where(HealthEventSymptom.health_event_id == event.id)
+            )
         )
-    ).scalars().all()
+        .scalars()
+        .all()
+    )
     assert len(symptoms) == 0
 
     actions = (
-        await db_session.execute(
-            select(HealthEventAction).where(HealthEventAction.health_event_id == event.id)
+        (
+            await db_session.execute(
+                select(HealthEventAction).where(HealthEventAction.health_event_id == event.id)
+            )
         )
-    ).scalars().all()
+        .scalars()
+        .all()
+    )
     assert len(actions) == 0

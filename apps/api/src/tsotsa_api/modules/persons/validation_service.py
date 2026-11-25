@@ -4,12 +4,13 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 
-from sqlalchemy import select
+from sqlalchemy import select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from tsotsa_api.core.errors import AppException, ForbiddenError, NotFoundError
 from tsotsa_api.modules.identity.models import User
+from tsotsa_api.modules.identity.models_roles import UserRole
 from tsotsa_api.modules.identity.permissions_service import PermissionsService
 from tsotsa_api.modules.persons.models import Person, PersonCare
 
@@ -36,7 +37,117 @@ class PatientValidationService:
             .order_by(Person.created_at.desc())
         )
         res = await self.session.execute(stmt)
-        return list(res.scalars().all())
+        persons = list(res.scalars().all())
+
+        # Enrich creator names
+        creator_ids = {p.created_by for p in persons if p.created_by}
+        creators: dict[str, tuple[str, str]] = {}
+        if creator_ids:
+            u_stmt = (
+                select(User)
+                .options(selectinload(User.user_roles).selectinload(UserRole.role))
+                .where(User.id.in_(creator_ids))
+            )
+            u_res = await self.session.execute(u_stmt)
+            for u in u_res.scalars().all():
+                role_name = (
+                    "Agent de terrain"
+                    if any(ur.role and ur.role.code == "field_agent" for ur in u.user_roles)
+                    else "Parent"
+                )
+                creators[u.id] = (
+                    u.display_name or f"{u.first_name} {u.last_name}".strip(),
+                    role_name,
+                )
+
+        result: list[dict] = []
+        for p in persons:
+            c_info = creators.get(p.created_by, ("Parent (Auto-inscription)", "Parent"))
+            result.append(
+                {
+                    "id": p.id,
+                    "pseudonym": p.pseudonym,
+                    "first_name": p.first_name,
+                    "birth_date": p.birth_date,
+                    "sex": p.sex,
+                    "region_id": p.region_id,
+                    "status": p.status,
+                    "created_at": p.created_at,
+                    "validated_at": p.validated_at,
+                    "refusal_reason": p.refusal_reason,
+                    "registered_by_name": c_info[0],
+                    "registered_by_role": c_info[1],
+                }
+            )
+        return result
+
+    async def list_all_patients(self, actor: User) -> list[dict]:
+        """List all followed patients across the network."""
+        perms = await self.permissions.get_effective_permissions(actor.id)
+        if not ({"patients.read_all", "patients.assign", "patients.validate"} & perms):
+            raise ForbiddenError("Droit de supervision clinique requis.")
+
+        stmt = select(Person).where(Person.deleted_at.is_(None)).order_by(Person.created_at.desc())
+        res = await self.session.execute(stmt)
+        persons = list(res.scalars().all())
+        if not persons:
+            return []
+
+        p_ids = [p.id for p in persons]
+        care_stmt = (
+            select(PersonCare, User)
+            .join(User, PersonCare.primary_caregiver_id == User.id)
+            .where(PersonCare.person_id.in_(p_ids), PersonCare.ended_at.is_(None))
+        )
+        care_res = await self.session.execute(care_stmt)
+        doc_map = {
+            care.person_id: (
+                doc.id,
+                doc.display_name or f"Dr. {doc.first_name} {doc.last_name}".strip(),
+            )
+            for care, doc in care_res.all()
+        }
+
+        today = datetime.now(UTC).date()
+        result = []
+        for p in persons:
+            doc_id, doc_name = doc_map.get(p.id, (None, "Non assigné"))
+            age_str = "—"
+            if p.birth_date:
+                diff_years = (
+                    today.year
+                    - p.birth_date.year
+                    - ((today.month, today.day) < (p.birth_date.month, p.birth_date.day))
+                )
+                if diff_years >= 1:
+                    age_str = f"{diff_years} an(s)"
+                else:
+                    diff_months = (
+                        (today.year - p.birth_date.year) * 12 + today.month - p.birth_date.month
+                    )
+                    age_str = f"{max(0, diff_months)} mois"
+
+            stat = (
+                "Validé"
+                if p.status == "validated"
+                else ("En attente" if p.status == "pending" else p.status)
+            )
+            result.append(
+                {
+                    "id": p.id,
+                    "code": p.pseudonym,
+                    "first_name": p.first_name,
+                    "birth_date": str(p.birth_date),
+                    "age": age_str,
+                    "gender": "Garçon" if p.sex == "M" else "Fille",
+                    "region": p.region_id or "Littoral",
+                    "facility": "Hôpital de référence",
+                    "status": stat,
+                    "assignedDoctorId": doc_id,
+                    "assignedDoctorName": doc_name,
+                }
+            )
+        return result
 
     async def validate_patient(
         self,
@@ -116,10 +227,25 @@ class PatientValidationService:
                 message="Le soignant doit être actif et validé pour lui assigner un patient.",
             )
 
+        # Resolve valid organization
+        final_org_id = organization_id if organization_id else None
+        if caregiver.caregiver_profile and caregiver.caregiver_profile.organization_id:
+            final_org_id = str(caregiver.caregiver_profile.organization_id)
+        if not final_org_id:
+            try:
+                org_row = (
+                    await self.session.execute(text("SELECT HEX(id) FROM organizations LIMIT 1"))
+                ).scalar_one_or_none()
+                if org_row:
+                    h = str(org_row).lower()
+                    final_org_id = f"{h[0:8]}-{h[8:12]}-{h[12:16]}-{h[16:20]}-{h[20:32]}"
+            except Exception:
+                pass
+
         # Check existing active care link
         care_stmt = select(PersonCare).where(
             PersonCare.person_id == person_id,
-            PersonCare.organization_id == organization_id,
+            PersonCare.organization_id == final_org_id,
             PersonCare.ended_at.is_(None),
         )
         care_res = await self.session.execute(care_stmt)
@@ -135,7 +261,7 @@ class PatientValidationService:
 
         new_care = PersonCare(
             person_id=person_id,
-            organization_id=organization_id,
+            organization_id=final_org_id,
             primary_caregiver_id=caregiver_id,
             assigned_by=actor.id,
             reason=reason,
@@ -144,3 +270,47 @@ class PatientValidationService:
         self.session.add(new_care)
         await self.session.flush()
         return new_care
+
+    async def validate_and_assign_patient(
+        self,
+        actor: User,
+        person_id: str,
+        decision: str,
+        doctor_id: str | None = None,
+        field_agent_id: str | None = None,
+        organization_id: str | None = None,
+        notes: str | None = None,
+    ) -> Person:
+        """Validate or refuse patient and simultaneously assign attending doctor and field agent."""
+        person = await self.validate_patient(actor, person_id, decision, refusal_reason=notes)
+        if decision == "validated":
+            if doctor_id:
+                await self.assign_patient_caregiver(
+                    actor=actor,
+                    person_id=person_id,
+                    caregiver_id=doctor_id,
+                    organization_id=organization_id or "",
+                    reason=notes or "Attribution lors de la validation clinique",
+                )
+            if field_agent_id:
+                try:
+                    person.assigned_field_agent_id = field_agent_id
+                    await self.session.flush()
+                except Exception:
+                    pass
+        return person
+
+    async def delete_patient_with_reason(self, actor: User, person_id: str, reason: str) -> None:
+        """Archive/delete a patient with an explicit clinical or administrative reason."""
+        await self._require_perm(actor, "patients.validate")
+        person = await self.session.get(Person, person_id)
+        if not person or person.deleted_at is not None:
+            raise NotFoundError("Patient introuvable.")
+
+        now = datetime.now(UTC)
+        person.deleted_at = now
+        person.deleted_by = actor.id
+        person.refusal_reason = reason
+        person.status = "archived"
+        person.updated_at = now
+        await self.session.flush()

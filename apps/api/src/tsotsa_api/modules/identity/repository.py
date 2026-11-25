@@ -2,9 +2,10 @@
 
 from __future__ import annotations
 
+import uuid
 from datetime import UTC, datetime
 
-from sqlalchemy import select, update
+from sqlalchemy import select, text, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -38,6 +39,52 @@ class IdentityRepository(TokenRepository):
         )
         res = await self.session.execute(stmt)
         return res.scalar_one_or_none()
+
+    async def resolve_region_id(self, region_val: str | None) -> str | None:
+        """Resolve region code (e.g. 'OU', 'CE') or UUID string to valid region UUID."""
+        if not region_val or not str(region_val).strip():
+            return None
+        cleaned = str(region_val).strip()
+        try:
+            val_uuid = uuid.UUID(cleaned)
+            return str(val_uuid)
+        except ValueError:
+            pass
+        stmt = text(
+            "SELECT HEX(id) FROM regions "
+            "WHERE UPPER(code) = UPPER(:c) OR UPPER(name) = UPPER(:c) LIMIT 1"
+        )
+        res = (await self.session.execute(stmt, {"c": cleaned})).scalar_one_or_none()
+        if res:
+            h = str(res).lower()
+            if len(h) == 32:
+                return f"{h[0:8]}-{h[8:12]}-{h[12:16]}-{h[16:20]}-{h[20:32]}"
+            return str(res)
+        return None
+
+    async def resolve_organization_id(self, org_val: str | None) -> str | None:
+        """Resolve organization ID safely to ensure it is a valid existing UUID."""
+        if not org_val or not str(org_val).strip():
+            return None
+        cleaned = str(org_val).strip()
+        try:
+            val_uuid = uuid.UUID(cleaned)
+            return str(val_uuid)
+        except ValueError:
+            pass
+        stmt = text("SELECT HEX(id) FROM organizations WHERE LOWER(name) LIKE LOWER(:n) LIMIT 1")
+        res = (await self.session.execute(stmt, {"n": f"%{cleaned}%"})).scalar_one_or_none()
+        if res:
+            h = str(res).lower()
+            if len(h) == 32:
+                return f"{h[0:8]}-{h[8:12]}-{h[12:16]}-{h[16:20]}-{h[20:32]}"
+            return str(res)
+        return None
+        stmt = text("SELECT id FROM organizations WHERE UPPER(name) = UPPER(:n) LIMIT 1")
+        res = (await self.session.execute(stmt, {"n": cleaned})).scalar_one_or_none()
+        if res:
+            return str(uuid.UUID(bytes=res)) if isinstance(res, bytes) else str(res)
+        return None
 
     async def create_user(
         self,

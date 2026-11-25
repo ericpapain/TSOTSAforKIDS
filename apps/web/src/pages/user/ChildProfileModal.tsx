@@ -170,7 +170,7 @@ export const ChildProfileModal: React.FC<ChildProfileModalProps> = ({
                 </span>
               </div>
               <span className="text-[12px] font-bold text-[#17302A]">
-                {child.doctorName || "Prof. Félicité Ngeufack"}
+                {child.doctorName || (child.validationStatus === "validated" ? "Non assigné" : "En cours d'attribution")}
               </span>
             </div>
 

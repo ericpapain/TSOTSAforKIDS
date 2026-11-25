@@ -1,14 +1,14 @@
 /* eslint-disable i18next/no-literal-string */
-import React, { useId } from "react";
+import React from "react";
 
 export interface BrandLogoProps {
   /** Height h of the symbol in px (default: 34) or named size */
   size?: number | "sm" | "md" | "lg";
   /** Variant: "light" (for light backgrounds) or "dark" (for dark backgrounds) */
   variant?: "light" | "dark";
-  /** Display mode: full (default), symbol only, or word only */
-  mode?: "full" | "symbol" | "word";
-  display?: "full" | "symbol" | "wordmark" | "word";
+  /** Display mode: full (default), symbol only, word only, or full image */
+  mode?: "full" | "symbol" | "word" | "image";
+  display?: "full" | "symbol" | "wordmark" | "word" | "image";
   testID?: string;
   className?: string;
 }
@@ -30,31 +30,40 @@ export function BrandLogo({
   const numericSize = typeof size === "number" ? size : sizeMap[size] || 34;
   const h = numericSize;
   const isDark = variant === "dark";
-  const uniqueId = useId().replace(/:/g, "_");
-  const maskId = `tsotsa_web_mask_${uniqueId}`;
 
-  const textColor = isDark ? "#FFFFFF" : "#17302A";
-  const pillBg = isDark ? "#FFFFFF" : "#F26142";
-  const pillTextColor = isDark ? "#F26142" : "#FFFFFF";
+  // Bleu Nuit #092D73 for TSOTSA and KIDS, Orange #F38B1F for 'for'
+  const textColor = isDark ? "#FFFFFF" : "#092D73";
+  const forColor = isDark ? "#FFFFFF" : "#F38B1F";
 
   // Proportions
   const symbolGap = Math.round(0.45 * h);
   const wordFontSize = Math.round(0.6 * h);
-  const pillGap = Math.round(0.22 * h);
-  const pillHeight = Math.round(0.72 * h);
-  const pillFontSize = Math.round(0.42 * h);
   const diskSize = Math.round(1.24 * h);
 
   const activeMode = display ? (display === "wordmark" ? "word" : display) : (mode || "full");
+  const isImageMode = activeMode === "image";
   const showSymbol = activeMode === "full" || activeMode === "symbol";
   const showWord = activeMode === "full" || activeMode === "word";
+
+  if (isImageMode) {
+    return (
+      <div data-testid={testID} className={`inline-flex items-center select-none ${className}`}>
+        <img
+          src="/logo.png"
+          alt="TSOTSA for KIDS - Bien nourrir, bien suivre"
+          style={{ height: h, width: "auto" }}
+          className="object-contain"
+        />
+      </div>
+    );
+  }
 
   return (
     <div
       data-testid={testID}
       className={`inline-flex items-center select-none ${className}`}
       role="img"
-      aria-label="TSOTSA4Kids Logo"
+      aria-label="TSOTSA for Kids Logo"
     >
       {/* Symbol */}
       {showSymbol && (
@@ -77,36 +86,29 @@ export function BrandLogo({
           <svg
             width={h}
             height={h}
-            viewBox="8 8 84 84"
+            viewBox="0 0 100 100"
             className="relative z-10"
             aria-hidden="true"
           >
-            <defs>
-              <mask id={maskId}>
-                <rect width="100" height="100" fill="#fff" />
-                <rect x="46.9" y="0" width="6.2" height="100" fill="#000" />
-                <circle cx="50" cy="50" r="11.6" fill="#000" />
-                <rect x="50" y="46.4" width="50" height="7.2" fill="#000" />
-              </mask>
-            </defs>
-            <circle
-              cx="50"
-              cy="50"
-              r="42"
-              fill="#F26142"
-              mask={`url(#${maskId})`}
+            <image
+              href="/logo_symbol.png"
+              width="100"
+              height="100"
+              preserveAspectRatio="xMidYMid meet"
             />
           </svg>
         </div>
       )}
 
-      {/* TSOTSA + KIDS */}
+      {/* TSOTSA for Kids */}
       {showWord && (
         <div
-          className="inline-flex items-center font-bold"
+          data-testid="brand-logo-wordmark"
+          className="inline-flex items-baseline font-bold"
           style={{ marginLeft: showSymbol ? symbolGap : 0 }}
         >
           <span
+            data-testid="brand-logo-text"
             style={{
               fontSize: wordFontSize,
               color: textColor,
@@ -117,19 +119,28 @@ export function BrandLogo({
             TSOTSA
           </span>
           <span
-            className="inline-flex items-center justify-center font-bold uppercase rounded-pill"
+            data-testid="brand-logo-for"
             style={{
-              marginLeft: pillGap,
-              height: pillHeight,
-              paddingLeft: Math.round(0.28 * h),
-              paddingRight: Math.round(0.28 * h),
-              backgroundColor: pillBg,
-              color: pillTextColor,
-              fontSize: pillFontSize,
+              fontSize: Math.round(wordFontSize * 0.88),
+              color: forColor,
+              marginLeft: Math.round(0.24 * wordFontSize),
+              marginRight: Math.round(0.24 * wordFontSize),
+              fontWeight: 700,
               lineHeight: 1,
             }}
           >
-            4KIDS
+            for
+          </span>
+          <span
+            data-testid="brand-logo-kids"
+            style={{
+              fontSize: wordFontSize,
+              color: textColor,
+              letterSpacing: "0.02em",
+              lineHeight: 1,
+            }}
+          >
+            KIDS
           </span>
         </div>
       )}

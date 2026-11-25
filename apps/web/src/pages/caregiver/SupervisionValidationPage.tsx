@@ -1,154 +1,196 @@
-import React, { useState } from "react";
-import { useTranslation } from "react-i18next";
+import React, { useState, useEffect } from "react";
 import { Card } from "../../components/Card";
 import { Button } from "../../components/Button";
-import { DataTable } from "../../components/DataTable";
-
-interface PendingStaffItem {
-  id: string;
-  name: string;
-  email: string;
-  role: "caregiver" | "field_agent";
-  facilityOrOrg: string;
-  specialty?: string;
-  registeredAt: string;
-  status: "pending" | "active" | "refused";
-}
+import {
+  listPendingPatients,
+  listPendingStaff,
+  listActiveDoctors,
+  promoteSuperCaregiver,
+  type PendingPatient,
+  type PendingStaffUser,
+  type DoctorUser,
+} from "../../api/persons";
+import { PendingPatientsTable } from "./PendingPatientsTable";
+import { PendingStaffTable } from "./PendingStaffTable";
 
 export const SupervisionValidationPage: React.FC = () => {
-  const { t } = useTranslation("caregiver");
-  const { t: tCommon } = useTranslation("common");
+  const [activeTab, setActiveTab] = useState<"patients" | "staff" | "promotion">("patients");
+  const [pendingPatients, setPendingPatients] = useState<PendingPatient[]>([]);
+  const [isLoadingPatients, setIsLoadingPatients] = useState(false);
 
-  const [pendingList, setPendingList] = useState<PendingStaffItem[]>([]);
-  const [selectedForReject, setSelectedForReject] = useState<PendingStaffItem | null>(null);
-  const [rejectReason, setRejectReason] = useState("");
+  const [pendingStaff, setPendingStaff] = useState<PendingStaffUser[]>([]);
+  const [isLoadingStaff, setIsLoadingStaff] = useState(false);
 
-  const handleApprove = (staffId: string) => {
-    setPendingList((prev) =>
-      prev.map((s) => (s.id === staffId ? { ...s, status: "active" } : s))
-    );
+  // Promote staff state
+  const [doctors, setDoctors] = useState<DoctorUser[]>([]);
+  const [promoteUserId, setPromoteUserId] = useState("");
+  const [promoteStatusMsg, setPromoteStatusMsg] = useState<string | null>(null);
+
+  const fetchPatients = async () => {
+    setIsLoadingPatients(true);
+    try {
+      const data = await listPendingPatients();
+      setPendingPatients(data);
+    } catch {
+      // offline / fallback
+    } finally {
+      setIsLoadingPatients(false);
+    }
   };
 
-  const handleConfirmReject = (e: React.FormEvent) => {
+  const fetchStaff = async () => {
+    setIsLoadingStaff(true);
+    try {
+      const data = await listPendingStaff();
+      setPendingStaff(data);
+    } catch {
+      // offline / fallback
+    } finally {
+      setIsLoadingStaff(false);
+    }
+  };
+
+  const fetchDoctors = async () => {
+    try {
+      const data = await listActiveDoctors();
+      setDoctors(data);
+      if (data.length > 0 && !promoteUserId) {
+        setPromoteUserId(data[0].id);
+      }
+    } catch {
+      // offline / fallback
+    }
+  };
+
+  useEffect(() => {
+    void fetchPatients();
+    void fetchStaff();
+    void fetchDoctors();
+  }, []);
+
+  const handlePromoteSuperCaregiver = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedForReject) return;
-    setPendingList((prev) =>
-      prev.map((s) => (s.id === selectedForReject.id ? { ...s, status: "refused" } : s))
-    );
-    setSelectedForReject(null);
-    setRejectReason("");
+    if (!promoteUserId) return;
+    try {
+      await promoteSuperCaregiver(promoteUserId);
+      const selected = doctors.find((d) => d.id === promoteUserId);
+      setPromoteStatusMsg(
+        `Le Dr ${selected?.name || promoteUserId} a été promu avec succès au rang de Super-Soignant.`
+      );
+      await fetchDoctors();
+    } catch {
+      setPromoteStatusMsg("Erreur lors de la promotion du praticien.");
+    }
   };
-
-  const columns = [
-    { header: t("supervision.colFullName"), accessor: "name" as const },
-    { header: t("supervision.colEmail"), accessor: "email" as const },
-    {
-      header: t("supervision.colRole"),
-      render: (r: PendingStaffItem) => (r.role === "caregiver" ? t("persons.standardDoctorMode") : tCommon("fieldAgent.profileRoleValue")),
-    },
-    { header: t("supervision.colFacilityOrOrg"), accessor: "facilityOrOrg" as const },
-    { header: t("supervision.colRegDate"), accessor: "registeredAt" as const },
-    {
-      header: t("supervision.colStatus"),
-      render: (r: PendingStaffItem) => (
-        <span
-          className={`px-2 py-0.5 rounded text-[11px] font-bold ${
-            r.status === "active"
-              ? "bg-green-100 text-green-800"
-              : r.status === "refused"
-              ? "bg-red-100 text-red-800"
-              : "bg-amber-100 text-amber-800"
-          }`}
-        >
-          {r.status === "active" ? t("supervision.btnApprove") : r.status === "refused" ? t("supervision.btnReject") : tCommon("fieldAgent.statusPending")}
-        </span>
-      ),
-    },
-    {
-      header: t("supervision.colActions"),
-      render: (r: PendingStaffItem) => {
-        if (r.status !== "pending") return <span className="text-xs text-text-muted">—</span>;
-        return (
-          <div className="flex items-center gap-2">
-            <Button
-              variant="primary"
-              size="sm"
-              onClick={() => handleApprove(r.id)}
-              testID={`approve-staff-${r.id}`}
-            >
-              {t("supervision.btnApprove")}
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setSelectedForReject(r)}
-              testID={`reject-staff-${r.id}`}
-            >
-              {t("supervision.btnReject")}
-            </Button>
-          </div>
-        );
-      },
-    },
-  ];
 
   return (
     <div className="space-y-6" data-testid="supervision-validation-page">
       <div>
-        <h1 className="text-2xl font-bold text-text-primary">{t("supervision.validationTitle")}</h1>
+        <h1 className="text-2xl font-bold text-text-primary">Supervision & Validations</h1>
         <p className="text-xs text-text-secondary mt-1">
-          {t("supervision.validationSubtitle")}
+          Gouvernance globale : validation des enfants, familles, agents de terrain et praticiens.
         </p>
       </div>
 
-      <Card className="p-4">
-        {pendingList.length === 0 ? (
-          <div className="text-center py-12 text-text-muted text-sm" data-testid="empty-staff-validation-notice">
-            {t("supervision.emptyValidation")}
-          </div>
-        ) : (
-          <DataTable data={pendingList} columns={columns} keyExtractor={(r) => r.id} />
-        )}
-      </Card>
+      {/* Tabs */}
+      <div className="flex border-b border-border gap-4">
+        <button
+          type="button"
+          onClick={() => setActiveTab("patients")}
+          data-testid="tab-patients-validation"
+          className={`pb-2.5 text-sm font-bold border-b-2 transition-colors ${
+            activeTab === "patients"
+              ? "border-primary text-primary"
+              : "border-transparent text-text-secondary hover:text-text-primary"
+          }`}
+        >
+          Validation Enfants & Familles ({pendingPatients.length})
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveTab("staff")}
+          data-testid="tab-staff-validation"
+          className={`pb-2.5 text-sm font-bold border-b-2 transition-colors ${
+            activeTab === "staff"
+              ? "border-primary text-primary"
+              : "border-transparent text-text-secondary hover:text-text-primary"
+          }`}
+        >
+          Personnel Soignant & Agents ({pendingStaff.length})
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveTab("promotion")}
+          data-testid="tab-promotion"
+          className={`pb-2.5 text-sm font-bold border-b-2 transition-colors ${
+            activeTab === "promotion"
+              ? "border-primary text-primary"
+              : "border-transparent text-text-secondary hover:text-text-primary"
+          }`}
+        >
+          Nomination Super-Soignant
+        </button>
+      </div>
 
-      {selectedForReject && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <Card className="w-full max-w-[420px] p-6 text-left">
-            <h2 className="text-base font-bold text-text-primary mb-2">
-              {t("supervision.rejectModalTitle", { name: selectedForReject.name })}
-            </h2>
-            <form onSubmit={handleConfirmReject} className="space-y-4">
-              <div>
-                <label className="block text-xs font-semibold mb-1">
-                  {t("supervision.rejectReasonLabel")}
-                </label>
-                <textarea
-                  required
-                  rows={3}
-                  value={rejectReason}
-                  onChange={(e) => setRejectReason(e.target.value)}
-                  placeholder={t("supervision.rejectReasonPlaceholder")}
-                  className="w-full px-3 py-2 text-sm border rounded focus:outline-none focus:border-primary"
-                />
-              </div>
-              <div className="flex justify-end gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    setSelectedForReject(null);
-                    setRejectReason("");
-                  }}
-                >
-                  {tCommon("actions.cancel")}
-                </Button>
-                <Button type="submit" variant="primary" size="sm" testID="confirm-reject-staff-btn">
-                  {t("supervision.btnConfirmReject")}
-                </Button>
-              </div>
-            </form>
-          </Card>
-        </div>
+      {activeTab === "patients" && (
+        <PendingPatientsTable
+          patients={pendingPatients}
+          isLoading={isLoadingPatients}
+          onRefresh={fetchPatients}
+        />
+      )}
+
+      {activeTab === "staff" && (
+        <PendingStaffTable
+          staff={pendingStaff}
+          isLoading={isLoadingStaff}
+          onRefresh={fetchStaff}
+        />
+      )}
+
+      {activeTab === "promotion" && (
+        <Card className="p-5 max-w-2xl">
+          <h2 className="text-base font-bold text-text-primary mb-2">
+            Nommer un nouveau Super-Soignant (Coordinateur Clinique)
+          </h2>
+          <p className="text-xs text-text-secondary mb-4">
+            Sélectionnez un praticien soignant actif pour lui déléguer le rôle de supervision,
+            d'attribution des patients et d'approbation du personnel.
+          </p>
+
+          <form onSubmit={handlePromoteSuperCaregiver} className="space-y-4">
+            <div>
+              <label className="block text-xs font-semibold text-text-secondary mb-1.5">
+                Sélectionner le praticien :
+              </label>
+              <select
+                required
+                value={promoteUserId}
+                onChange={(e) => setPromoteUserId(e.target.value)}
+                className="w-full px-3 py-2 text-sm border rounded focus:border-primary bg-white"
+                data-testid="promote-caregiver-select"
+              >
+                {doctors.map((d) => (
+                  <option key={d.id} value={d.id}>
+                    {d.name} — {d.specialty} ({d.facility}) {d.is_super_caregiver ? "⭐ (Déjà Super-Soignant)" : ""}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <Button type="submit" variant="primary" size="sm" testID="promote-caregiver-btn">
+                Nommer Super-Soignant
+              </Button>
+            </div>
+          </form>
+
+          {promoteStatusMsg && (
+            <div className="mt-4 p-2.5 bg-emerald-50 border border-emerald-200 rounded text-xs font-semibold text-emerald-800">
+              {promoteStatusMsg}
+            </div>
+          )}
+        </Card>
       )}
     </div>
   );

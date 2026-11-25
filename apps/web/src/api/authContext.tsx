@@ -4,6 +4,7 @@ import type { UserRole, UserSession } from "../types";
 import { getWebApiClient } from "./client";
 import { changeAppLanguage } from "../i18n/setup";
 import { normalizeLocale } from "@tsotsa/i18n";
+import { userStore } from "../features/user/userStore";
 
 const PROFESSIONAL_ROLES: UserRole[] = ["admin", "super_caregiver", "caregiver", "field_agent"];
 export const INACTIVITY_TIMEOUT_MS = 30 * 60 * 1000; // 30 minutes
@@ -59,6 +60,37 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+const TOKENS_STORAGE_KEY = "tsotsa_auth_tokens";
+const SESSION_STORAGE_KEY = "tsotsa_session";
+
+interface StoredTokens {
+  accessToken: string;
+  refreshToken?: string;
+}
+
+function getStoredTokens(): StoredTokens | null {
+  try {
+    if (typeof window === "undefined") return null;
+    const raw = window.sessionStorage.getItem(TOKENS_STORAGE_KEY);
+    return raw ? (JSON.parse(raw) as StoredTokens) : null;
+  } catch {
+    return null;
+  }
+}
+
+function persistTokens(tokens: StoredTokens | null): void {
+  try {
+    if (typeof window === "undefined") return;
+    if (tokens && tokens.accessToken) {
+      window.sessionStorage.setItem(TOKENS_STORAGE_KEY, JSON.stringify(tokens));
+    } else {
+      window.sessionStorage.removeItem(TOKENS_STORAGE_KEY);
+    }
+  } catch {
+    // Storage errors ignored
+  }
+}
+
 let inMemoryAccessToken: string | null = null;
 let inMemoryRefreshToken: string | null = null;
 
@@ -66,10 +98,17 @@ export function getInMemoryAccessToken(): string | null {
   return inMemoryAccessToken;
 }
 
+export function getInMemoryRefreshToken(): string | null {
+  return inMemoryRefreshToken;
+}
+
 export function AuthProvider({ children }: { children: ReactNode }): React.JSX.Element {
   const [session, setSessionState] = useState<UserSession | null>(() => {
     try {
-      const stored = typeof window !== "undefined" ? window.sessionStorage.getItem("tsotsa_session") : null;
+      const stored =
+        typeof window !== "undefined"
+          ? window.sessionStorage.getItem(SESSION_STORAGE_KEY)
+          : null;
       return stored ? (JSON.parse(stored) as UserSession) : null;
     } catch {
       return null;
@@ -85,13 +124,21 @@ export function AuthProvider({ children }: { children: ReactNode }): React.JSX.E
     inMemoryRefreshToken = refreshToken ?? null;
 
     try {
-      if (newSession) {
-        window.sessionStorage.setItem("tsotsa_session", JSON.stringify(newSession));
-      } else {
-        window.sessionStorage.removeItem("tsotsa_session");
+      if (typeof window !== "undefined") {
+        if (newSession) {
+          window.sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(newSession));
+        } else {
+          window.sessionStorage.removeItem(SESSION_STORAGE_KEY);
+        }
       }
     } catch {
       // Storage errors ignored
+    }
+
+    if (accessToken) {
+      persistTokens({ accessToken, refreshToken });
+    } else {
+      persistTokens(null);
     }
 
     const apiClient = getWebApiClient();
@@ -111,10 +158,23 @@ export function AuthProvider({ children }: { children: ReactNode }): React.JSX.E
       }
     }
 
+    if (!newSession) {
+      userStore.clear();
+    }
     setSessionState(newSession);
   }, []);
 
   const logout = useCallback(() => {
+    userStore.clear();
+    const currentRefresh = inMemoryRefreshToken;
+    if (currentRefresh) {
+      const apiClient = getWebApiClient();
+      void apiClient.client
+        .POST("/v1/auth/logout", { body: { refresh_token: currentRefresh } })
+        .catch(() => {
+          // Network errors ignored to guarantee client-side cleanup
+        });
+    }
     setSession(null);
   }, [setSession]);
 
@@ -131,6 +191,20 @@ export function AuthProvider({ children }: { children: ReactNode }): React.JSX.E
     };
     setSession(updated, inMemoryAccessToken || undefined, inMemoryRefreshToken || undefined);
   }, [session, setSession]);
+
+  // Restore tokens from sessionStorage on startup
+  useEffect(() => {
+    const stored = getStoredTokens();
+    if (stored) {
+      inMemoryAccessToken = stored.accessToken;
+      inMemoryRefreshToken = stored.refreshToken ?? null;
+      const apiClient = getWebApiClient();
+      apiClient.setTokens({
+        accessToken: stored.accessToken,
+        refreshToken: stored.refreshToken,
+      });
+    }
+  }, []);
 
   // Inactivity tracking for professional accounts (30 min)
   useEffect(() => {
@@ -157,14 +231,6 @@ export function AuthProvider({ children }: { children: ReactNode }): React.JSX.E
       clearInterval(timer);
     };
   }, [session, logout]);
-
-  useEffect(() => {
-    const apiClient = getWebApiClient();
-    apiClient.setTokens({
-      accessToken: inMemoryAccessToken || "",
-      refreshToken: inMemoryRefreshToken || undefined,
-    });
-  }, []);
 
   return (
     <AuthContext.Provider

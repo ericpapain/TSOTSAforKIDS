@@ -47,7 +47,7 @@ describe("Super Caregiver & Delegation Features (Étape 3)", () => {
 
     expect(screen.getByText("Tous les patients")).toBeInTheDocument();
     expect(screen.getByText("Association")).toBeInTheDocument();
-    expect(screen.getByText("Validation soignants")).toBeInTheDocument();
+    expect(screen.getByText("Supervision & Validations")).toBeInTheDocument();
     expect(screen.getByText("Gestion des droits")).toBeInTheDocument();
   });
 

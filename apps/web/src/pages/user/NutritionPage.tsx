@@ -16,6 +16,7 @@ import { UserNavTabs } from "./UserNavTabs";
 import { AddChildModal } from "./AddChildModal";
 import { ChildHealthReportModal } from "../health/ChildHealthReportModal";
 import { useUserStore } from "../../features/user/useUserStore";
+import { recordIntake } from "../../api/intakes";
 
 export const NutritionPage: React.FC = () => {
   const { t, i18n } = useTranslation("nutrition");
@@ -122,7 +123,7 @@ export const NutritionPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#F1F3F2] font-sans">
-      <AppHeader space="user" onLogout={handleLogout} />
+      <AppHeader space="user" userName={authContext?.session?.name || authContext?.session?.email} onLogout={handleLogout} />
       <UserNavTabs onOpenAddChild={() => setIsAddChildOpen(true)} />
 
       <main className="mx-auto max-w-[1440px] px-7 py-6">
@@ -189,7 +190,7 @@ export const NutritionPage: React.FC = () => {
                 }
                 className="w-full h-[48px] rounded-[9px] bg-[#0F7B5F] hover:bg-[#0c634c] text-white text-[17px] font-bold transition-colors cursor-pointer shadow-sm"
               >
-                {t("productCard.giveButton", { name: "Hamadou" })}
+                {t("productCard.giveButton", { name: activeChild?.firstName || "l'enfant" })}
               </button>
             </div>
           </section>
@@ -263,13 +264,14 @@ export const NutritionPage: React.FC = () => {
 
       <FoodDetailModal
         food={selectedFood}
+        personName={activeChild?.firstName || "l'enfant"}
         onClose={() => setSelectedFoodId(null)}
         onGiveFood={(food) => setGiveModalItem({ name: food.name, unit: "portion" })}
       />
 
       <ConfirmIntakeModal
         isOpen={!!giveModalItem}
-        personName={activeChild?.firstName || "Hamadou"}
+        personName={activeChild?.firstName || "l'enfant"}
         itemName={giveModalItem?.name ?? selectedProduct.name}
         defaultUnit={giveModalItem?.unit ?? "sachet"}
         onClose={() => setGiveModalItem(null)}
@@ -290,6 +292,16 @@ export const NutritionPage: React.FC = () => {
               date: "Aujourd'hui",
               consumption: details.consumption,
               status: "given",
+            });
+            void recordIntake({
+              person_id: activeChild.id,
+              item_type: "product",
+              item_id: details.foodName,
+              quantity: details.quantity,
+              unit: details.unit,
+              consumption: details.consumption,
+            }).catch(() => {
+              // Ignore API network errors silently
             });
           }
         }}

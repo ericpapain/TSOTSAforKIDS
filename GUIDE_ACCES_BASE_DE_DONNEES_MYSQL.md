@@ -1,4 +1,4 @@
-# Guide d'Accès et d'Administration de la Base de Données MySQL – TSOTSA4Kids
+# Guide d'Accès et d'Administration de la Base de Données MySQL – TSOTSA for Kids
 
 Ce document fournit le mode d'emploi exhaustif, simple et sécurisé pour accéder, consulter, modifier, sauvegarder et restaurer votre base de données de production **MySQL 8.0**.
 

@@ -43,6 +43,9 @@ class PersonRead(BaseModel):
     region_id: str | None = None
     relation: str | None = None
     is_primary: bool | None = None
+    status: str = "pending"
+    doctor_id: str | None = None
+    doctor_name: str | None = None
     created_at: datetime
 
 

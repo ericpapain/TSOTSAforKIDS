@@ -1,5 +1,6 @@
 """Persons module (Domain C)."""
 
+from tsotsa_api.modules.persons.field_agent_router import field_agent_router
 from tsotsa_api.modules.persons.models import (
     Person,
     PersonCare,
@@ -18,5 +19,6 @@ __all__ = [
     "PersonsService",
     "caregiver_persons_router",
     "family_router",
+    "field_agent_router",
     "patient_validation_router",
 ]

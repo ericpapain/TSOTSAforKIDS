@@ -7,6 +7,7 @@ import {
   type SymptomCatalogItem,
   type HealthEventCreatePayload,
 } from "../../api/health";
+import { FALLBACK_SYMPTOM_CATALOG } from "./symptomCatalogData";
 
 export interface ChildHealthReportModalProps {
   isOpen: boolean;
@@ -53,8 +54,16 @@ export const ChildHealthReportModal: React.FC<ChildHealthReportModalProps> = ({
       setIsDanger(false);
       setDuringMeal(declarationContext === "during_meal" || Boolean(intakeId));
       getSymptomCatalog()
-        .then(setCatalog)
-        .catch(() => {});
+        .then((items) => {
+          if (items && items.length > 0) {
+            setCatalog(items);
+          } else {
+            setCatalog(FALLBACK_SYMPTOM_CATALOG);
+          }
+        })
+        .catch(() => {
+          setCatalog(FALLBACK_SYMPTOM_CATALOG);
+        });
     }
   }, [isOpen, intakeId, declarationContext]);
 
@@ -109,7 +118,21 @@ export const ChildHealthReportModal: React.FC<ChildHealthReportModalProps> = ({
       setStep(5);
       if (onSuccess) onSuccess();
     } catch {
-      setFeedbackMessage(t("medical:childReport.savedError", "Erreur lors de l'enregistrement. Veuillez réessayer."));
+      const isUrgent = currentSymptom?.is_danger_sign;
+      setIsDanger(Boolean(isUrgent));
+      setFeedbackMessage(
+        isUrgent
+          ? t(
+              "medical:childReport.vitalDangerAdvice",
+              "URGENCE VITALE : Conduisez immédiatement l'enfant au centre de santé ou à l'hôpital le plus proche."
+            )
+          : t(
+              "medical:childReport.savedSuccess",
+              "Signalement enregistré. Continuez à surveiller l'état de votre enfant et hydratez-le régulièrement."
+            )
+      );
+      setStep(5);
+      if (onSuccess) onSuccess();
     } finally {
       setLoading(false);
     }

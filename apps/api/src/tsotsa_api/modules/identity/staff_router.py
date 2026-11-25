@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from fastapi import APIRouter, Depends, status
+from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from tsotsa_api.core.database import get_db_session
@@ -53,6 +54,20 @@ async def list_pending_staff(
         )
         for u in pending_users
     ]
+
+
+@staff_router.get(
+    "/doctors",
+    status_code=status.HTTP_200_OK,
+    summary="Lister les praticiens actifs pour nomination et association",
+)
+async def list_doctors(
+    actor: User = Depends(require_permission("staff.validate")),
+    db: AsyncSession = Depends(get_db_session),
+) -> list[dict]:
+    """Retrieve active caregivers and doctors."""
+    service = StaffService(db)
+    return await service.list_doctors(actor)
 
 
 @staff_router.post(
@@ -111,6 +126,27 @@ async def delete_user(
     service = StaffService(db)
     await service.soft_delete_user(actor, user_id)
     return MessageResponse(message="Compte supprimé avec succès.")
+
+
+class PromoteSuperCaregiverRequest(BaseModel):
+    caregiver_id: str
+
+
+@staff_router.post(
+    "/promote-super-caregiver",
+    response_model=MessageResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Nommer un autre Super Soignant",
+)
+async def promote_super_caregiver(
+    payload: PromoteSuperCaregiverRequest,
+    actor: User = Depends(require_permission("permissions.manage")),
+    db: AsyncSession = Depends(get_db_session),
+) -> MessageResponse:
+    """Promote another caregiver to Super Caregiver coordinator."""
+    service = StaffService(db)
+    await service.promote_to_super_caregiver(actor, payload.caregiver_id)
+    return MessageResponse(message="Soignant nommé Super Soignant avec succès.")
 
 
 @permissions_router.get(

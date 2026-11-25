@@ -1,90 +1,161 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Card } from "../../components/Card";
 import { Button } from "../../components/Button";
 import { DataTable } from "../../components/DataTable";
-import { CAMEROON_REGIONS } from "../../features/reference/cameroonRegions";
-
-interface RegisteredFamily {
-  id: string;
-  parentName: string;
-  parentPhone: string;
-  childName: string;
-  childAge: string;
-  region: string;
-  registeredAt: string;
-  status: "validated" | "pending";
-}
+import {
+  listEnrolledFamilies,
+  updateEnrolledChild,
+  deleteEnrolledChild,
+  type EnrolledChild,
+} from "../../api/fieldAgent";
+import { EnrollFamilyModal } from "./EnrollFamilyModal";
 
 export const FieldAgentFamiliesPage: React.FC = () => {
   const { t } = useTranslation("common");
 
-  const [families, setFamilies] = useState<RegisteredFamily[]>([]);
+  const [childrenList, setChildrenList] = useState<EnrolledChild[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
 
-  // Form states
-  const [parentFirstName, setParentFirstName] = useState("");
-  const [parentLastName, setParentLastName] = useState("");
-  const [parentEmail, setParentEmail] = useState("");
-  const [parentPhone, setParentPhone] = useState("");
-  const [childFirstName, setChildFirstName] = useState("");
-  const [childBirthDate, setChildBirthDate] = useState("");
-  const [regionCode, setRegionCode] = useState("CE");
+  // Edit child modal
+  const [editingChild, setEditingChild] = useState<EnrolledChild | null>(null);
+  const [editFirstName, setEditFirstName] = useState("");
+  const [editBirthDate, setEditBirthDate] = useState("");
+  const [editSex, setEditSex] = useState<"M" | "F">("M");
 
-  const handleRegisterFamily = (e: React.FormEvent) => {
+  const fetchFamilies = async () => {
+    setIsLoading(true);
+    try {
+      const data = await listEnrolledFamilies();
+      setChildrenList(data);
+    } catch {
+      // fallback
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    void fetchFamilies();
+  }, []);
+
+  const handleOpenEdit = (child: EnrolledChild) => {
+    setEditingChild(child);
+    setEditFirstName(child.first_name);
+    setEditBirthDate(child.birth_date);
+    setEditSex(child.sex);
+  };
+
+  const handleSaveEdit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const newFamily: RegisteredFamily = {
-      id: `fam-${Date.now()}`,
-      parentName: `${parentFirstName} ${parentLastName}`.trim(),
-      parentPhone: parentPhone || "—",
-      childName: childFirstName,
-      childAge: childBirthDate,
-      region: CAMEROON_REGIONS.find((r) => r.code === regionCode)?.name || regionCode,
-      registeredAt: new Date().toLocaleDateString("fr-FR"),
-      status: "validated", // In-person registration is immediately validated
-    };
-    setFamilies((prev) => [newFamily, ...prev]);
-    setShowAddModal(false);
-    // Reset form
-    setParentFirstName("");
-    setParentLastName("");
-    setParentEmail("");
-    setParentPhone("");
-    setChildFirstName("");
-    setChildBirthDate("");
+    if (!editingChild) return;
+    try {
+      await updateEnrolledChild(editingChild.id, {
+        first_name: editFirstName,
+        birth_date: editBirthDate,
+        sex: editSex,
+      });
+      setEditingChild(null);
+      await fetchFamilies();
+    } catch (err) {
+      alert("Erreur lors de la modification : " + String(err));
+    }
+  };
+
+  const handleDeleteChild = async (id: string, name: string) => {
+    if (!confirm(`Supprimer le dossier de ${name} ?`)) return;
+    try {
+      await deleteEnrolledChild(id);
+      setChildrenList((prev) => prev.filter((c) => c.id !== id));
+    } catch (err) {
+      alert("Erreur lors de la suppression : " + String(err));
+    }
   };
 
   const columns = [
     {
-      header: t("fieldAgent.colParent"),
-      accessor: "parentName" as const,
-    },
-    {
-      header: t("fieldAgent.colPhone"),
-      accessor: "parentPhone" as const,
-    },
-    {
-      header: t("fieldAgent.colChild"),
-      accessor: "childName" as const,
-    },
-    {
-      header: t("fieldAgent.colRegion"),
-      accessor: "region" as const,
-    },
-    {
-      header: t("fieldAgent.colDate"),
-      accessor: "registeredAt" as const,
-    },
-    {
-      header: t("fieldAgent.colPatientStatus"),
-      render: (row: RegisteredFamily) => (
-        <span
-          className={`px-2 py-0.5 rounded text-[11px] font-bold ${
-            row.status === "validated" ? "bg-green-100 text-green-800" : "bg-amber-100 text-amber-800"
-          }`}
-        >
-          {row.status === "validated" ? t("fieldAgent.statusValidatedOnSite") : t("fieldAgent.statusPending")}
+      header: "Dossier",
+      accessor: "pseudonym" as const,
+      render: (row: EnrolledChild) => (
+        <span className="font-mono font-bold text-xs bg-slate-100 text-slate-800 px-1.5 py-0.5 rounded">
+          {row.pseudonym}
         </span>
+      ),
+    },
+    {
+      header: "Enfant",
+      render: (row: EnrolledChild) => (
+        <div>
+          <div className="font-semibold text-text-primary text-sm">{row.first_name}</div>
+          <div className="text-[11px] text-text-secondary">
+            {row.sex === "M" ? "Garçon" : "Fille"} • {row.birth_date}
+          </div>
+        </div>
+      ),
+    },
+    {
+      header: "Parent & Contact",
+      render: (row: EnrolledChild) => (
+        <div>
+          <div className="font-medium text-xs text-text-primary">{row.parent_name || "Parent"}</div>
+          <div className="text-[11px] text-text-muted">{row.parent_phone || "—"}</div>
+        </div>
+      ),
+    },
+    {
+      header: "Médecin assigné",
+      render: (row: EnrolledChild) => (
+        <span className="text-xs text-text-secondary">
+          {row.assigned_doctor_name ? `🩺 ${row.assigned_doctor_name}` : "En attente d'attribution"}
+        </span>
+      ),
+    },
+    {
+      header: "Statut",
+      render: (row: EnrolledChild) => {
+        if (row.status === "validated") {
+          return (
+            <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-green-100 text-green-800 border border-green-200">
+              🟢 Validé
+            </span>
+          );
+        }
+        if (row.status === "refused") {
+          return (
+            <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-red-100 text-red-800 border border-red-200">
+              🔴 Refusé
+            </span>
+          );
+        }
+        return (
+          <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-amber-100 text-amber-800 border border-amber-200">
+            🟡 En attente Super-Médecin
+          </span>
+        );
+      },
+    },
+    {
+      header: "Actions",
+      render: (row: EnrolledChild) => (
+        <div className="flex items-center gap-1.5">
+          <Button
+            size="sm"
+            variant="outline"
+            className="!px-2 !py-0.5 text-xs"
+            onClick={() => handleOpenEdit(row)}
+          >
+            ✏️
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            className="!px-2 !py-0.5 text-xs text-red-600 hover:bg-red-50"
+            onClick={() => handleDeleteChild(row.id, row.first_name)}
+          >
+            🗑️
+          </Button>
+        </div>
       ),
     },
   ];
@@ -93,9 +164,10 @@ export const FieldAgentFamiliesPage: React.FC = () => {
     <div className="space-y-6" data-testid="field-agent-families-page">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-text-primary">{t("fieldAgent.familiesTitle")}</h1>
+          <div className="text-xs font-semibold text-primary uppercase tracking-wider mb-0.5">Familles inscrites</div>
+          <h1 className="text-2xl font-bold text-text-primary">Enrôlement & Suivi des Familles</h1>
           <p className="text-xs text-text-secondary mt-1">
-            {t("fieldAgent.familiesSubtitle")}
+            Enregistrez les familles sur le terrain et suivez l'état de validation de leurs dossiers cliniques.
           </p>
         </div>
         <Button
@@ -104,122 +176,82 @@ export const FieldAgentFamiliesPage: React.FC = () => {
           testID="btn-open-register-family-modal"
           onClick={() => setShowAddModal(true)}
         >
-          {t("fieldAgent.btnRegisterFamily")}
+          ➕ Enrôler une famille
         </Button>
       </div>
 
       <Card className="p-4">
-        {families.length === 0 ? (
+        {isLoading ? (
+          <div className="py-8 text-center text-sm text-text-secondary">Chargement des dossiers...</div>
+        ) : childrenList.length === 0 ? (
           <div className="text-center py-12 text-text-muted text-sm" data-testid="empty-families-notice">
-            {t("fieldAgent.emptyFamilies")}
+            Aucun dossier de famille enregistré pour le moment.
           </div>
         ) : (
-          <DataTable data={families} columns={columns} keyExtractor={(r) => r.id} />
+          <DataTable data={childrenList} columns={columns} keyExtractor={(r) => r.id} />
         )}
       </Card>
 
-      {showAddModal && (
+      {/* Edit Child Modal */}
+      {editingChild && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <Card className="w-full max-w-[500px] p-6 relative">
-            <h2 className="text-lg font-bold text-text-primary mb-4">{t("fieldAgent.modalRegisterFamilyTitle")}</h2>
-            <form onSubmit={handleRegisterFamily} className="space-y-3.5 text-left">
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <label className="block text-xs font-semibold mb-1">{t("fieldAgent.parentFirstName")}</label>
-                  <input
-                    type="text"
-                    required
-                    value={parentFirstName}
-                    onChange={(e) => setParentFirstName(e.target.value)}
-                    className="w-full px-3 py-1.5 text-sm border rounded"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold mb-1">{t("fieldAgent.parentLastName")}</label>
-                  <input
-                    type="text"
-                    required
-                    value={parentLastName}
-                    onChange={(e) => setParentLastName(e.target.value)}
-                    className="w-full px-3 py-1.5 text-sm border rounded"
-                  />
-                </div>
-              </div>
+          <Card className="w-full max-w-[450px] p-6 relative">
+            <h2 className="text-base font-bold text-text-primary mb-3">
+              Modifier le dossier : {editingChild.pseudonym}
+            </h2>
+            <form onSubmit={handleSaveEdit} className="space-y-3">
               <div>
-                <label className="block text-xs font-semibold mb-1">{t("fieldAgent.parentEmail")}</label>
+                <label className="block text-xs font-semibold mb-1">Prénom de l'enfant *</label>
                 <input
-                  type="email"
-                  value={parentEmail}
-                  onChange={(e) => setParentEmail(e.target.value)}
+                  type="text"
+                  required
+                  value={editFirstName}
+                  onChange={(e) => setEditFirstName(e.target.value)}
                   className="w-full px-3 py-1.5 text-sm border rounded"
                 />
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="block text-xs font-semibold mb-1">{t("fieldAgent.parentPhone")}</label>
+                  <label className="block text-xs font-semibold mb-1">Date de naissance *</label>
                   <input
-                    type="tel"
+                    type="date"
                     required
-                    value={parentPhone}
-                    onChange={(e) => setParentPhone(e.target.value)}
+                    value={editBirthDate}
+                    onChange={(e) => setEditBirthDate(e.target.value)}
                     className="w-full px-3 py-1.5 text-sm border rounded"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold mb-1">{t("fieldAgent.region")}</label>
+                  <label className="block text-xs font-semibold mb-1">Sexe *</label>
                   <select
-                    value={regionCode}
-                    onChange={(e) => setRegionCode(e.target.value)}
+                    value={editSex}
+                    onChange={(e) => setEditSex(e.target.value as "M" | "F")}
                     className="w-full px-3 py-1.5 text-sm border rounded bg-white"
                   >
-                    {CAMEROON_REGIONS.map((r) => (
-                      <option key={r.code} value={r.code}>
-                        {r.name}
-                      </option>
-                    ))}
+                    <option value="M">Garçon</option>
+                    <option value="F">Fille</option>
                   </select>
                 </div>
               </div>
-              <div className="border-t pt-3 mt-3">
-                <h3 className="text-xs font-bold text-text-secondary uppercase mb-2">
-                  {t("fieldAgent.childSection")}
-                </h3>
-                <div className="grid grid-cols-2 gap-2">
-                  <div>
-                    <label className="block text-xs font-semibold mb-1">{t("fieldAgent.childFirstName")}</label>
-                    <input
-                      type="text"
-                      required
-                      value={childFirstName}
-                      onChange={(e) => setChildFirstName(e.target.value)}
-                      className="w-full px-3 py-1.5 text-sm border rounded"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-semibold mb-1">{t("fieldAgent.childBirthDate")}</label>
-                    <input
-                      type="date"
-                      required
-                      value={childBirthDate}
-                      onChange={(e) => setChildBirthDate(e.target.value)}
-                      className="w-full px-3 py-1.5 text-sm border rounded"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex justify-end gap-2 pt-4">
-                <Button variant="outline" size="sm" onClick={() => setShowAddModal(false)}>
+              <div className="flex justify-end gap-2 pt-3">
+                <Button variant="outline" size="sm" onClick={() => setEditingChild(null)}>
                   {t("actions.cancel")}
                 </Button>
-                <Button type="submit" variant="primary" size="sm" testID="btn-confirm-register-family">
-                  {t("fieldAgent.btnConfirmRegister")}
+                <Button type="submit" variant="primary" size="sm">
+                  Enregistrer
                 </Button>
               </div>
             </form>
           </Card>
         </div>
       )}
+
+      {/* Enroll Family Modal */}
+      <EnrollFamilyModal
+        isOpen={showAddModal}
+        onClose={() => setShowAddModal(false)}
+        onSuccess={fetchFamilies}
+      />
     </div>
   );
 };

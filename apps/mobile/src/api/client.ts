@@ -11,8 +11,29 @@ import {
 
 import { clearStoredTokens, getStoredTokens, saveStoredTokens } from "./storage";
 
-const API_BASE_URL =
-  process.env.EXPO_PUBLIC_API_URL || "https://www.tsotsa-for-kids.com/api";
+export function resolveApiBaseUrl(
+  envOverride?: Record<string, string | undefined>
+): string {
+  try {
+    const env =
+      envOverride !== undefined
+        ? envOverride
+        : typeof process !== "undefined"
+          ? process.env
+          : undefined;
+    if (env && typeof env === "object") {
+      const customUrl = env["EXPO_PUBLIC_API_URL"];
+      if (typeof customUrl === "string" && customUrl.trim().length > 0) {
+        return customUrl.trim();
+      }
+    }
+  } catch {
+    // Fallback if environment is inaccessible
+  }
+  return "https://www.tsotsa-for-kids.com/api";
+}
+
+const API_BASE_URL = resolveApiBaseUrl();
 
 let apiClientInstance: TsotsaApiClient | null = null;
 

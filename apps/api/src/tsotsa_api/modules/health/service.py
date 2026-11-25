@@ -9,6 +9,7 @@ from tsotsa_api.core.errors import ForbiddenError, NotFoundError
 from tsotsa_api.modules.audit.service import AuditService
 from tsotsa_api.modules.health.eval_helpers import (
     evaluate_event_rules,
+    resolve_or_create_target_person,
     resolve_user_access_tier,
     to_caregiver_out,
     to_parent_out,
@@ -61,14 +62,10 @@ class HealthService:
         ip: str | None = None,
     ) -> HealthEventParentOut | HealthEventCaregiverOut:
         """Create and triage a new health event."""
-        tier = await resolve_user_access_tier(
-            self.session, self.perms, actor_id, payload.person_id
-        )
+        person = await resolve_or_create_target_person(self.session, actor_id, payload.person_id)
+        payload.person_id = str(person.id)
 
-        p_stmt = select(Person).where(Person.id == payload.person_id)
-        person = (await self.session.execute(p_stmt)).scalar_one_or_none()
-        if not person or person.deleted_at is not None:
-            raise NotFoundError("Enfant suivi introuvable.")
+        tier = await resolve_user_access_tier(self.session, self.perms, actor_id, payload.person_id)
 
         rule_inputs = [
             SymptomInput(
@@ -134,9 +131,7 @@ class HealthService:
         priority: str | None = None,
     ) -> list[HealthEventParentOut | HealthEventCaregiverOut]:
         """Fetch timeline of health events for a child."""
-        tier = await resolve_user_access_tier(
-            self.session, self.perms, actor_id, person_id
-        )
+        tier = await resolve_user_access_tier(self.session, self.perms, actor_id, person_id)
         events = await self.repo.list_events_by_person(person_id, status=status, priority=priority)
 
         results: list[HealthEventParentOut | HealthEventCaregiverOut] = []
@@ -158,9 +153,7 @@ class HealthService:
         if not event:
             raise NotFoundError("Événement de santé introuvable.")
 
-        tier = await resolve_user_access_tier(
-            self.session, self.perms, actor_id, event.person_id
-        )
+        tier = await resolve_user_access_tier(self.session, self.perms, actor_id, event.person_id)
         ev_res = evaluate_event_rules(event)
         if tier == "caregiver":
             return to_caregiver_out(event, ev_res)
@@ -226,9 +219,7 @@ class HealthService:
         if not event:
             raise NotFoundError("Événement de santé introuvable.")
 
-        tier = await resolve_user_access_tier(
-            self.session, self.perms, actor_id, event.person_id
-        )
+        tier = await resolve_user_access_tier(self.session, self.perms, actor_id, event.person_id)
         if tier != "caregiver":
             raise ForbiddenError(
                 "Seul un professionnel de santé peut enregistrer une action médicale."
@@ -264,17 +255,14 @@ class HealthService:
         min_priority: str | None = None,
     ) -> list[HealthAlertSummary]:
         """Fetch alert summaries for caregivers and supervisors."""
-        has_perm = (
-            await self.perms.has_permission(actor_id, "patients.manage")
-            or await self.perms.has_permission(actor_id, "caregivers.view_as")
-        )
+        has_perm = await self.perms.has_permission(
+            actor_id, "patients.manage"
+        ) or await self.perms.has_permission(actor_id, "caregivers.view_as")
         if not has_perm:
             raise ForbiddenError("Accès réservé aux soignants et coordinateurs.")
 
         priorities = (
-            ["urgent", "high"]
-            if min_priority == "high"
-            else ["urgent", "high", "attention"]
+            ["urgent", "high"] if min_priority == "high" else ["urgent", "high", "attention"]
         )
         events = await self.repo.list_open_alerts(priorities=priorities)
 

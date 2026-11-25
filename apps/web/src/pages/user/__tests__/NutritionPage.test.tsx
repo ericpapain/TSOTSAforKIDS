@@ -1,9 +1,15 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, act } from "@testing-library/react";
 import { BrowserRouter } from "react-router-dom";
 import { NutritionPage } from "../NutritionPage";
+import { userStore } from "../../../features/user/userStore";
 
 describe("NutritionPage (W01)", () => {
+  beforeEach(() => {
+    localStorage.clear();
+    userStore.reset();
+  });
+
   const renderNutritionPage = () => {
     return render(
       <BrowserRouter>
@@ -16,7 +22,7 @@ describe("NutritionPage (W01)", () => {
     renderNutritionPage();
 
     expect(screen.getByText(/Espace utilisateur \(web\)/i)).toBeInTheDocument();
-    expect(screen.getByText(/Compte démo · Hamadou/i)).toBeInTheDocument();
+    expect(screen.getByText(/Espace Famille/i)).toBeInTheDocument();
 
     expect(screen.getByTestId("product-card")).toBeInTheDocument();
     expect(screen.getByTestId("equivalents-card")).toBeInTheDocument();
@@ -163,6 +169,19 @@ describe("NutritionPage (W01)", () => {
   });
 
   it("ouvre la modale Confirmer la prise (Donner à Hamadou) et enregistre la prise", () => {
+    userStore.addChild({
+      firstName: "Hamadou",
+      birthDate: "2022-09-15",
+      sex: "M",
+      relation: "father",
+      weightKg: 14.2,
+      heightCm: 98,
+      muacMm: 145,
+      edema: "none",
+      status: "normal",
+      facilityName: "Hôpital de District",
+      validationStatus: "validated",
+    });
     renderNutritionPage();
 
     const giveBtn = screen.getByTestId("give-product-btn");

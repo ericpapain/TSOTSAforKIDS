@@ -25,6 +25,22 @@ class PatientAssignRequest(BaseModel):
     reason: str | None = Field(default=None, max_length=255)
 
 
+class PatientDeleteRequest(BaseModel):
+    """Payload to delete or archive a patient record with a reason."""
+
+    reason: str = Field(..., min_length=3, max_length=500)
+
+
+class PatientValidateAndAssignRequest(BaseModel):
+    """Payload to validate a patient and simultaneously assign attending doctor and field agent."""
+
+    decision: PatientDecision
+    doctor_id: str | None = None
+    field_agent_id: str | None = None
+    organization_id: str | None = None
+    notes: str | None = Field(default=None, max_length=500)
+
+
 class PendingPatientRead(BaseModel):
     """Detailed representation of a patient pending validation."""
 
@@ -40,3 +56,7 @@ class PendingPatientRead(BaseModel):
     created_at: datetime
     validated_at: datetime | None = None
     refusal_reason: str | None = None
+    registered_by_name: str | None = None
+    registered_by_role: str | None = None
+    assigned_doctor_name: str | None = None
+    assigned_field_agent_name: str | None = None

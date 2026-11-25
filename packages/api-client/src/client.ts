@@ -39,10 +39,6 @@ function normalizeBaseUrl(url?: string): string {
   return url.endsWith("/") ? url.slice(0, -1) : url;
 }
 
-function normalizeHeaders(headersInit?: HeadersInit): Headers {
-  return new Headers(headersInit);
-}
-
 class TokenManager {
   private tokens: TokenPair | null = null;
   private inFlightRefresh: Promise<TokenPair | null> | null = null;
@@ -159,6 +155,18 @@ class TokenManager {
   }
 }
 
+function extractHeaders(input: RequestInfo | URL, init?: RequestInit): Headers {
+  const headers = new Headers();
+  if (typeof Request !== "undefined" && input instanceof Request) {
+    input.headers.forEach((val: string, key: string) => headers.set(key, val));
+  }
+  if (init?.headers) {
+    const initHeaders = new Headers(init.headers);
+    initHeaders.forEach((val: string, key: string) => headers.set(key, val));
+  }
+  return headers;
+}
+
 function createAuthenticatedFetch(
   manager: TokenManager,
   baseFetch: typeof globalThis.fetch,
@@ -166,16 +174,30 @@ function createAuthenticatedFetch(
   refreshEndpoint: string,
 ): typeof globalThis.fetch {
   return async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
-    const headers = normalizeHeaders(init?.headers);
+    const headers = extractHeaders(input, init);
     const token = manager.getAccessToken();
     if (token && !headers.has("Authorization")) {
       headers.set("Authorization", `Bearer ${token}`);
     }
+    if (!headers.has("Content-Type") && !headers.has("content-type")) {
+      headers.set("Content-Type", "application/json");
+    }
+
+    let finalInput = input;
+    if (typeof Request !== "undefined" && input instanceof Request) {
+      finalInput = new Request(input, { headers });
+    }
 
     const initialRequestInit: RequestInit = { ...init, headers };
-    const response = await baseFetch(input, initialRequestInit);
+    const response = await baseFetch(finalInput, initialRequestInit);
 
-    const isRefreshReq = typeof input === "string" && input.includes(refreshEndpoint);
+    const isRefreshReq =
+      typeof input === "string"
+        ? input.includes(refreshEndpoint)
+        : "url" in input
+          ? input.url.includes(refreshEndpoint)
+          : false;
+
     if (response.status !== 401 || !autoRefresh || isRefreshReq) {
       return response;
     }
@@ -185,9 +207,12 @@ function createAuthenticatedFetch(
       return response;
     }
 
-    const retryHeaders = normalizeHeaders(init?.headers);
-    retryHeaders.set("Authorization", `Bearer ${refreshedTokens.accessToken}`);
-    return baseFetch(input, { ...init, headers: retryHeaders });
+    headers.set("Authorization", `Bearer ${refreshedTokens.accessToken}`);
+    const retryInput =
+      typeof Request !== "undefined" && input instanceof Request
+        ? new Request(input, { headers })
+        : input;
+    return baseFetch(retryInput, { ...init, headers });
   };
 }
 

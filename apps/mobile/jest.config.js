@@ -6,6 +6,7 @@ module.exports = {
   setupFilesAfterEnv: ["<rootDir>/tests/jest.setup.js"],
   testMatch: ["**/__tests__/**/*.test.[jt]s?(x)"],
   moduleNameMapper: {
+    "^expo/virtual/env$": "<rootDir>/tests/mocks/expoVirtualEnv.js",
     "^(\\.{1,2}/.*)\\.js$": "$1",
   },
   collectCoverageFrom: [
